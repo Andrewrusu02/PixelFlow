@@ -1,0 +1,40 @@
+@import "css/everycss.css";
+
+/*
+Design directions:
+- Left menu (1/6 of the full with of the display) (fixed size)
+- Minimum Dynamic size (1/2 of every direction of the display) (1/4 total display size)
+- Minimum Minimum size (800x600)
+*/
+
+.root {
+    /* Accento */
+    -fu-accent: red;
+    -fu-accent-rest: -fu-accent;
+    -fu-accent-hover: -fu-accent;
+    -fu-accent-pressed: -fu-accent;
+    -fu-accent-selected: -fu-accent;
+
+    /* Variabili per la modalità chiara */
+    -fu-background-1: rgb(255, 255, 255);
+    -fu-background-2: rgb(228, 228, 228);
+    -fu-background-3: rgb(234, 234, 234);
+    -fu-background-4: rgb(224, 224, 224);
+
+    -fu-foreground-rest: rgb(255, 255, 255);
+    -fu-foreground-hover: rgb(243, 243, 243);
+    -fu-foreground-pressed: rgb(255, 255, 255);
+    -fu-foreground-selected: rgb(255, 255, 255);
+
+    -fu-stroke-colors: rgb(255, 255, 255);
+    -fu-stroke-rest: rgb(213, 213, 213);
+    -fu-stroke-hover: rgb(193, 193, 193);
+    -fu-stroke-pressed: rgb(193, 193, 193);
+    -fu-stroke-selected: rgb(193, 193, 193);
+
+    -fu-barra: rgb(119, 119, 119);
+    -fu-text-1: rgb(21, 21, 21);
+    -fu-text-2: #555555;
+    -fu-text-3: #ffffff;
+
+}

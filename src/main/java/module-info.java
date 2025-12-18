@@ -8,7 +8,10 @@ module com.unical.pixelflow {
 
     // AGGIUNTA FONDAMENTALE 2: Serve per il Database SQLite
     requires java.sql;
-    requires org.xerial.sqlitejdbc; // Se l'IDE non lo trova, prova a togliere questa riga, ma java.sql serve.
+    requires org.xerial.sqlitejdbc;
+    requires spring.security.crypto;
+    requires java.net.http;
+    requires org.json; // Se l'IDE non lo trova, prova a togliere questa riga, ma java.sql serve.
 
     opens com.unical.pixelflow to javafx.fxml;
     opens com.unical.pixelflow.controller to javafx.fxml;

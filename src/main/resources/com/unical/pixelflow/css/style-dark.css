@@ -1,0 +1,44 @@
+@import "css/everycss.css";
+
+/*
+Design directions:
+- Left menu (1/6 of the full with of the display) (fixed size)
+- Minimum Dynamic size (1/2 of every direction of the display) (1/4 total display size)
+- Minimum Minimum size (800x600)
+*/
+
+.root {
+    /* Accento */
+    -fu-accent: red;
+    -fu-accent-rest: -fu-accent;
+    -fu-accent-hover: -fu-accent;
+    -fu-accent-pressed: -fu-accent;
+    -fu-accent-selected: -fu-accent;
+    -xfu-accent-rest: rgba(255, 0, 0, 1);
+    -xfu-accent-hover: rgba(210, 0, 0, 1);
+    -xfu-accent-pressed: rgba(180, 0, 0, 1);
+    -xfu-accent-selected: rgba(230, 0, 0, 1);
+
+    /* Variabili per la modalità scura */
+    -fu-background-1: #141414;
+    -fu-background-2: #141414;
+    -fu-background-3: #1f1f1f;
+    -fu-background-4: #292929;
+
+    -fu-foreground-rest: rgba(26, 26, 26, 1);
+    -fu-foreground-hover: rgba(38, 38, 38, 1);
+    -fu-foreground-pressed: rgba(18, 18, 18, 1);
+    -fu-foreground-selected: rgba(22, 22, 22, 1);
+
+    -fu-stroke-colors: rgba(66, 66, 66, 1);
+    -fu-stroke-rest: rgb(58, 58, 58);
+    -fu-stroke-hover: rgb(58, 58, 58);
+    -fu-stroke-pressed: rgb(57, 57, 57);
+    -fu-stroke-selected: rgb(57, 57, 57);
+
+    -fu-barra: #c3c3c3;
+    -fu-text-1: #ffffff;
+    -fu-text-2: #737373;
+    -fu-text-3: #ffffff;
+
+}

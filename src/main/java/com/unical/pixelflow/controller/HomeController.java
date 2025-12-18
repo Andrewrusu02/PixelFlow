@@ -24,7 +24,7 @@ public class HomeController {
     public void initialize() {
         logoWebView.setContextMenuEnabled(false);
 
-        String logoPath = Objects.requireNonNull(getClass().getResource("/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
+        String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
 
         logoWebView.getEngine().load(logoPath);
 
