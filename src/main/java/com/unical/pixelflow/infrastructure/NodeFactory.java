@@ -20,6 +20,9 @@ public class NodeFactory {
             case "PixelateFilter": return new PixelateFilter();
             case "VignetteFilter": return new VignetteFilter();
             case "SolarizeFilter": return new SolarizeFilter();
+            case "FlipFilter": return new FlipFilter();
+            case "ScaleFilter": return new ScaleFilter();
+            case "Rotate90Filter": return new Rotate90Filter();
             default: throw new IllegalArgumentException("Unknown node type: " + type);
         }
     }

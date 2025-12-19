@@ -69,6 +69,9 @@ public class AppController {
             case "Pixelate": newNode = new PixelateFilter(); break;
             case "Vignette": newNode = new VignetteFilter(); break;
             case "Solarize": newNode = new SolarizeFilter(); break;
+            case "Flip": newNode = new FlipFilter(); break;
+            case "Scale": newNode = new ScaleFilter(); break;
+            case "Rotate90": newNode = new Rotate90Filter(); break;
             case "Input": newNode = new InputNode(null); break;
             case "Output": newNode = new OutputNode(); break;
         }
