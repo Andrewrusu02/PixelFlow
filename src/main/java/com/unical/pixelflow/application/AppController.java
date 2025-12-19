@@ -60,6 +60,15 @@ public class AppController {
             case "Brightness": newNode = new BrightnessFilter(); break;
             case "Grayscale": newNode = new GrayscaleFilter(); break;
             case "Blur": newNode = new BlurFilter(); break;
+            case "Invert": newNode = new InvertFilter(); break;
+            case "Sepia": newNode = new SepiaFilter(); break;
+            case "Sharpen": newNode = new SharpenFilter(); break;
+            case "Threshold": newNode = new ThresholdFilter(); break;
+            case "Contrast": newNode = new ContrastFilter(); break;
+            case "EdgeDetection": newNode = new EdgeDetectionFilter(); break;
+            case "Pixelate": newNode = new PixelateFilter(); break;
+            case "Vignette": newNode = new VignetteFilter(); break;
+            case "Solarize": newNode = new SolarizeFilter(); break;
             case "Input": newNode = new InputNode(null); break;
             case "Output": newNode = new OutputNode(); break;
         }

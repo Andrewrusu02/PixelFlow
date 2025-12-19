@@ -1,17 +1,22 @@
 package com.unical.pixelflow.domain.nodes;
 
 import com.unical.pixelflow.domain.model.Filter;
+import com.unical.pixelflow.domain.model.Parameter;
 import java.awt.image.BufferedImage;
 
 public class GrayscaleFilter extends Filter {
 
     public GrayscaleFilter() {
         super("Grayscale");
-        // Nessun parametro necessario per una conversione standard
+        this.parameters.put("intensity", new Parameter<>("intensity", 100, 0, 100));
     }
 
     @Override
     protected BufferedImage applyEffect(BufferedImage input) {
+        double intensity = (int) getParameterValue("intensity") / 100.0;
+
+        if (intensity <= 0.01) return input;
+
         BufferedImage result = new BufferedImage(
             input.getWidth(), input.getHeight(), input.getType()
         );
@@ -20,18 +25,18 @@ public class GrayscaleFilter extends Filter {
             for (int x = 0; x < input.getWidth(); x++) {
                 int rgb = input.getRGB(x, y);
 
-                // Estrazione componenti
                 int a = (rgb >> 24) & 0xFF;
                 int r = (rgb >> 16) & 0xFF;
                 int g = (rgb >> 8) & 0xFF;
                 int b = rgb & 0xFF;
 
-                // Formula standard per la luminanza (percepita dall'occhio umano)
-                // oppure media semplice (r+g+b)/3
                 int gray = (int) (0.299 * r + 0.587 * g + 0.114 * b);
 
-                // Ricostruzione pixel grigio
-                int newPixel = (a << 24) | (gray << 16) | (gray << 8) | gray;
+                int newR = (int) (r + (gray - r) * intensity);
+                int newG = (int) (g + (gray - g) * intensity);
+                int newB = (int) (b + (gray - b) * intensity);
+
+                int newPixel = (a << 24) | (newR << 16) | (newG << 8) | newB;
 
                 result.setRGB(x, y, newPixel);
             }

@@ -11,6 +11,15 @@ public class NodeFactory {
             case "BrightnessFilter": return new BrightnessFilter();
             case "GrayscaleFilter": return new GrayscaleFilter();
             case "BlurFilter": return new BlurFilter();
+            case "InvertFilter": return new InvertFilter();
+            case "SepiaFilter": return new SepiaFilter();
+            case "SharpenFilter": return new SharpenFilter();
+            case "ThresholdFilter": return new ThresholdFilter();
+            case "ContrastFilter": return new ContrastFilter();
+            case "EdgeDetectionFilter": return new EdgeDetectionFilter();
+            case "PixelateFilter": return new PixelateFilter();
+            case "VignetteFilter": return new VignetteFilter();
+            case "SolarizeFilter": return new SolarizeFilter();
             default: throw new IllegalArgumentException("Unknown node type: " + type);
         }
     }
