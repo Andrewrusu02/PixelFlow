@@ -80,6 +80,20 @@ public class Pipeline {
         connections.add(newConnection);
     }
 
+    public void disconnect(String sourceId, String destId) {
+        connections.removeIf(conn ->
+            conn.getSource().getOwner().getId().equals(sourceId) &&
+            conn.getDestination().getOwner().getId().equals(destId)
+        );
+    }
+
+    public boolean isConnected(String sourceId, String destId) {
+        return connections.stream().anyMatch(conn ->
+            conn.getSource().getOwner().getId().equals(sourceId) &&
+            conn.getDestination().getOwner().getId().equals(destId)
+        );
+    }
+
     /**
      * Verifica se collegare 'from' a 'to' creerebbe un ciclo.
      * Usa una DFS (Depth First Search) per vedere se 'to' può già raggiungere 'from'.
@@ -158,4 +172,3 @@ public class Pipeline {
         return result;
     }
 }
-
