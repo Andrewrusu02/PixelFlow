@@ -1,5 +1,7 @@
 package com.unical.pixelflow.controller;
 
+// COMMENTATO PER TESTING BACKEND - LoginController non funzionale
+/*
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
@@ -206,3 +208,4 @@ public class LoginController {
     }
 
 }
+*/

@@ -1,3 +1,4 @@
+/*
 package com.unical.pixelflow.model;
 
 import javafx.beans.Observable;
@@ -104,3 +105,4 @@ public class LocalizationService {
         }
     }
 }
+*/

@@ -1,5 +1,7 @@
 package com.unical.pixelflow.view;
 
+// COMMENTATO PER TESTING BACKEND - Main non funzionale
+/*
 import javafx.application.Application;
 import javafx.stage.Stage;
 import com.unical.pixelflow.model.DataPF;
@@ -45,3 +47,4 @@ public class Main extends Application {
         DataPF.esm.shutdown();
     }
 }
+*/

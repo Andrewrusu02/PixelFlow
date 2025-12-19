@@ -1,12 +1,15 @@
 package com.unical.pixelflow.model.types;
 
-import com.unical.pixelflow.model.DataPF;
+// COMMENTATO PER TESTING BACKEND - import non necessario
+//import com.unical.pixelflow.model.DataPF;
 
 public enum Theme {
     SYSTEM,
     LIGHT,
     DARK;
 
+    // COMMENTATO PER TESTING BACKEND - usa LocalizationService non funzionale
+    /*
     @Deprecated
     public static Theme fromString(String theme) {
         theme = theme.toLowerCase();
@@ -24,7 +27,7 @@ public enum Theme {
     public static String toString(Theme theme) {
         return DataPF.lsp.lsb(theme.toString().toLowerCase()).get();
     }
-
+    */
 
     public static Theme fromInt(int type) {
         if (type < 0 || type >= values().length) {
