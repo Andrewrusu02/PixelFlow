@@ -11,7 +11,11 @@ module com.unical.pixelflow {
     requires org.xerial.sqlitejdbc;
     requires spring.security.crypto;
     requires java.net.http;
-    requires org.json; // Se l'IDE non lo trova, prova a togliere questa riga, ma java.sql serve.
+
+    // AGGIUNTA FONDAMENTALE 3: Serve per la serializzazione JSON (Jackson)
+    requires com.fasterxml.jackson.databind;
+
+    // requires org.json; // Commentato - non utilizzato attualmente
 
     // COMMENTATO PER TESTING BACKEND - packages non necessari per i test
     //opens com.unical.pixelflow to javafx.fxml;
