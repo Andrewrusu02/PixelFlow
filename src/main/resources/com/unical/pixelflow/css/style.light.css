@@ -1,4 +1,4 @@
-@import "css/everycss.css";
+@import "everycss.css";
 
 /*
 Design directions:
@@ -9,7 +9,7 @@ Design directions:
 
 .root {
     /* Accento */
-    -fu-accent: red;
+    -fu-accent: yellow;
     -fu-accent-rest: -fu-accent;
     -fu-accent-hover: -fu-accent;
     -fu-accent-pressed: -fu-accent;

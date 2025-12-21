@@ -1,0 +1,33 @@
+
+.profile_image:hover {
+    -fx-opacity: 0.8;
+}
+
+
+
+.profile_image .profile_label {
+    -fx-text-fill: -fu-text-3;
+    -fx-font-size: 16px;
+    -fx-opacity: 0;
+}
+
+.profile_image:hover .profile_label {
+    -fx-opacity: 1;
+}
+
+.profile_image .profile_pane {
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+    -fx-shape: "M 50,0 A 50,50 0 1,1 50,100 A 50,50 0 1,1 50,0 Z";
+    -fx-border-width: 0;
+
+    -fx-effect: dropshadow(gaussian, -fu-stroke-rest, 4, 0.5, 0, 0);
+}
+
+.profile_image:hover .profile_pane {
+    -fx-background-color: -fu-accent;
+    -fx-opacity: 0.8;
+    -fx-shape: "M 50,0 A 50,50 0 1,1 50,100 A 50,50 0 1,1 50,0 Z";
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-width: 2;
+}

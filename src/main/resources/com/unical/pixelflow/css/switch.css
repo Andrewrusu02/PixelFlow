@@ -1,0 +1,33 @@
+/*This is a switch AKA a fancy toggle button
+Suona meglio in inglese la frase che tradotta*/
+
+.switch {
+    -fx-text-fill: -fu-text-1;
+    -fx-background-color: -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 6, 4;
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+}
+
+.switch:hover {
+    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover;
+}
+
+.switch:pressed {
+    -fx-background-color: -fu-stroke-pressed, -fu-foreground-pressed;
+}
+
+.switch:selected {
+    -fx-background-color: -fu-stroke-selected, -fu-foreground-selected;
+}
+.switch_state_indicator {
+    -fx-background-color: -fu-accent;
+    -fx-background-insets: 2;
+    -fx-background-radius: 4;
+}
+
+.switch:hover > .switch_state_indicator {
+    -fx-background-insets: 3.5;
+    -fx-background-radius: 2.5;
+}

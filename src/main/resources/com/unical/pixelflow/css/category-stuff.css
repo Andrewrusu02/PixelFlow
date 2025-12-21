@@ -1,0 +1,151 @@
+.category-type-toggle {
+    /*background, accent*/
+    -fx-background-color: transparent, transparent;
+    -fx-background-insets: 0, 38 0 0 0;
+    -fx-background-radius: 0, 0;
+    -fx-background-position: top, left;
+    -fx-text-fill: -fu-text-1;
+}
+
+.category-type-toggle:hover {
+    /*background, accent*/
+    -fx-background-color: transparent, -fu-text-2;
+    -fx-background-insets: 0, 38 0 0 0;
+}
+
+.category-type-toggle:pressed {
+    /*background, accent*/
+    -fx-background-color: transparent, -fu-text-2;
+    -fx-background-insets: 0, 38 0 0 0;
+}
+
+.category-type-toggle:selected {
+    /*background, accent*/
+    -fx-background-color: transparent, -fu-accent;
+}
+
+.category-type-toggle:selected:hover {
+    /*background, accent*/
+    -fx-background-color: transparent, -fu-accent;
+}
+
+.category_editor {
+    -fx-background-insets: 5 0 0 0;
+    -fx-background-radius: 5;
+    -fx-border-color: transparent;
+    -fx-border-radius: 5;
+    -fx-border-style: dashed;
+}
+
+.category_editor:hover .separator .line {
+    -fx-border-color: -fu-stroke-pressed;
+}
+
+.category_editor:pressed {
+    -fx-background-color: transparent;
+}
+
+.category_editor:selected .separator .line {
+    -fx-border-color: -fu-accent;
+}
+
+.category_editor:selected .hseparator .line {
+    -fx-border-color:  -fu-stroke-pressed;
+}
+
+.category_editor:contorno_abilitato {
+    -fx-border-color: -fu-accent;
+}
+
+.category_editor:selected {
+    -fx-background-color: transparent;
+}
+
+.category_editor:selected:pressed {
+    -fx-background-color: -fu-foreground-pressed;
+}
+
+.category_editor .separator {
+    -fx-padding: 3 0 0 0;
+    -fx-background-color: transparent;
+}
+
+.category-background {
+    -fx-background-color: -fu-foreground-rest;
+    -fx-background-radius: 6;
+    -fx-border-color: transparent;
+}
+
+
+.category_editor .double-click:phase_1 {
+    -fx-background-color: -fu-accent;
+}
+
+.category_editor .double-click:phase_1:hover {
+    -fx-background-color: -fu-foreground-selected;
+}
+
+.category_editor .double-click:phase_1:pressed {
+    -fx-background-color: -fu-foreground-selected;
+    -fx-text-fill: -fu-accent;
+}
+
+
+.category_selector {
+    -fx-highlight-fill: -fu-accent;
+    -fx-highlight-text-fill: -fu-text-1;
+    -fx-text-fill: -fu-text-1;
+    -fx-prompt-text-fill: -fu-text-2;
+
+    /*accent, border, background*/
+    /*top-l, top-r, bottom-r, bottom-l*/
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 0 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 3;
+    -fx-padding: .5333333em .783em .844444em .783em;
+}
+
+
+.category_selector:hover {
+    -fx-background-color:  -fu-accent, -fu-stroke-hover, -fu-foreground-hover;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 3;
+}
+
+.category_selector:focused {
+    -fx-background-color: -fu-accent, -fu-stroke-selected, -fu-foreground-selected;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 3;
+}
+
+.category_choice_box {
+    -fx-background-color: transparent;
+}
+
+.category_choice_box:selected {
+    -fx-background-color: transparent;
+}
+
+.category_choice_box:focused {
+    -fx-background-color: transparent;
+}
+
+.category_choice_box:hover {
+    -fx-background-color: transparent;
+}
+
+.sub_category_choice_box {
+    -fx-background-color: transparent;
+}
+
+.sub_category_choice_box:selected {
+    -fx-background-color: transparent;
+}
+
+.sub_category_choice_box:focused {
+    -fx-background-color: transparent;
+}
+
+.sub_category_choice_box:hover {
+    -fx-background-color: transparent;
+}

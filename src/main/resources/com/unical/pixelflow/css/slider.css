@@ -1,0 +1,49 @@
+.slider .thumb {
+    -fx-background-color: -fu-stroke-rest, -fu-foreground-rest, -fu-accent;
+    -fx-background-insets: 0, 2, 6;
+    -fx-background-radius: 100, 100, 100;
+    -fx-max-width: 22;
+    -fx-pref-width: 22;
+    -fx-max-height: 22;
+    -fx-pref-height: 22;
+}
+
+.slider .thumb:hover {
+    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover, -fu-accent;
+    -fx-background-insets: 0, 2, 4;
+
+}
+
+.slider .thumb:pressed {
+    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover, -fu-accent;
+    -fx-background-insets: 0, 2, 7;
+}
+
+.slider .track {
+    -fx-background-color: -fu-stroke-rest;
+    -fx-background-insets: 0, 1.5;
+    -fx-background-radius: 0.25em, 0.25em, 0.166667em; /* 3 3 2 */
+    -fx-padding: 0.25em;
+}
+
+.slider_red .track {
+    -fx-background-color: -fu-stroke-rest,
+    linear-gradient(to right, transparent, red);
+}
+
+.slider_green .track {
+    -fx-background-color: -fu-stroke-rest,
+    linear-gradient(to right, transparent, green);
+}
+
+.slider_blue .track {
+    -fx-background-color: -fu-stroke-rest,
+    linear-gradient(to right, transparent, blue);
+}
+
+.slider .axis-tick-mark, .slider .axis-minor-tick-mark {
+    -fx-stroke: green;
+    -fx-stroke-width: 1;
+    -fx-smooth: false;
+    -fx-stroke-type: outside
+}

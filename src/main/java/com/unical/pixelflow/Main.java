@@ -1,5 +1,6 @@
-package com.unical.pixelflow.view;
+package com.unical.pixelflow;
 
+import com.unical.pixelflow.view.SceneHandler;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import com.unical.pixelflow.model.DataPF;
@@ -42,6 +43,12 @@ public class Main extends Application {
 
     @Override
     public void stop() {
-        DataPF.esm.shutdown();
+        try {
+            // Proteggiamo la chiamata perché l'inizializzazione statica di DataPF potrebbe aver fallito
+            DataPF.esm.shutdown();
+        } catch (Throwable t) {
+            System.err.println("Impossibile eseguire shutdown di DataPF.esm: " + t);
+            t.printStackTrace();
+        }
     }
 }

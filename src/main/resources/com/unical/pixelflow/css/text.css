@@ -1,0 +1,28 @@
+.root {
+    -fx-font-family: "Segoe UI Variable";
+}
+
+* {
+    -fx-font-size: 14px;
+}
+
+.text-title * {
+    -fx-font-size: 16px;
+    -fx-text-fill: -fu-text-1;
+    -fx-font-weight: bold;
+    -fx-text-transform: uppercase;
+}
+
+.text-body {
+    -fx-font-size: 14px;
+    -fx-text-fill: -fu-text-1;
+}
+
+.text-small {
+    -fx-font-size: 12px;
+    -fx-text-fill: -fu-text-1;
+}
+
+.label {
+    -fx-text-fill: -fu-text-1;
+}

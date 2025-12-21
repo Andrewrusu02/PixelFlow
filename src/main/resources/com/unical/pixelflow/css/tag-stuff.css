@@ -1,0 +1,117 @@
+.tag {
+    -fx-background-color: -fu-foreground-rest;
+    -fx-background-radius: 5;
+    -fx-opacity: 1;
+    -fx-border-color: transparent;
+    -fx-border-radius: 3;
+    -fx-border-width: 1;
+}
+
+.tag .label {
+    -fx-text-fill: -fu-text-3;
+}
+
+.tag:hover {
+    -fx-opacity: 0.8;
+    -fx-border-color: -fu-text-1;
+    -fx-border-radius: 3;
+    -fx-border-width: 1;
+}
+
+.tag:pressed {
+    -fx-opacity: 0.9;
+}
+
+.tag:selected {
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-radius: 5;
+}
+
+.tag:selected .label {
+    -fx-text-fill: -fu-text-3;
+}
+
+.tag:discarded {
+    -fx-border-color: red;
+    -fx-border-style: dashed;
+    -fx-border-radius: 5;
+}
+
+.tag:discarded .label{
+    -fx-text-fill: red;
+}
+
+.custom-tag-filter {
+    -fx-background-color: transparent;
+}
+
+.tag-filter-context-menu {
+    -fx-background-color: -fu-foreground-rest;
+    -fx-text-fill: -fu-text-1;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-width: 2px;
+    -fx-padding: 0 0 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0.0, 0.0, 1.0);
+}
+
+.tag-filter-menu-item {
+    -fx-font-size: 14;
+    -fx-text-fill: -fu-text-1;
+    -fx-font-family: System;
+    -fx-padding: 5;
+    -fx-background-radius: 4;
+    -fx-background-insets: 3;
+}
+
+
+.tag-filter-menu-item:focused {
+    -fx-background-color: -fu-foreground-rest;
+}
+
+.tag-filter-menu-item:hover {
+    -fx-background-color: -fu-foreground-rest;
+}
+
+.tag-selector {
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 4;
+    -fx-padding: .333333em .583em .444444em .583em;
+}
+
+.tag-selector:hover {
+    -fx-background-color: -fu-accent, -fu-stroke-hover, -fu-foreground-hover;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+}
+
+.tag-selector:focused {
+    -fx-background-color: -fu-accent, -fu-stroke-selected, -fu-foreground-selected;
+    -fx-background-insets: 0 0 0 0, 0 0 3 0, 2 2 3 2;
+}
+
+.tag-selector-hb {
+    -fx-background-color: -fu-foreground-rest;
+}
+.tag-selector:hover * > .tag-selector-hb {
+    -fx-background-color: -fu-foreground-hover;
+}
+.tag-selector:focused * > .tag-selector-hb {
+    -fx-background-color: -fu-foreground-selected;
+}
+
+
+.search-bar-tag{
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 0 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 3 3 0 0;
+    -fx-padding: .5333333em .783em .844444em .783em;
+}
+
+.tag-list {
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest,  -fu-background-2;
+    -fx-background-insets: 0 0 0 0, 0 0 0 0, 0 2 2 2;
+    -fx-background-radius: 4, 0 0 3 3, 0 0 3 3;
+    -fx-padding: .5333333em .783em .844444em .783em;
+}

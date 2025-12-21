@@ -1,0 +1,32 @@
+.context-menu {
+    -fx-background-color: -fu-foreground-rest;
+    -fx-text-fill: -fu-text-1;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-width: 1px;
+    -fx-padding: 8 0 8 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0.0, 0.0, 1.0);
+}
+.context-menu .separator .line {
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-insets: 1 3 1 3;
+    -fx-border-width: .5;
+}
+
+.menu-item {
+    -fx-font-size: 14;
+    -fx-text-fill: -fu-text-1;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-padding: 5;
+    -fx-background-radius: 4;
+    -fx-background-insets: 3;
+}
+
+.menu-item:focused {
+    -fx-background-color: -fu-accent;
+}
+
+.menu-item:hover {
+    -fx-background-color: -fu-accent;
+}

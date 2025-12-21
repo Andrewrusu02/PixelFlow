@@ -1,0 +1,58 @@
+.nav-button {
+    -fx-border-width: 1px;
+    -fx-border-radius: 6;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+    -fx-border-color: #808080;
+}
+
+#incomeButton:hover, #incomeButton:selected, .incomeButton-active {
+    -fx-border-color: green;
+}
+
+#expenseButton:hover, #expenseButton:selected, .expenseButton-active {
+    -fx-border-color: #DC3545;
+}
+
+#transferButton:hover, #transferButton:selected, .transferButton-active {
+    -fx-border-color: -fu-text-1;
+}
+
+#transferButton:hover {
+    -fx-border-color: -fu-text-1;
+}
+
+.button-income {
+    -fx-border-color: -fu-stroke-rest;
+}
+
+
+.text-field {
+    -fx-border-width: 1px;
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+}
+
+.text-field:focused {
+    -fx-border-color: green;
+}
+
+.save-button {
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+
+.cancel-button {
+    -fx-border-radius: 3;
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+}
+
+.save-button:hover {
+    -fx-background-color: #1a237e;
+}
+
+.cancel-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}

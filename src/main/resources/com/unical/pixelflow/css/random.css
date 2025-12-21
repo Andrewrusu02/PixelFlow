@@ -1,0 +1,25 @@
+
+
+.rounded_pane {
+    -fx-background-radius: 8;
+}
+
+.dialog_pane {
+    -fx-background-color: -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-radius: 15, 13;
+    -fx-background-insets: 0, 2;
+}
+
+.separator {
+    -fx-padding: 3 0 3 0;
+    -fx-background-color: transparent;
+}
+
+.separator .line {
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-insets: 1 3 1 3;
+    -fx-border-width: 0.8;
+}
+
+
+

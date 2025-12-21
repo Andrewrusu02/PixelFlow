@@ -1,0 +1,302 @@
+.button* {
+    -fx-text-fill: -fu-text-1;
+    -fx-background-color: -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 6, 4;
+    -fx-padding: 8 5 8 5;
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+}
+
+.icon_general {
+    -fx-fill: -fu-text-1;
+    -fx-padding: 9 15 9 15;
+}
+.button:hover {
+    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover;
+}
+
+.button:pressed {
+    -fx-background-color: -fu-stroke-pressed, -fu-foreground-pressed;
+}
+
+.button:selected {
+    -fx-background-color: -fu-stroke-selected, -fu-foreground-selected;
+}
+
+.button:disabled {
+    -fx-opacity: 0.5;
+}
+
+
+.toggle-button {
+    -fx-text-fill: -fu-text-1;
+    -fx-background-color: -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 6, 4;
+    -fx-padding: 5;
+}
+
+.toggle-button:hover {
+    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover;
+}
+
+.toggle-button:pressed {
+    -fx-background-color: -fu-stroke-pressed, -fu-foreground-pressed;
+}
+
+.toggle-button:selected {
+    -fx-background-color: -fu-accent, -fu-foreground-selected;
+}
+
+.icon-toggle-button:selected {
+    -fx-background-color: -fu-stroke-selected, -fu-foreground-selected;
+}
+
+.icon-toggle-button {
+    -fx-padding: 8 15 8 15;
+}
+
+.icon-toggle-button:selected:hover {
+    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover;
+}
+
+.icon-toggle-button:selected:pressed {
+    -fx-background-color: -fu-stroke-pressed, -fu-foreground-pressed;
+}
+
+
+.buttons_login_register_secondary {
+    -fx-text-fill: -fu-accent;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 6;
+    -fx-padding: 5;
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+}
+
+.buttons_login_register_secondary:hover {
+    -fx-background-color: transparent;
+    -fx-opacity: 0.5;
+}
+
+.buttons_login_register_secondary:pressed {
+    -fx-background-color: transparent;
+}
+
+.buttons_login_register_secondary:disabled {
+    -fx-opacity: 0.5;
+}
+
+
+.edit-profile-button {
+    -fx-text-fill: -fu-accent;
+    -fx-opacity: 0.8;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+    -fx-alignment: center-left;
+}
+
+.edit-profile-button:hover {
+    -fx-text-fill: -fu-accent;
+    -fx-opacity: 1;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.edit-profile-button:pressed {
+    -fx-text-fill: -fu-accent;
+    -fx-opacity: 1;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+
+}
+
+.edit-profile-button:selected {
+    -fx-text-fill: -fu-accent;
+    -fx-opacity: 1;
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.logout-button SVGPath {
+    -fx-fill: -fu-text-1;
+    -fx-opacity: 0.5;
+}
+
+.logout-button:hover SVGPath{
+    -fx-fill: -fu-text-1;
+    -fx-opacity: 1;
+}
+
+.logout-button:pressed SVGPath{
+    -fx-fill: -fu-text-1;
+    -fx-opacity: 1;
+}
+
+.logout-button:selected SVGPath{
+    -fx-fill: -fu-text-1;
+    -fx-opacity: 1;
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.logout-button:hover {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.logout-button:pressed {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-o: transparent;
+}
+
+.logout-button:selected {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+    -fx-border-color: transparent;
+}
+
+.full-button {
+    -fx-text-fill: -fu-text-1;
+    -fx-background-color: -fu-stroke-rest, -fu-accent;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 6, 4;
+    -fx-padding: 8 5 8 5;
+    -fx-text-alignment: CENTER;
+    -fx-alignment: CENTER;
+    -fx-opacity: 0.7;
+}
+
+.full-button:hover {
+    -fx-background-color: -fu-stroke-hover, -fu-accent;
+    -fx-opacity: 1;
+
+    -fx-text-fill: -fu-text-3;
+}
+
+.full-button:pressed {
+    -fx-background-color: -fu-stroke-pressed, -fu-accent;
+    -fx-text-fill: -fu-text-3;
+}
+
+.full-button:hover:pressed {
+    -fx-background-color: -fu-stroke-selected, -fu-accent;
+    -fx-text-fill: -fu-text-3;
+}
+
+
+.side-button {
+    /*background, accent*/
+    -fx-background-color: rgba(0, 0, 0, 0), transparent;
+    /*-fx-background-insets: 0, 6 125 6 0; /* Posiziona il bordo a sinistra */
+    -fx-background-insets: 0, 5.5 174 5.5 0; /* Posiziona il bordo a sinistra */
+    -fx-background-radius: 6, 10;
+    -fx-background-position: center, left;
+    -fx-text-fill: -fu-text-1;
+    -fx-label-padding: 0 0 0 16;
+}
+
+.side-button:hover {
+    /*background, accent*/
+    -fx-background-color: -fu-foreground-hover, transparent;
+}
+
+.side-button:pressed {
+    /*background, accent*/
+    -fx-background-color: -fu-foreground-pressed, transparent;
+}
+
+.side-button:selected {
+    /*background, accent*/
+    -fx-background-color: -fu-foreground-selected, -fu-accent;
+}
+
+.side-button:selected:hover {
+    /*background, accent*/
+    -fx-background-color: -fu-foreground-selected, -fu-accent;
+}
+.transparent-button {
+    -fx-background-radius: 6;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: -fu-text-1;
+    -fx-opacity: 0.5;
+    -fx-text-alignment: left;
+}
+
+.transparent-button:hover {
+    -fx-opacity: 1;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-button:selected {
+    -fx-opacity: 1;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-button:pressed {
+    -fx-opacity: 1;
+    -fx-background-color: rgba(0, 0, 0, 0);
+}
+
+.transparent-button:hover:pressed {
+    -fx-opacity: 1;
+}
+
+.transparent-button:selected:hover {
+    -fx-opacity: 1;
+}
+
+.transparent-menubutton {
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: -fu-text-1;
+    -fx-text-alignment: left;
+    -fx-padding: 4;
+    -fx-background-radius: 4;
+}
+
+.transparent-menubutton:hover {
+    -fx-background-color: rgba(0, 0, 0, .4);
+}
+
+.transparent-menubutton > .arrow-button {
+    -fx-padding: 0;
+}
+
+.transparent-menubutton > .arrow-button > .arrow {
+    -fx-padding: 0;
+}
+
+.transparent-button {
+    -fx-background-radius: 6;
+    -fx-background-color: rgba(0, 0, 0, 0);
+    -fx-text-fill: -fu-text-1;
+    -fx-opacity: 0.5;
+    -fx-text-alignment: left;
+}
+
+.terms-hypertext {
+    -fx-text-fill: -fu-accent;
+    -fx-opacity: 0.5;
+}
+
+.terms-hypertext:hover {
+    -fx-opacity: 1;
+}
+
+.terms-hypertext:pressed {
+    -fx-opacity: 1;
+}
+
+

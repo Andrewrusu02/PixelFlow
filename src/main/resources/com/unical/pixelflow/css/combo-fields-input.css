@@ -1,0 +1,170 @@
+.combo-box {
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 3 3, 3;
+}
+
+.combo-box:hover {
+    -fx-background-color: -fu-accent, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 3 3, 3;
+}
+
+.combo-box:showing {
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 0 0, 2 2 0 2;
+    -fx-background-radius: 4, 3 3 0 0, 3 3 0 0;
+}
+
+.combo-box-balance {
+    -fx-background-color: transparent, transparent, transparent;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 3 3, 3;
+}
+
+
+.combo-box-balance .list-view {
+    -fx-pref-width: 80px;
+}
+.combo-box-balance2 .list-view {
+    -fx-pref-width: 200px;
+}
+
+
+.combo-box-transparent{
+    -fx-background-color: transparent, transparent, transparent;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 3 3, 3;
+}
+
+.combo-box .list-cell{
+    -fx-text-fill: -fu-text-1;
+    -fx-padding: 3 0 2 7;
+}
+
+.combo-box .list-cell:hover{
+    -fx-padding: 3 0 2 7;
+}
+
+.combo-box-base.combo-box > .arrow-button > .arrow{
+    -fx-background-color: -fu-text-1;
+    -fx-background-insets: 0 0 0 0;
+    -fx-padding: 3 6;
+    -fx-shape: "M 0 0 H 7 L 3.5 4 z";
+}
+.combo-box-base.combo-box > .arrow-button {
+    -fx-padding: 0 8 0 4;
+}
+
+.combo-box .list-view .list-cell {
+    -fx-background-color:  -fu-foreground-rest;
+    -fx-padding: 3 0 2 7;
+    -fx-background-insets: 0 1.5 0 1.5;
+    -fx-background-radius: 1.5;
+}
+
+.combo-box .list-view .list-cell:hover {
+    -fx-background-color: -fu-accent;
+    -fx-padding: 3 0 2 7;
+}
+
+.combo-box .list-view .list-cell .text {
+    -fx-opacity: 1;
+}
+.combo-box .list-view .list-cell:empty:hover  {
+    -fx-background-color:  transparent;
+}
+
+.combo-box .list-view .list-cell:selected  {
+    -fx-background-color: -fu-accent;
+    -fx-padding: 3 0 2 7;
+}
+
+.combo-box .list-view {
+    -fx-background-color: -fu-foreground-rest;
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-width: 0 2 2 2;
+    -fx-border-radius: 0 0 3 3;
+    -fx-background-radius: 3;
+}
+.under_icon_pane {
+    -fx-background-color: transparent;
+    -fx-background-radius: 5;
+    -fx-padding: 5 15 5 5;
+}
+
+.under_icon_pane:hover {
+    -fx-background-color: transparent;
+}
+
+.under_icon_pane SVGPath {
+    -fx-fill: -fu-text-1;
+
+}
+
+.text-input, .text-area, .text-field {
+    -fx-cursor: text;
+    -fx-highlight-fill: -fu-accent;
+    -fx-highlight-text-fill: -fu-text-1;
+    -fx-text-fill: -fu-text-1;
+    -fx-prompt-text-fill: -fu-text-2;
+
+    /*accent, border, background*/
+    /*top-l, top-r, bottom-r, bottom-l*/
+    -fx-background-color: -fu-stroke-rest, -fu-stroke-rest, -fu-foreground-rest;
+    -fx-background-insets: 0 0 0 0, 0 0 0 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 3 3, 3;
+    -fx-padding: .5333333em .783em .844444em .783em;
+}
+
+.text-input:hover, .text-area:hover, .text-field:hover {
+    -fx-background-color:  -fu-accent, -fu-stroke-hover, -fu-foreground-hover;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 3;
+}
+
+.text-input:focused, .text-area:focused, .text-field:focused {
+    -fx-background-color: -fu-accent, -fu-stroke-selected, -fu-foreground-selected;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 3;
+}
+
+.transparent-text-field {
+    -fx-cursor: text;
+    -fx-highlight-fill: -fu-accent;
+    -fx-highlight-text-fill: -fu-text-1;
+    -fx-text-fill: -fu-text-1;
+    -fx-prompt-text-fill: -fu-text-2;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0 0 0 0, 0 0 2 0, 2 2 2 2;
+    -fx-background-radius: 4, 3 3 0 0, 4;
+    -fx-padding: .333333em .583em .444444em .583em;
+}
+
+.transparent-text-field:hover {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0.3 0.3 0 0.3, 0 0 2 0, 2 2 2 2;
+}
+
+.transparent-text-field:focused {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0.3 0.3 0 0.3, 0 0 3 0, 2 2 3 2;
+}
+
+.transparent-field{
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.transparent-field:hover{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.transparent-field:focused{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
