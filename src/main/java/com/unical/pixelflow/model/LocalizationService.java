@@ -16,7 +16,6 @@ public class LocalizationService {
     private final Map<String, Translation> localizationData = new HashMap<>();
     private final StringProperty selectedLanguage;
 
-    // CORREZIONE 1: Aggiunto lo slash iniziale "/" fondamentale!
     private final static String base_path = "/com/unical/pixelflow/lang/";
 
     public LocalizationService(String locale) {
@@ -59,7 +58,6 @@ public class LocalizationService {
         }, selectedLanguage);
     }
 
-    // Non so che vuol dire ma intellij non smetteva di chiederlo
     @SafeVarargs
     public final StringBinding lsb(String key, ObservableValue<String>... arg) {
         return localizedStringBinding(key, arg);
@@ -100,11 +98,10 @@ public class LocalizationService {
         return localizationData.get(locale).translate(key);
     }
 
-    // CORREZIONE 2: Metodo reso più robusto
+
     public void loadAllLocales() {
         var url = getClass().getResource(base_path);
 
-        // Controllo di sicurezza per evitare il NullPointerException
         if (url == null) {
             System.err.println("ERRORE CRITICO: Impossibile trovare la cartella risorse: " + base_path);
             System.err.println("Verifica che in src/main/resources esista la cartella: com/unical/pixelflow/lang");
@@ -117,8 +114,6 @@ public class LocalizationService {
         if (files != null) {
             for (File file : files) {
                 System.out.println("Caricamento lingua: " + file.getName());
-                // Qui chiamiamo LocalizationMap
-                // Assicurati che anche LocalizationMap accetti solo il nome file o abbia il path corretto
                 LocalizationMap properties = new LocalizationMap(file.getName());
                 String localization_name = file.getName().replace(".properties", "");
                 localizationData.put(localization_name, properties);

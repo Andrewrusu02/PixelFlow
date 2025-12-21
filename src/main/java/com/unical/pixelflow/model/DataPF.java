@@ -11,9 +11,8 @@ public class DataPF {
 
     public static dbUser dbUser;
 
-    // COMMENTATO PER TESTING BACKEND - LocalizationService non funzionale
-    //public static final LocalizationService localizationService = new LocalizationService("en");
-    //public static final LocalizationService lsp = localizationService;
+    public static final LocalizationService localizationService = new LocalizationService("en");
+    public static final LocalizationService lsp = localizationService;
 
     public static final ExecutorsServiceManager esm = new ExecutorsServiceManager();
 
