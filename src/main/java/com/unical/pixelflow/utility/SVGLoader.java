@@ -12,7 +12,7 @@ public class SVGLoader {
 
     public SVGLoader(String path) {
         if (!path.startsWith("/")) {
-            path = "/org/wip/moneymanager/svg/" + path;
+            path = "/com/unical/pixelflow/assets/svg/" + path;
         }
         if (!path.endsWith(".svg")) {
             path = path + ".svg";

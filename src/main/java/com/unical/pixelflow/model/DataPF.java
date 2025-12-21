@@ -16,7 +16,6 @@ public class DataPF {
 
     public static final ExecutorsServiceManager esm = new ExecutorsServiceManager();
 
-    // BUSY counter
     private static final IntegerProperty busy = new SimpleIntegerProperty(0);
 
     public static ReadOnlyIntegerProperty busyProperty() {

@@ -4,6 +4,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.web.WebView;
+import javafx.stage.Stage;
+import com.unical.pixelflow.view.SceneHandler;
+
 import java.util.Objects;
 
 public class HomeController {
@@ -24,22 +27,25 @@ public class HomeController {
     public void initialize() {
         logoWebView.setContextMenuEnabled(false);
 
-        String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
+        try {
+            String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
+            logoWebView.getEngine().load(logoPath);
+        } catch (Exception e) {
+            System.err.println("Errore caricamento logo: " + e.getMessage());
+        }
 
-        logoWebView.getEngine().load(logoPath);
-
-        // Rende lo zoom coerente
         logoWebView.setZoom(0.8);
-
         loginHomeButton.setOnAction(event -> handleLogin());
         RegisterHomeButton.setOnAction(event -> handleRegister());
     }
 
     private void handleLogin() {
-        System.out.println("Login");
+        Stage stage = (Stage) loginHomeButton.getScene().getWindow();
+        SceneHandler.getInstance(stage).showLoginScreen();
     }
 
     private void handleRegister() {
-        System.out.println("Register");
+        Stage stage = (Stage) RegisterHomeButton.getScene().getWindow();
+        SceneHandler.getInstance(stage).showRegisterScreen();
     }
 }

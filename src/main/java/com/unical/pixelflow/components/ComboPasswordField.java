@@ -43,7 +43,7 @@ public class ComboPasswordField extends StackPane {
     }
 
     public ComboPasswordField() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/wip/moneymanager/components/combopasswordfield.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/components/ComboPasswordField.fxml"));
         fxmlLoader.setRoot(this);
         fxmlLoader.setController(this);
 

@@ -1,6 +1,8 @@
 package com.unical.pixelflow.model;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -17,9 +19,8 @@ public class Database implements AutoCloseable {
 
     protected Connection con = null;
 
-    // Aggiornati i percorsi per PixelFlow
-    private static final String TEMPLATE_PATH = "/com/unical/pixelflow/databases/usertemplate.db";
-    private static final String USER_DB_FOLDER = "data/user_dbs";
+    private static final String TEMPLATE_PATH = "/src/main/resources/com/unical/pixelflow/databases/usertemplate.db";
+    private static final String USER_DB_FOLDER = "Data/user_dbs";
 
     protected final ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -28,10 +29,30 @@ public class Database implements AutoCloseable {
     }
 
     protected Database(String db) {
+        File dbFile = new File(db);
+
+        if (!dbFile.exists()) {
+            try {
+                if (dbFile.getParentFile() != null) {
+                    dbFile.getParentFile().mkdirs();
+                }
+
+                String templatePath = "/com/unical/pixelflow/databases/pixelFlowDataBaseTemplate.db";
+
+                try (InputStream is = getClass().getResourceAsStream(templatePath)) {
+                    if (is != null) {
+                        Files.copy(is, dbFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         try {
             String url = "jdbc:sqlite:" + db;
             con = DriverManager.getConnection(url);
-            if(isConnected())
+            if (isConnected())
                 System.out.println("Database " + db + " connected!");
         } catch (SQLException e) {
             e.printStackTrace();

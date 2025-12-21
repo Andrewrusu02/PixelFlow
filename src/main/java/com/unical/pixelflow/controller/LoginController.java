@@ -10,6 +10,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import com.unical.pixelflow.view.SceneHandler;
@@ -49,6 +51,9 @@ public class LoginController {
 
     @FXML
     private TextField usernameField;
+
+    @FXML
+    private WebView logoWebView;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -162,6 +167,21 @@ public class LoginController {
     @FXML
     private void initialize() {
         DataPF.esm.register(executorService);
+
+        try {
+            logoWebView.setContextMenuEnabled(false);
+            logoWebView.setPageFill(Color.TRANSPARENT); // Sfondo trasparente
+
+            String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
+            logoWebView.getEngine().load(logoPath);
+
+            // Zoom out se il logo è troppo grande
+            logoWebView.setZoom(0.7);
+
+        } catch (Exception e) {
+            System.err.println("Errore caricamento logo login: " + e.getMessage());
+        }
+
 
         FieldAnimationUtils.disableContextMenu(
                 usernameField

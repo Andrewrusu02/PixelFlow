@@ -24,7 +24,6 @@ public class Main extends Application {
 
 
 
-        // Add a ShutdownHook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             System.out.println("Shutdown Hook is running!");
             Set<String> currentThreads = Thread.getAllStackTraces().keySet().stream()
@@ -44,7 +43,6 @@ public class Main extends Application {
     @Override
     public void stop() {
         try {
-            // Proteggiamo la chiamata perché l'inizializzazione statica di DataPF potrebbe aver fallito
             DataPF.esm.shutdown();
         } catch (Throwable t) {
             System.err.println("Impossibile eseguire shutdown di DataPF.esm: " + t);

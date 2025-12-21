@@ -14,7 +14,7 @@ public class SceneHandler {
     private static SceneHandler instance;
     private static Stage primaryStage;
 
-    private static final String STYLE_CSS_PATH = "/com/unical/pixelflow/css/style.light.css";
+    private static final String STYLE_CSS_PATH = "/com/unical/pixelflow/css/style-dark.css";
     private static final String ICON_PATH = "/com/unical/pixelflow/images/IconPixelFlow.png";
     private static final double MIN_WIDTH = 960;
     private static final double MIN_HEIGHT = 540;
