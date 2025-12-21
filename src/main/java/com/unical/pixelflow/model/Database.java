@@ -19,7 +19,7 @@ public class Database implements AutoCloseable {
 
     protected Connection con = null;
 
-    private static final String TEMPLATE_PATH = "/src/main/resources/com/unical/pixelflow/databases/usertemplate.db";
+    private static final String TEMPLATE_PATH = "/com/unical/pixelflow/databases/usertemplate.db";
     private static final String USER_DB_FOLDER = "Data/user_dbs";
 
     protected final ExecutorService executorService = Executors.newCachedThreadPool();
@@ -79,16 +79,18 @@ public class Database implements AutoCloseable {
     }
 
     public static void createNewUserDB(int id) throws IOException {
-        Path templatePath = Paths.get(TEMPLATE_PATH);
-        Path userDbFolder = Paths.get(USER_DB_FOLDER);
-        Path userDbPath = userDbFolder.resolve(id + ".db");
-
-        if (!Files.exists(userDbFolder)) {
-            Files.createDirectories(userDbFolder);
+        File folder = new File(USER_DB_FOLDER);
+        if (!folder.exists()) {
+            folder.mkdirs();
         }
 
-        try {
-            Files.copy(templatePath, userDbPath, StandardCopyOption.REPLACE_EXISTING);
+        Path userDbPath = Paths.get(USER_DB_FOLDER, id + ".db");
+
+        try (InputStream is = Database.class.getResourceAsStream(TEMPLATE_PATH)) {
+            if (is == null) {
+                throw new IOException("Template not found: " + TEMPLATE_PATH);
+            }
+            Files.copy(is, userDbPath, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("File db copy success: " + userDbPath.toString());
         } catch (IOException e) {
             e.printStackTrace();
