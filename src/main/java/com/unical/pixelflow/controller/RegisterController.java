@@ -1,6 +1,7 @@
 package com.unical.pixelflow.controller;
 
-
+// COMMENTATO PER TESTING BACKEND - RegisterController non funzionale
+/*
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.concurrent.Task;
@@ -242,3 +243,4 @@ public class RegisterController {
     }
 
 }
+*/

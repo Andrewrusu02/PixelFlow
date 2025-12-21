@@ -1,4 +1,4 @@
-package com.unical.pixelflow;
+package com.unical.pixelflow.view;
 
 import com.unical.pixelflow.view.SceneHandler;
 import javafx.application.Application;

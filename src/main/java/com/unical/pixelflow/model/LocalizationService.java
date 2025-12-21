@@ -59,6 +59,7 @@ public class LocalizationService {
         }, selectedLanguage);
     }
 
+    // Non so che vuol dire ma intellij non smetteva di chiederlo
     @SafeVarargs
     public final StringBinding lsb(String key, ObservableValue<String>... arg) {
         return localizedStringBinding(key, arg);
