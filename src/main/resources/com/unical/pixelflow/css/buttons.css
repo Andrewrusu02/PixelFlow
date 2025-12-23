@@ -176,24 +176,24 @@
     -fx-padding: 8 5 8 5;
     -fx-text-alignment: CENTER;
     -fx-alignment: CENTER;
-    -fx-opacity: 0.7;
+    -fx-opacity: 1;
 }
 
 .full-button:hover {
-    -fx-background-color: -fu-stroke-hover, -fu-accent;
+    -fx-background-color: -fu-stroke-hover, -fu-background-1;
     -fx-opacity: 1;
 
-    -fx-text-fill: black;
+    -fx-text-fill: white;
 }
 
 .full-button:pressed {
-    -fx-background-color: -fu-stroke-pressed, -fu-accent;
-    -fx-text-fill: black;
+    -fx-background-color: -fu-stroke-hover, -fu-background-1;
+    -fx-text-fill: white;
 }
 
 .full-button:hover:pressed {
-    -fx-background-color: -fu-stroke-selected, -fu-accent;
-    -fx-text-fill: -fu-text-3;
+    -fx-background-color: -fu-stroke-hover, -fu-background-1;
+    -fx-text-fill: white;
 }
 
 

@@ -104,7 +104,7 @@
 
 .text-input, .text-area, .text-field {
     -fx-cursor: text;
-    -fx-highlight-fill: -fu-accent;
+    -fx-highlight-fill: grey;
     -fx-highlight-text-fill: -fu-text-1;
     -fx-text-fill: -fu-text-1;
     -fx-prompt-text-fill: -fu-text-2;

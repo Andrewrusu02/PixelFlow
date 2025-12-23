@@ -75,19 +75,19 @@
       </HBox>
    </bottom>
    <center>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="200.0" BorderPane.alignment="TOP_LEFT">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="TOP_LEFT">
          <children>
             <VBox alignment="CENTER_LEFT" spacing="20.0">
                <padding>
                   <Insets bottom="20.0" left="40.0" right="20.0" top="20.0" />
                </padding>
                   <ImageView fx:id="logoImageView" fitHeight="90.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
-               <Text fx:id="textWelcomeTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-title" text="Benvenuto in PixelFlow">
+               <Text fx:id="textWelcomeTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-title-home" text="Benvenuto in PixelFlow">
                   <font>
-                     <Font name="System Bold" size="34.0" />
+                     <Font name="System Bold" size="35.0" />
                   </font>
                </Text>
-               <Text fx:id="textWelcomeBody" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text.body" text="L'Editing Fotografico Professionale a Nodi Scopri un workflow creativo illimitato e trasforma le tue immagini con facilità" wrappingWidth="412.3765563964844">
+               <Text fx:id="textWelcomeBody" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-body-home" text="L'Editing Fotografico Professionale a Nodi Scopri un workflow creativo illimitato e trasforma le tue immagini con facilità" wrappingWidth="412.3765563964844">
                   <font>
                      <Font size="22.0" />
                   </font>
@@ -110,7 +110,7 @@
                   </children>
                </HBox>
             </VBox>
-            <ImageView fx:id="ImageHome" fitHeight="395.0" fitWidth="1032.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="ImageHome" fitHeight="400.0" fitWidth="2000.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../images/ImageHomePage.png" />
                </image></ImageView>

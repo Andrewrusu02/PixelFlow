@@ -6,6 +6,17 @@
     -fx-font-size: 14px;
 }
 
+.text-title-home{
+    -fx-font-size: 40px;
+    -fx-text-fill: -fu-text-1;
+    -fx-font-weight: bold;
+    -fx-text-transform: uppercase;
+}
+
+.text-body-home{
+    -fx-font-size: 18px;
+    -fx-text-fill: -fu-text-1;}
+
 .text-title * {
     -fx-font-size: 16px;
     -fx-text-fill: -fu-text-1;
