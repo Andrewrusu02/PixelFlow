@@ -171,7 +171,6 @@ public class LoginController {
         try {
             logoWebView.setContextMenuEnabled(false);
             logoWebView.setPageFill(Color.TRANSPARENT); // Sfondo trasparente
-
             String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
             logoWebView.getEngine().load(logoPath);
 

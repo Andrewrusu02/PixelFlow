@@ -3,6 +3,7 @@ package com.unical.pixelflow.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import com.unical.pixelflow.view.SceneHandler;
@@ -28,6 +29,7 @@ public class HomeController {
         logoWebView.setContextMenuEnabled(false);
 
         try {
+            logoWebView.setPageFill(Color.TRANSPARENT);
             String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
             logoWebView.getEngine().load(logoPath);
         } catch (Exception e) {

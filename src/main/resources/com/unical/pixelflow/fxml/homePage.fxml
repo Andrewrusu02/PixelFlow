@@ -2,21 +2,126 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
-<VBox alignment="CENTER" prefHeight="103.0" prefWidth="224.0" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-    </padding>
-    <WebView fx:id="logoWebView" maxWidth="200.0" maxHeight="150.0" prefWidth="200.0" prefHeight="150.0" />
-    <Label fx:id="welcomeText" text="Welcome to PixelFlow" />
-   <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
-      <children>
-         <Button fx:id="loginHomeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Go Login" />
-         <Button fx:id="RegisterHomeButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" text="Go Register" />
-      </children>
-   </VBox>
-</VBox>
+
+
+<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="810.0" prefWidth="1440.0" styleClass="background-4" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeController">
+   <bottom>
+      <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="150.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" spacing="40.0">
+               <children>
+                  <SVGPath content="M 3 6 A 1 1 0 0 1 4 5 L 7.5 5 A 2.5 2.5 0 0 1 10 3 A 2.5 2.5 0 0 1 12.5 5 L 20 5 A 1 1 0 0 1 21 6 A 1 1 0 0 1 20 7 L 12.5 7 A 2.5 2.5 0 0 1 10 9 A 2.5 2.5 0 0 1 7.5 7 L 4 7 A 1 1 0 0 1 3 6 z M 3 12 A 1 1 0 0 1 4 11 L 14 11 A 2.5 2.5 0 0 1 16.5 9 A 2.5 2.5 0 0 1 19 11 L 20 11 A 1 1 0 0 1 21 12 A 1 1 0 0 1 20 13 L 19 13 A 2.5 2.5 0 0 1 16.5 15 A 2.5 2.5 0 0 1 14 13 L 4 13 A 1 1 0 0 1 3 12 z M 3 18 A 1 1 0 0 1 4 17 L 6 17 A 2.5 2.5 0 0 1 8.5 15 A 2.5 2.5 0 0 1 11 17 L 20 17 A 1 1 0 0 1 21 18 A 1 1 0 0 1 20 19 L 11 19 A 2.5 2.5 0 0 1 8.5 21 A 2.5 2.5 0 0 1 6 19 L 4 19 A 1 1 0 0 1 3 18 z" fill="#e1c302" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Workflow Flessibile">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sperimenta un flusso di lavoro creativo, fluido e senza limiti." wrappingWidth="165.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" spacing="40.0">
+               <children>
+                  <SVGPath content="M7.5 5.6L10 7 8.6 4.5 10 2 7.5 3.4 5 2l1.4 2.5L5 7l2.5-1.4zM19 8l-2.5 1.4L15.1 12 14 9.5 11.5 8l2.5-1.4L15.1 4 17.6 6.5 19 8zm-6.6 8.9l-1.4 2.5L8.5 18l1.4-2.5L8.5 13l2.5 1.4L13.6 13l-1.4 2.5zM21 16l-2.5 1.4L17.1 20 16 17.5 13.5 16l2.5-1.4L17.1 12 19.6 14.5 21 16z M 2.5 18 L 11 9.5 L 12.5 11 L 4 19.5 Z" fill="#e1c302" layoutX="-1.0" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Effetti Avanzati">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Trasforma i tuoi scatti con effetti visivi avanzati e strumenti professionali." wrappingWidth="165.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER" spacing="40.0">
+               <children>
+                  <SVGPath content="M 19 3 H 5 C 3.9 3 3 3.9 3 5 V 19 C 3 20.1 3.9 21 5 21 H 19 C 20.1 21 21 20.1 21 19 V 5 C 21 3.9 20.1 3 19 3 Z M 19 19 H 5 V 5 H 19 V 19 Z M 13.96 12.29 L 11.21 15.83 L 9.25 13.47 L 6.5 17 H 17.5 L 13.96 12.29 Z M 8.5 9.5 A 1.5 1.5 0 1 1 5.5 9.5 A 1.5 1.5 0 0 1 8.5 9.5 Z" fill="#e1c302" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Risultati Incredibili">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Esporta i tuoi progetti facilmente e ottieni risultati sorprendenti." wrappingWidth="165.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="40.0" left="10.0" right="10.0" top="40.0" />
+         </padding>
+      </HBox>
+   </bottom>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <center>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefHeight="103.0" prefWidth="224.0" spacing="20.0">
+                <padding>
+                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                </padding>
+                <WebView fx:id="logoWebView" maxHeight="150.0" maxWidth="200.0" prefHeight="150.0" prefWidth="200.0" />
+               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-title" text="Benvenuto in PixelFlow">
+                  <font>
+                     <Font name="System Bold" size="34.0" />
+                  </font>
+               </Text>
+               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text.body" text="L'Editing Fotografico Professionale a Nodi Scopri un workflow creativo illimitato e trasforma le tue immagini con facilità" wrappingWidth="412.3765563964844">
+                  <font>
+                     <Font size="22.0" />
+                  </font>
+               </Text>
+               <HBox spacing="10.0">
+                  <children>
+                     <Button fx:id="loginHomeButton" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="200.0" styleClass="full-button" text="Go Login">
+                        <HBox.margin>
+                           <Insets />
+                        </HBox.margin>
+                        <padding>
+                           <Insets bottom="10.0" top="10.0" />
+                        </padding>
+                     </Button>
+                     <Button fx:id="RegisterHomeButton" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="200.0" styleClass="full-button" text="Go Register">
+                        <padding>
+                           <Insets bottom="10.0" top="10.0" />
+                        </padding>
+                     </Button>
+                  </children>
+               </HBox>
+            </VBox>
+            <ImageView fitHeight="359.0" fitWidth="580.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../images/homepageimage.png" />
+               </image>
+            </ImageView>
+         </children>
+         <padding>
+            <Insets left="50.0" right="50.0" />
+         </padding>
+      </HBox>
+   </center>
+</BorderPane>

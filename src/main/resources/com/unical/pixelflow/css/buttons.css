@@ -169,7 +169,7 @@
 }
 
 .full-button {
-    -fx-text-fill: -fu-text-1;
+    -fx-text-fill: black;
     -fx-background-color: -fu-stroke-rest, -fu-accent;
     -fx-background-insets: 0, 2;
     -fx-background-radius: 6, 4;
@@ -183,12 +183,12 @@
     -fx-background-color: -fu-stroke-hover, -fu-accent;
     -fx-opacity: 1;
 
-    -fx-text-fill: -fu-text-3;
+    -fx-text-fill: black;
 }
 
 .full-button:pressed {
     -fx-background-color: -fu-stroke-pressed, -fu-accent;
-    -fx-text-fill: -fu-text-3;
+    -fx-text-fill: black;
 }
 
 .full-button:hover:pressed {
