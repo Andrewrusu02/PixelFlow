@@ -5,14 +5,19 @@ import javafx.animation.Timeline;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import com.unical.pixelflow.components.ComboPasswordField;
 import com.unical.pixelflow.model.DataPF;
@@ -128,7 +133,7 @@ public class RegisterController {
         registrationTask.setOnSucceeded(e -> {
             Boolean isRegistered = registrationTask.getValue();
             if (isRegistered != null && isRegistered) {
-                SceneHandler.getInstance((Stage) registerButton.getScene().getWindow()).showLoginScreen();
+                showSuccessPopup();
             } else {
                 showError("register.error.generic");
             }
@@ -141,6 +146,53 @@ public class RegisterController {
         });
 
         executorService.submit(registrationTask);
+    }
+
+    private void showSuccessPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/RegisterSuccessPopup.fxml"));
+            Parent root = loader.load();
+
+
+            Label lblTitle = (Label) root.lookup("#lblTitle");
+            Label lblBody = (Label) root.lookup("#lblBody");
+            Button btnProceed = (Button) root.lookup("#btnProceed");
+
+            if (lblTitle != null) lblTitle.textProperty().bind(DataPF.lsp.lsb("popup.register.success.title"));
+            if (lblBody != null) lblBody.textProperty().bind(DataPF.lsp.lsb("popup.register.success.body"));
+            if (btnProceed != null) btnProceed.textProperty().bind(DataPF.lsp.lsb("popup.register.success.button"));
+
+            Stage popupStage = new Stage();
+
+            if (btnProceed != null) {
+                btnProceed.setOnAction(event -> {
+                    popupStage.close();
+                    SceneHandler.getInstance((Stage) registerButton.getScene().getWindow()).showLoginScreen();
+                });
+            } else {
+                popupStage.setOnHidden(ev -> SceneHandler.getInstance((Stage) registerButton.getScene().getWindow()).showLoginScreen());
+            }
+
+            Scene scene = new Scene(root);
+            scene.setFill(Color.TRANSPARENT);
+            popupStage.setScene(scene);
+            popupStage.initStyle(StageStyle.TRANSPARENT);
+            popupStage.initModality(Modality.APPLICATION_MODAL);
+
+            Stage mainStage = (Stage) registerButton.getScene().getWindow();
+            popupStage.initOwner(mainStage);
+
+            popupStage.setOnShown(ev -> {
+                popupStage.setX(mainStage.getX() + (mainStage.getWidth() / 2) - (popupStage.getWidth() / 2));
+                popupStage.setY(mainStage.getY() + (mainStage.getHeight() / 2) - (popupStage.getHeight() / 2));
+            });
+
+            popupStage.showAndWait();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            SceneHandler.getInstance((Stage) registerButton.getScene().getWindow()).showLoginScreen();
+        }
     }
 
     private void handleValidationErrors(Map<Node, String> validationErrors) {
