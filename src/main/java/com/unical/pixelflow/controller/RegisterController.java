@@ -7,6 +7,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.scene.web.WebView;
@@ -57,7 +59,7 @@ public class RegisterController {
     private TextField usernameFieldRegister;
 
     @FXML
-    private WebView logoWebView;
+    private ImageView logoImageView;
 
     private final PFDataBase db = PFDataBase.getInstance();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -169,15 +171,9 @@ public class RegisterController {
         DataPF.esm.register(executorService);
 
         try {
-            logoWebView.setContextMenuEnabled(false);
-            logoWebView.setPageFill(Color.TRANSPARENT); // Sfondo trasparente
-
-            String logoPath = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/assets/logo/logocompletoPixelFlow.svg")).toExternalForm();
-            logoWebView.getEngine().load(logoPath);
-
-            // Zoom out leggero
-            logoWebView.setZoom(0.7);
-
+            String path = "/com/unical/pixelflow/assets/logo/LogoPixelFlow.png";
+            Image logo = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+            logoImageView.setImage(logo);
         } catch (Exception e) {
             System.err.println("Errore caricamento logo register: " + e.getMessage());
         }

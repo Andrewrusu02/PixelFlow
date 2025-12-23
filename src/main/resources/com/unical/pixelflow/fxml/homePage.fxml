@@ -12,52 +12,53 @@
 <?import javafx.scene.text.Text?>
 <?import javafx.scene.web.WebView?>
 
-
-<BorderPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="810.0" prefWidth="1440.0" styleClass="background-4" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeController">
+<BorderPane styleClass="background-4" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeController">
    <bottom>
-      <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="150.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="200.0" spacing="150.0" styleClass="background-3" BorderPane.alignment="CENTER">
          <children>
             <HBox alignment="CENTER" spacing="40.0">
                <children>
-                  <SVGPath content="M 3 6 A 1 1 0 0 1 4 5 L 7.5 5 A 2.5 2.5 0 0 1 10 3 A 2.5 2.5 0 0 1 12.5 5 L 20 5 A 1 1 0 0 1 21 6 A 1 1 0 0 1 20 7 L 12.5 7 A 2.5 2.5 0 0 1 10 9 A 2.5 2.5 0 0 1 7.5 7 L 4 7 A 1 1 0 0 1 3 6 z M 3 12 A 1 1 0 0 1 4 11 L 14 11 A 2.5 2.5 0 0 1 16.5 9 A 2.5 2.5 0 0 1 19 11 L 20 11 A 1 1 0 0 1 21 12 A 1 1 0 0 1 20 13 L 19 13 A 2.5 2.5 0 0 1 16.5 15 A 2.5 2.5 0 0 1 14 13 L 4 13 A 1 1 0 0 1 3 12 z M 3 18 A 1 1 0 0 1 4 17 L 6 17 A 2.5 2.5 0 0 1 8.5 15 A 2.5 2.5 0 0 1 11 17 L 20 17 A 1 1 0 0 1 21 18 A 1 1 0 0 1 20 19 L 11 19 A 2.5 2.5 0 0 1 8.5 21 A 2.5 2.5 0 0 1 6 19 L 4 19 A 1 1 0 0 1 3 18 z" fill="#e1c302" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
+                  <SVGPath content="M19 1a4.004 4.004 0 0 0-4 4 3.96 3.96 0 0 0 .853 2.44L7.44 15.853A3.96 3.96 0 0 0 5 15a4 4 0 1 0 4 4 3.96 3.96 0 0 0-.853-2.44l8.413-8.413A3.96 3.96 0 0 0 19 9a4 4 0 0 0 0-8zM5 22a3 3 0 1 1 3-3 3.003 3.003 0 0 1-3 3z" fill="#e1c302" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Workflow Flessibile">
+                        <Text fx:id="textWorkflowTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Workflow Flessibile">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Text>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sperimenta un flusso di lavoro creativo, fluido e senza limiti." wrappingWidth="165.0" />
+                        <Text fx:id="textWorkflowDesc" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Sperimenta un flusso di lavoro creativo, fluido e senza limiti." wrappingWidth="165.0" />
                      </children>
                   </VBox>
                </children>
             </HBox>
+
             <HBox alignment="CENTER" spacing="40.0">
                <children>
-                  <SVGPath content="M7.5 5.6L10 7 8.6 4.5 10 2 7.5 3.4 5 2l1.4 2.5L5 7l2.5-1.4zM19 8l-2.5 1.4L15.1 12 14 9.5 11.5 8l2.5-1.4L15.1 4 17.6 6.5 19 8zm-6.6 8.9l-1.4 2.5L8.5 18l1.4-2.5L8.5 13l2.5 1.4L13.6 13l-1.4 2.5zM21 16l-2.5 1.4L17.1 20 16 17.5 13.5 16l2.5-1.4L17.1 12 19.6 14.5 21 16z M 2.5 18 L 11 9.5 L 12.5 11 L 4 19.5 Z" fill="#e1c302" layoutX="-1.0" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
+                  <SVGPath content="M4.334 21.39a6.165 6.165 0 0 1-1.151-.317 4.233 4.233 0 0 1-2.014-1.575 3.945 3.945 0 0 1 .575-4.804 13.407 13.407 0 0 1 3.549-2.401c1.133-.607 2.337-1.328 2.458-2.122.073-.411-.072-.67-.52-1.024a7.44 7.44 0 0 0-1.631-.82c-.61-.243-1.25-.463-1.903-.766a5.266 5.266 0 0 1-.99-.578 1.985 1.985 0 0 1-.786-1.19 1.525 1.525 0 0 1 .09-.828 1.803 1.803 0 0 1 .426-.606 3.478 3.478 0 0 1 1.022-.645 7.692 7.692 0 0 1 2.105-.529 10.899 10.899 0 0 1 4.193.338.5.5 0 0 1-.265.965 9.856 9.856 0 0 0-3.787-.207 6.593 6.593 0 0 0-1.774.49 2.353 2.353 0 0 0-.665.433c-.164.187-.174.241-.154.37.023.236.537.597 1.107.822.572.244 1.21.443 1.854.675a8.646 8.646 0 0 1 1.979.932 2.906 2.906 0 0 1 .907.96 2.275 2.275 0 0 1 .25 1.423 3.454 3.454 0 0 1-1.347 2.122 14.091 14.091 0 0 1-1.778 1.182 12.172 12.172 0 0 0-3.041 2.157 2.45 2.45 0 0 0-.617 1.33 1.794 1.794 0 0 0 .295 1.28A3.3 3.3 0 0 0 5.5 19.5a.99.99 0 0 1 .363.063 2.958 2.958 0 0 1-.755.639 1.493 1.493 0 0 0-.774 1.189zM22.11 6.018L18.4 9.35l-7.45 7.25 1.4 1.4 7.25-7.449 3.383-3.661a.626.626 0 0 0-.873-.873zM9.368 17.619l1.439 1.738a2.94 2.94 0 0 1-1.63 2.234 3.92 3.92 0 0 1-1.626.359 3.598 3.598 0 0 1-1.733-.427s1.8-.968 1.809-2.464c.006-1.38 1.451-1.44 1.703-1.44zm.35 1.99l-.78-.94a.379.379 0 0 0-.311.395 3.191 3.191 0 0 1-.633 1.85 3.042 3.042 0 0 0 .772-.234 1.823 1.823 0 0 0 .952-1.07zM19 15h-1v3h-3v.999h3V22h1v-3.001h3V18h-3z" fill="#e1c302" layoutX="-1.0" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Effetti Avanzati">
+                        <Text fx:id="textEffectsTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Effetti Avanzati">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Text>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Trasforma i tuoi scatti con effetti visivi avanzati e strumenti professionali." wrappingWidth="165.0" />
+                        <Text fx:id="textEffectsDesc" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Trasforma i tuoi scatti con effetti visivi avanzati e strumenti professionali." wrappingWidth="165.0" />
                      </children>
                   </VBox>
                </children>
             </HBox>
+
             <HBox alignment="CENTER" spacing="40.0">
                <children>
-                  <SVGPath content="M 19 3 H 5 C 3.9 3 3 3.9 3 5 V 19 C 3 20.1 3.9 21 5 21 H 19 C 20.1 21 21 20.1 21 19 V 5 C 21 3.9 20.1 3 19 3 Z M 19 19 H 5 V 5 H 19 V 19 Z M 13.96 12.29 L 11.21 15.83 L 9.25 13.47 L 6.5 17 H 17.5 L 13.96 12.29 Z M 8.5 9.5 A 1.5 1.5 0 1 1 5.5 9.5 A 1.5 1.5 0 0 1 8.5 9.5 Z" fill="#e1c302" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
+                  <SVGPath content="M12 1.2A10.8 10.8 0 1 0 22.8 12 10.8 10.8 0 0 0 12 1.2zm0 20.6a9.8 9.8 0 1 1 9.8-9.8 9.811 9.811 0 0 1-9.8 9.8zm0-2.826a6.961 6.961 0 0 1-6.57-4.47l.928-.371a6.064 6.064 0 0 0 11.284 0l.928.37a6.96 6.96 0 0 1-6.57 4.47zM15.5 11a1.074 1.074 0 0 1-.518-.135 1.293 1.293 0 0 1-.405-.353 1.575 1.575 0 0 1-.246-.479 1.79 1.79 0 0 1 0-1.066 1.575 1.575 0 0 1 .246-.479 1.293 1.293 0 0 1 .405-.353 1.065 1.065 0 0 1 1.036 0 1.293 1.293 0 0 1 .405.353 1.575 1.575 0 0 1 .246.48 1.79 1.79 0 0 1 0 1.065 1.575 1.575 0 0 1-.246.479 1.293 1.293 0 0 1-.405.353A1.074 1.074 0 0 1 15.5 11zm-7 0a1.074 1.074 0 0 1-.518-.135 1.293 1.293 0 0 1-.405-.353 1.575 1.575 0 0 1-.246-.479 1.79 1.79 0 0 1 0-1.066 1.575 1.575 0 0 1 .246-.479 1.293 1.293 0 0 1 .405-.353 1.065 1.065 0 0 1 1.036 0 1.293 1.293 0 0 1 .405.353 1.575 1.575 0 0 1 .246.48 1.79 1.79 0 0 1 0 1.065 1.575 1.575 0 0 1-.246.479 1.293 1.293 0 0 1-.405.353A1.074 1.074 0 0 1 8.5 11z" fill="#e1c302" scaleX="2.0" scaleY="2.0" scaleZ="2.0" />
                   <VBox prefHeight="200.0" prefWidth="100.0">
                      <children>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Risultati Incredibili">
+                        <Text fx:id="textResultsTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Risultati Incredibili">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Text>
-                        <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Esporta i tuoi progetti facilmente e ottieni risultati sorprendenti." wrappingWidth="165.0" />
+                        <Text fx:id="textResultsDesc" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Esporta i tuoi progetti facilmente e ottieni risultati sorprendenti." wrappingWidth="165.0" />
                      </children>
                   </VBox>
                </children>
@@ -74,23 +75,24 @@
          </padding>
       </HBox>
    </bottom>
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
    <center>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="200.0" BorderPane.alignment="TOP_LEFT">
          <children>
-            <VBox alignment="CENTER_LEFT" maxWidth="-Infinity" prefHeight="103.0" prefWidth="224.0" spacing="20.0">
-                <padding>
-                    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-                </padding>
-                <WebView fx:id="logoWebView" maxHeight="150.0" maxWidth="200.0" prefHeight="150.0" prefWidth="200.0" />
-               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-title" text="Benvenuto in PixelFlow">
+            <VBox alignment="CENTER_LEFT" spacing="20.0">
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+                  <ImageView fx:id="logoImageView"
+                             fitHeight="90.0"
+                             fitWidth="300.0"
+                             pickOnBounds="true"
+                             preserveRatio="true" />
+               <Text fx:id="textWelcomeTitle" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-title" text="Benvenuto in PixelFlow">
                   <font>
                      <Font name="System Bold" size="34.0" />
                   </font>
                </Text>
-               <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text.body" text="L'Editing Fotografico Professionale a Nodi Scopri un workflow creativo illimitato e trasforma le tue immagini con facilità" wrappingWidth="412.3765563964844">
+               <Text fx:id="textWelcomeBody" fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text.body" text="L'Editing Fotografico Professionale a Nodi Scopri un workflow creativo illimitato e trasforma le tue immagini con facilità" wrappingWidth="412.3765563964844">
                   <font>
                      <Font size="22.0" />
                   </font>
@@ -113,15 +115,11 @@
                   </children>
                </HBox>
             </VBox>
-            <ImageView fitHeight="359.0" fitWidth="580.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="ImageHome" fitHeight="395.0" fitWidth="1032.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../images/homepageimage.png" />
-               </image>
-            </ImageView>
+                  <Image url="@../images/ImageHomePage.png" />
+               </image></ImageView>
          </children>
-         <padding>
-            <Insets left="50.0" right="50.0" />
-         </padding>
       </HBox>
    </center>
 </BorderPane>

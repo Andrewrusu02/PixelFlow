@@ -83,10 +83,6 @@ public class SceneHandler {
     public void showHomePageScreen() {
         primaryStage.setMinHeight(BASE_HEIGHT);
         primaryStage.setMinWidth(BASE_WIDTH);
-
-        lastWidth = primaryStage.getWidth();
-        lastHeight = primaryStage.getHeight();
-
-        setupScene("/com/unical/pixelflow/fxml/homePage.fxml", "Pixel Flow", true);
+        setupScene("/com/unical/pixelflow/fxml/homePage.fxml", "Pixel Flow", false);
     }
 }
