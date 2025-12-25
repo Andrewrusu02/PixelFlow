@@ -1,14 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<HBox alignment="CENTER" spacing="60" style="-fx-background-color: #1E1E1E;" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.ProfileSettingsController">
+    <padding>
+        <Insets bottom="50" left="40" right="40" top="50" />
+    </padding>
 
-</AnchorPane>
+    <!-- Colonna Sinistra - Impostazioni Account -->
+    <VBox alignment="TOP_LEFT" prefWidth="350" spacing="25">
+
+        <Label style="-fx-text-fill: #E1C106; -fx-font-weight: bold; -fx-font-size: 20px;" text="IMPOSTAZIONI ACCOUNT" />
+
+        <VBox spacing="8">
+            <Label style="-fx-text-fill: #AAAAAA; -fx-font-size: 13px;" text="Nome Utente" />
+            <TextField fx:id="usernameField" editable="false" promptText="Username" style="-fx-background-color: #2D2D2D; -fx-text-fill: white; -fx-background-radius: 5; -fx-padding: 10; -fx-font-size: 14px; -fx-border-color: #444; -fx-border-radius: 5;" />
+            <Label fx:id="userIdLabel" style="-fx-text-fill: #666; -fx-font-size: 11px;" text="ID: -" />
+        </VBox>
+
+        <Separator style="-fx-background-color: #444;" />
+
+        <VBox spacing="8">
+            <Label style="-fx-text-fill: #AAAAAA; -fx-font-size: 13px;" text="Lingua / Language" />
+            <ComboBox fx:id="languageBox" prefWidth="350" style="-fx-background-color: #2D2D2D; -fx-mark-color: #E1C106;" />
+        </VBox>
+
+        <VBox spacing="12">
+            <Label style="-fx-text-fill: #AAAAAA; -fx-font-size: 13px;" text="Tema Interfaccia" />
+            <ToggleButton fx:id="themeToggle" prefWidth="350" style="-fx-background-color: #2D2D2D; -fx-text-fill: white; -fx-padding: 10; -fx-background-radius: 5; -fx-border-color: #444; -fx-border-radius: 5;" text="Modalità Scura: ON" />
+            <Label style="-fx-text-fill: #888; -fx-font-size: 10px; -fx-font-style: italic;" text="⚠ Il cambio tema richiede il riavvio dell'app" />
+        </VBox>
+
+    </VBox>
+
+    <!-- Colonna Destra - Cambio Password -->
+    <VBox alignment="TOP_LEFT" prefWidth="350" spacing="20" style="-fx-background-color: #2D2D2D; -fx-padding: 30; -fx-background-radius: 15;">
+
+        <Label style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px;" text="SICUREZZA" />
+
+        <Label style="-fx-text-fill: #AAAAAA; -fx-font-size: 13px;" text="Cambia Password" />
+
+        <VBox spacing="8">
+            <Label style="-fx-text-fill: #AAAAAA; -fx-font-size: 12px;" text="Nuova Password" />
+            <PasswordField fx:id="newPass" promptText="Inserisci nuova password" style="-fx-background-color: #1E1E1E; -fx-text-fill: white; -fx-border-color: #555; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;" />
+        </VBox>
+
+        <VBox spacing="8">
+            <Label style="-fx-text-fill: #AAAAAA; -fx-font-size: 12px;" text="Conferma Password" />
+            <PasswordField fx:id="confirmPass" promptText="Conferma password" style="-fx-background-color: #1E1E1E; -fx-text-fill: white; -fx-border-color: #555; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 10;" />
+        </VBox>
+
+        <Separator style="-fx-background-color: #444;" />
+
+        <Button maxWidth="Infinity" onAction="#handleSave" style="-fx-background-color: #E1C106; -fx-text-fill: black; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 12; -fx-font-size: 14px; -fx-background-radius: 5;" text="💾 Salva Modifiche" />
+
+        <Label fx:id="statusLabel" style="-fx-text-fill: #4CAF50; -fx-font-size: 12px; -fx-font-weight: bold;" text="" wrapText="true" />
+    </VBox>
+
+</HBox>

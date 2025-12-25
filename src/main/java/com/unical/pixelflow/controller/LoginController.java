@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class LoginController {
+public class  LoginController {
 
     @FXML
     private Label LabelRegister;

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="20" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeViewController">
+    <padding>
+        <Insets top="30" right="40" bottom="30" left="40"/>
+    </padding>
+
+    <Label text="Recent Projects" style="-fx-text-fill: #E1C106; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+    <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+        <FlowPane fx:id="projectsGrid" hgap="25" vgap="25" style="-fx-background-color: #1E1E1E;">
+            <padding>
+                <Insets top="10" right="0" bottom="10" left="0"/>
+            </padding>
+        </FlowPane>
+    </ScrollPane>
+</VBox>
+
+
