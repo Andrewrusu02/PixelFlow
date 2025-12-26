@@ -30,7 +30,6 @@ public class DataPF {
         busy.set(busy.get() - 1);
         if (busy.get() < 0) {
             throw new IllegalStateException("Busy counter is negative");
-            //busy.set(0);
         }
     }
 

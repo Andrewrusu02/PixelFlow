@@ -6,7 +6,14 @@ import com.unical.pixelflow.model.types.Theme;
 import com.unical.pixelflow.utility.Encrypter;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +41,22 @@ public class ProfileSettingsController {
     @FXML
     private Label statusLabel;
 
+    @FXML
+    private ImageView profileImage;
+
+    @FXML private Label accountTitleLabel;
+    @FXML private Label profileImageLabel;
+    @FXML private Button changeAvatarButton;
+    @FXML private Label usernameLabel;
+    @FXML private Label languageLabel;
+    @FXML private Label themeLabel;
+    @FXML private Label themeHintLabel;
+    @FXML private Label securityTitleLabel;
+    @FXML private Label changePasswordLabel;
+    @FXML private Label newPasswordLabel;
+    @FXML private Label confirmPasswordLabel;
+    @FXML private Button saveButton;
+
     private dbUser currentUser;
 
     // Mappatura codici ISO <-> Nomi lingue visualizzati
@@ -57,6 +80,29 @@ public class ProfileSettingsController {
             return;
         }
 
+        // Bind testi localizzati (live)
+        if (accountTitleLabel != null) accountTitleLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.title"));
+        if (profileImageLabel != null) profileImageLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.avatar"));
+        if (changeAvatarButton != null) changeAvatarButton.textProperty().bind(DataPF.lsp.lsb("profile.settings.avatar.change"));
+        if (usernameLabel != null) usernameLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.username"));
+        if (languageLabel != null) languageLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.language"));
+        if (themeLabel != null) themeLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.theme"));
+        if (themeHintLabel != null) themeHintLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.theme.hint"));
+        if (securityTitleLabel != null) securityTitleLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.security"));
+        if (changePasswordLabel != null) changePasswordLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.change_password"));
+        if (newPasswordLabel != null) newPasswordLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.new_password"));
+        if (confirmPasswordLabel != null) confirmPasswordLabel.textProperty().bind(DataPF.lsp.lsb("profile.settings.confirm_password"));
+        if (saveButton != null) saveButton.textProperty().bind(DataPF.lsp.lsb("profile.settings.save"));
+
+        // Setup avatar
+        loadAvatarImage(currentUser.getProfileImage());
+        // Click sull'immagine = cambia avatar
+        if (profileImage != null) {
+            profileImage.setOnMouseClicked(_ -> handleChangeAvatar());
+        }
+        // Se cambia la property (update da DB o altrove), aggiorniamo preview
+        currentUser.profileImageProperty().addListener((obs, oldVal, newVal) -> loadAvatarImage(newVal));
+
         // Popola campo username (read-only)
         usernameField.setText(currentUser.getUsername());
         userIdLabel.setText("ID: " + currentUser.getId());
@@ -67,14 +113,18 @@ public class ProfileSettingsController {
         // Imposta lingua corrente convertendo da codice ISO a nome
         String currentLangCode = currentUser.getLanguage();
         if (currentLangCode != null && !currentLangCode.isEmpty()) {
-            String displayName = LANG_CODE_TO_NAME.getOrDefault(currentLangCode.toLowerCase(), "Italiano");
+            String displayName = LANG_CODE_TO_NAME.getOrDefault(currentLangCode.toLowerCase(), "English");
             languageBox.setValue(displayName);
+            // allinea anche il servizio di localizzazione al profilo utente
+            DataPF.lsp.setSelectedLanguage(currentLangCode.toLowerCase());
         } else {
-            languageBox.setValue("Italiano");
+            // Default: inglese
+            languageBox.setValue("English");
+            DataPF.lsp.setSelectedLanguage("en");
         }
 
         // LISTENER: Salva lingua IMMEDIATAMENTE al cambio
-        languageBox.setOnAction(event -> handleLanguageChange());
+        languageBox.setOnAction(_ -> handleLanguageChange());
 
         // Gestione Tema
         Theme currentTheme = currentUser.getTheme();
@@ -83,7 +133,28 @@ public class ProfileSettingsController {
         updateThemeText(isDark);
 
         // LISTENER: Salva tema IMMEDIATAMENTE al cambio
-        themeToggle.setOnAction(event -> handleThemeChange());
+        themeToggle.setOnAction(_ -> handleThemeChange());
+    }
+
+    private void loadAvatarImage(String path) {
+        try {
+            if (profileImage == null) return;
+
+            if (path != null && !path.isBlank()) {
+                File f = new File(path);
+                if (f.exists()) {
+                    profileImage.setImage(new Image(f.toURI().toString()));
+                    return;
+                }
+            }
+
+            // Fallback: icona di default
+            profileImage.setImage(new Image(
+                    java.util.Objects.requireNonNull(getClass().getResourceAsStream("/com/unical/pixelflow/images/IconPixelFlow.png"))
+            ));
+        } catch (Exception e) {
+            System.err.println("Errore caricamento avatar: " + e.getMessage());
+        }
     }
 
     /**
@@ -109,10 +180,14 @@ public class ProfileSettingsController {
         String selectedLanguageName = languageBox.getValue();
         if (selectedLanguageName != null && currentUser != null) {
             String languageCode = LANG_NAME_TO_CODE.get(selectedLanguageName);
-            if (languageCode != null && !languageCode.equals(currentUser.getLanguage())) {
+            if (languageCode == null) return;
+
+            DataPF.lsp.setSelectedLanguage(languageCode);
+
+            if (!languageCode.equals(currentUser.getLanguage())) {
                 try {
                     currentUser.setLanguage(languageCode);
-                    showStatus("Lingua aggiornata: " + selectedLanguageName, "success");
+                    showStatus(DataPF.lsp.lsb("profile.settings.language.updated").get() + ": " + selectedLanguageName, "success");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     showStatus("Errore salvataggio lingua: " + e.getMessage(), "error");
@@ -189,6 +264,52 @@ public class ProfileSettingsController {
         }
     }
 
+    @FXML
+    private void handleChangeAvatar() {
+        if (currentUser == null) return;
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Seleziona Nuova Immagine Profilo");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg"));
+
+        File selectedFile = fc.showOpenDialog(usernameField.getScene().getWindow());
+        if (selectedFile == null) return;
+
+        try {
+            File userImgDir = new File(DataPF.users_images_directory);
+            if (!userImgDir.exists()) {
+                boolean ok = userImgDir.mkdirs();
+                if (!ok) {
+                    showStatus("Impossibile creare la cartella avatar: " + userImgDir.getAbsolutePath(), "error");
+                    return;
+                }
+            }
+
+            // 2) Copia e rinomina file in modo deterministico (evita conflitti)
+            String fileName = selectedFile.getName();
+            String ext = ".png";
+            int dot = fileName.lastIndexOf('.');
+            if (dot >= 0 && dot < fileName.length() - 1) {
+                ext = fileName.substring(dot).toLowerCase();
+            }
+
+            Path dest = Path.of(userImgDir.getPath(), "user_" + currentUser.getId() + ext);
+            Files.copy(selectedFile.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+
+            // 3) Aggiorna DB + model runtime (dbUser.setProfileImage fa entrambe le cose)
+            String finalPath = dest.toFile().getAbsolutePath();
+            currentUser.setProfileImage(finalPath);
+
+            // 4) Feedback e refresh locale
+            showStatus("Immagine profilo aggiornata", "success");
+            loadAvatarImage(finalPath);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showStatus("Errore aggiornamento immagine profilo: " + e.getMessage(), "error");
+        }
+    }
+
     private void showStatus(String message, String type) {
         statusLabel.setText(message);
 
@@ -215,5 +336,3 @@ public class ProfileSettingsController {
         }).start();
     }
 }
-
-

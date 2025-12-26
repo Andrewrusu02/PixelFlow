@@ -10,42 +10,46 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Circle?>
 
-<BorderPane fx:id="mainPane" prefHeight="810.0" prefWidth="1440.0" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
+<StackPane fx:id="dashboardRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 20; -fx-background-color: #252525;">
-            <ImageView fx:id="logoHeader" fitHeight="40.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" />
-            <Region HBox.hgrow="ALWAYS" />
-            <Button fx:id="btnNewProject" text="+ New Project" style="-fx-background-color: #333; -fx-text-fill: white;" />
-        </HBox>
-    </top>
+    <BorderPane fx:id="mainPane" prefHeight="810.0" prefWidth="1440.0" style="-fx-background-color: #1E1E1E;">
 
-    <center>
-        <StackPane>
-            <StackPane fx:id="contentPane" style="-fx-background-color: #1E1E1E;" />
+        <top>
+            <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 20; -fx-background-color: #252525;">
+                <ImageView fx:id="logoHeader" fitHeight="40.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnNewProject" text="+ New Project" onAction="#handleNewProject" style="-fx-background-color: #E1C106; -fx-text-fill: black; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 10 20; -fx-background-radius: 5;" />
+            </HBox>
+        </top>
 
-            <ProgressBar fx:id="busy_indicator" visible="false" prefWidth="300" maxHeight="10" StackPane.alignment="TOP_CENTER" />
-        </StackPane>
-    </center>
+        <center>
+            <StackPane>
+                <StackPane fx:id="contentPane" style="-fx-background-color: #1E1E1E;" />
 
-    <bottom>
-        <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 15 40 15 40; -fx-background-color: #252525;">
+                <ProgressBar fx:id="busy_indicator" visible="false" prefWidth="300" maxHeight="10" StackPane.alignment="TOP_CENTER" />
+            </StackPane>
+        </center>
 
-            <Button fx:id="btnProjects" onAction="#showProjects" text="Recent Projects" />
-            <Button fx:id="btnSettings" onAction="#showSettings" text="Profile Settings" />
+        <bottom>
+            <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 15 40 15 40; -fx-background-color: #252525;">
 
-            <Region HBox.hgrow="ALWAYS" />
+                <Button fx:id="btnProjects" onAction="#showProjects" text="Recent Projects" />
+                <Button fx:id="btnSettings" onAction="#showSettings" text="Profile Settings" />
 
-            <Label fx:id="userNameLabel" text="Username" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                <Region HBox.hgrow="ALWAYS" />
 
-            <ImageView fx:id="userAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                <clip>
-                    <Circle centerX="20" centerY="20" radius="20" />
-                </clip>
-            </ImageView>
+                <Label fx:id="userNameLabel" text="Username" style="-fx-text-fill: white; -fx-font-size: 14px;" />
 
-            <Button fx:id="btnLogout" onAction="#handleLogout" text="Log Out" style="-fx-text-fill: #FF5555; -fx-background-color: transparent;" />
-        </HBox>
-    </bottom>
+                <ImageView fx:id="userAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                    <clip>
+                        <Circle centerX="20" centerY="20" radius="20" />
+                    </clip>
+                </ImageView>
 
-</BorderPane>
+                <Button fx:id="btnLogout" onAction="#handleLogout" text="Log Out" style="-fx-text-fill: #FF5555; -fx-background-color: transparent;" />
+            </HBox>
+        </bottom>
+
+    </BorderPane>
+
+</StackPane>

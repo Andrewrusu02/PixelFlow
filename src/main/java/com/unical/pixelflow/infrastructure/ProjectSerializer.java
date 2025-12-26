@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ProjectSerializer {
 
@@ -113,5 +112,12 @@ public class ProjectSerializer {
 
         return pipeline;
     }
-}
 
+    /**
+     * Carica il DTO grezzo dal file .pfp.
+     * Utile quando serve leggere solo metadati (es. sourcePath) senza ricostruire la Pipeline.
+     */
+    public ProjectDTO loadDto(String filePath) throws IOException {
+        return mapper.readValue(new File(filePath), ProjectDTO.class);
+    }
+}

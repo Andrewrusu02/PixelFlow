@@ -17,13 +17,19 @@ public final class dbUser {
     private final StringProperty password;
     private final ObjectProperty<Theme> theme;
     private final StringProperty language;
+    private final StringProperty profileImage;
 
     public dbUser(int id, String username, String password, int theme, String language) {
+        this(id, username, password, theme, language, null);
+    }
+
+    public dbUser(int id, String username, String password, int theme, String language, String profileImage) {
         this.id = id;
         this.username = new SimpleStringProperty(username);
         this.password = new SimpleStringProperty(password);
         this.theme = new SimpleObjectProperty<>(Theme.fromInt(theme));
         this.language = new SimpleStringProperty(language);
+        this.profileImage = new SimpleStringProperty(profileImage);
     }
 
     public dbUser(ResultSet rs) throws SQLException {
@@ -32,8 +38,18 @@ public final class dbUser {
                 rs.getString("username"),
                 rs.getString("password_hash"),
                 rs.getInt("theme"),
-                rs.getString("language")
+                rs.getString("language"),
+                safeGetString(rs, "profile_image")
         );
+    }
+
+    private static String safeGetString(ResultSet rs, String column) {
+        try {
+            return rs.getString(column);
+        } catch (SQLException ignored) {
+            // Colonna non presente (DB template vecchio)
+            return null;
+        }
     }
 
     public int getId() {
@@ -68,6 +84,14 @@ public final class dbUser {
         return language;
     }
 
+    public String getProfileImage() {
+        return profileImage.get();
+    }
+
+    public ReadOnlyStringProperty profileImageProperty() {
+        return profileImage;
+    }
+
     public void setUsername(String newUsername) throws SQLException {
         updateField("username", newUsername);
         this.username.set(newUsername);
@@ -88,6 +112,11 @@ public final class dbUser {
         this.language.set(newLanguage);
     }
 
+    public void setProfileImage(String newProfileImage) throws SQLException {
+        updateField("profile_image", newProfileImage);
+        this.profileImage.set(newProfileImage);
+    }
+
     private void updateField(String columnName, Object value) throws SQLException {
         String query = "UPDATE Users SET " + columnName + " = ? WHERE id = ?";
         try (PreparedStatement stmt = db.getConnection().prepareStatement(query)) {
@@ -106,12 +135,13 @@ public final class dbUser {
                 Objects.equals(this.username.get(), that.username.get()) &&
                 Objects.equals(this.password.get(), that.password.get()) &&
                 Objects.equals(this.theme.get(), that.theme.get()) &&
-                Objects.equals(this.language.get(), that.language.get());
+                Objects.equals(this.language.get(), that.language.get()) &&
+                Objects.equals(this.profileImage.get(), that.profileImage.get());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username.get(), password.get(), theme.get(), language.get());
+        return Objects.hash(id, username.get(), password.get(), theme.get(), language.get(), profileImage.get());
     }
 
     @Override
