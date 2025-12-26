@@ -1,55 +1,84 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
 
-<StackPane fx:id="dashboardRoot" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
+<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
 
-    <BorderPane fx:id="mainPane" prefHeight="810.0" prefWidth="1440.0" style="-fx-background-color: #1E1E1E;">
+              <top>
+         <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="background-3">
+             <ImageView fx:id="logoHeader" fitHeight="76.0" fitWidth="131.0" pickOnBounds="true" smooth="false">
+            <image>
+               <Image url="@../assets/logo/LogoPixelFlow.png" />
+            </image></ImageView>
+             <Region HBox.hgrow="ALWAYS" />
+             <Button fx:id="btnNewProject" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#handleNewProject" prefHeight="40.0" prefWidth="200.0" styleClass="full-button" text="New Project">
+            <graphic>
+               <SVGPath content="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z" strokeWidth="0.0" styleClass="icon_general" translateX="-6.0" />
+            </graphic>
+            <padding>
+               <Insets bottom="10.0" top="10.0" />
+            </padding>
+         </Button>
+         <padding>
+            <Insets bottom="15.0" left="40.0" right="40.0" top="15.0" />
+         </padding>
+         </HBox>
+     </top>
 
-        <top>
-            <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 20; -fx-background-color: #252525;">
-                <ImageView fx:id="logoHeader" fitHeight="40.0" fitWidth="150.0" pickOnBounds="true" preserveRatio="true" />
-                <Region HBox.hgrow="ALWAYS" />
-                <Button fx:id="btnNewProject" text="+ New Project" onAction="#handleNewProject" style="-fx-background-color: #E1C106; -fx-text-fill: black; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 10 20; -fx-background-radius: 5;" />
-            </HBox>
-        </top>
+              <center>
+         <StackPane>
 
-        <center>
-            <StackPane>
-                <StackPane fx:id="contentPane" style="-fx-background-color: #1E1E1E;" />
+                      <ProgressBar fx:id="busy_indicator" maxHeight="10" prefWidth="300" visible="false" StackPane.alignment="TOP_CENTER" />
+             <StackPane fx:id="contentPane" styleClass="-fu-background-1" />
+         </StackPane>
+     </center>
 
-                <ProgressBar fx:id="busy_indicator" visible="false" prefWidth="300" maxHeight="10" StackPane.alignment="TOP_CENTER" />
-            </StackPane>
-        </center>
+              <bottom>
+         <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="background-3">
+         <ToggleButton fx:id="btnProjects" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Recent Projects">
+            <graphic>
+               <SVGPath content="M1 6V15H6V11C6 9.89543 6.89543 9 8 9C9.10457 9 10 9.89543 10 11V15H15V6L8 0L1 6Z" styleClass="icon_general" translateX="-6.0" />
+            </graphic>
+            <padding>
+               <Insets bottom="10.0" top="10.0" />
+            </padding>
+         </ToggleButton>
+         <ToggleButton fx:id="btnSettings" layoutX="50.0" layoutY="27.0" maxHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Profile Settings">
+            <padding>
+               <Insets bottom="15.0" top="15.0" />
+            </padding>
+            <graphic>
+               <SVGPath content="M134,2008.99998 C131.783496,2008.99998 129.980955,2007.20598 129.980955,2004.99998 C129.980955,2002.79398 131.783496,2000.99998 134,2000.99998 C136.216504,2000.99998 138.019045,2002.79398 138.019045,2004.99998 C138.019045,2007.20598 136.216504,2008.99998 134,2008.99998 M137.775893,2009.67298 C139.370449,2008.39598 140.299854,2006.33098 139.958235,2004.06998 C139.561354,2001.44698 137.368965,1999.34798 134.722423,1999.04198 C131.070116,1998.61898 127.971432,2001.44898 127.971432,2004.99998 C127.971432,2006.88998 128.851603,2008.57398 130.224107,2009.67298 C126.852128,2010.93398 124.390463,2013.89498 124.004634,2017.89098 C123.948368,2018.48198 124.411563,2018.99998 125.008391,2018.99998 C125.519814,2018.99998 125.955881,2018.61598 126.001095,2018.10898 C126.404004,2013.64598 129.837274,2010.99998 134,2010.99998 C138.162726,2010.99998 141.595996,2013.64598 141.998905,2018.10898 C142.044119,2018.61598 142.480186,2018.99998 142.991609,2018.99998 C143.588437,2018.99998 144.051632,2018.48198 143.995366,2017.89098 C143.609537,2013.89498 141.147872,2010.93398 137.775893,2009.67298" scaleX="0.8" scaleY="0.8" styleClass="icon_general" translateX="-6.0" />
+            </graphic>
+         </ToggleButton>
 
-        <bottom>
-            <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 15 40 15 40; -fx-background-color: #252525;">
+                      <Region HBox.hgrow="ALWAYS" />
 
-                <Button fx:id="btnProjects" onAction="#showProjects" text="Recent Projects" />
-                <Button fx:id="btnSettings" onAction="#showSettings" text="Profile Settings" />
+                      <Label fx:id="userNameLabel" style="-fx-text-fill: white; -fx-font-size: 14px;" text="Username" />
 
-                <Region HBox.hgrow="ALWAYS" />
+                      <ImageView fx:id="userAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                 <clip>
+                     <Circle centerX="20" centerY="20" radius="20" />
+                 </clip>
+             </ImageView>
 
-                <Label fx:id="userNameLabel" text="Username" style="-fx-text-fill: white; -fx-font-size: 14px;" />
+                      <Button fx:id="btnLogout" onAction="#handleLogout" styleClass="transparent-button" text="Log Out" textFill="#ee0000" />
+         <padding>
+            <Insets bottom="15.0" left="40.0" right="40.0" top="15.0" />
+         </padding>
+         </HBox>
+     </bottom>
 
-                <ImageView fx:id="userAvatar" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                    <clip>
-                        <Circle centerX="20" centerY="20" radius="20" />
-                    </clip>
-                </ImageView>
-
-                <Button fx:id="btnLogout" onAction="#handleLogout" text="Log Out" style="-fx-text-fill: #FF5555; -fx-background-color: transparent;" />
-            </HBox>
-        </bottom>
-
-    </BorderPane>
-
-</StackPane>
+          </BorderPane>

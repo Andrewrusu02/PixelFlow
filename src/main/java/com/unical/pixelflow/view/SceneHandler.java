@@ -1,8 +1,5 @@
 package com.unical.pixelflow.view;
 
-
-import com.unical.pixelflow.model.DataPF;
-import com.unical.pixelflow.model.types.Theme;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -38,29 +35,10 @@ public class SceneHandler {
         return instance;
     }
 
-    /**
-     * Determina quale CSS caricare in base al tema dell'utente
-     */
-    private String getCurrentStylesheet() {
-        // Se l'utente è loggato, usa le sue preferenze
-        if (DataPF.dbUser != null) {
-            Theme userTheme = DataPF.dbUser.getTheme();
-            if (userTheme == Theme.LIGHT) {
-                return STYLE_LIGHT_CSS_PATH;
-            } else if (userTheme == Theme.DARK) {
-                return STYLE_DARK_CSS_PATH;
-            }
-            // SYSTEM: per ora usa DARK come default
-            return STYLE_DARK_CSS_PATH;
-        }
-        // Default per login/register: usa DARK
-        return STYLE_DARK_CSS_PATH;
-    }
 
     private void setupScene(String fxmlPath, String title, boolean isMaximized) {
         try {
-            String stylesheet = getCurrentStylesheet();
-            setUserAgentStylesheet(getClass().getResource(stylesheet).toExternalForm());
+            setUserAgentStylesheet(getClass().getResource(STYLE_DARK_CSS_PATH).toExternalForm());
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Scene scene = new Scene(loader.load());
 

@@ -17,8 +17,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -143,8 +143,7 @@ public class HomeViewController {
         });
 
         // Thumbnail container
-        StackPane thumbnail = new StackPane();
-        thumbnail.setAlignment(Pos.CENTER);
+        BorderPane thumbnail = new BorderPane();
         thumbnail.setPrefSize(190, 140);
         thumbnail.setMaxSize(190, 140);
         thumbnail.setMinSize(190, 140);
@@ -216,17 +215,17 @@ public class HomeViewController {
         return card;
     }
 
-    private StackPane findDashboardRootForBlur() {
+    private BorderPane findDashboardRootForBlur() {
         try {
             if (projectsGrid == null || projectsGrid.getScene() == null) return null;
             var root = projectsGrid.getScene().getRoot();
-            if (root instanceof StackPane sp && sp.lookup("#dashboardRoot") != null) {
+            if (root instanceof BorderPane sp && sp.lookup("#dashboardRoot") != null) {
                 // root è dashboardRoot
                 return sp;
             }
             // se siamo dentro dashboardRoot ma root diverso, prova lookup
             var n = root.lookup("#dashboardRoot");
-            if (n instanceof StackPane sp2) return sp2;
+            if (n instanceof BorderPane sp2) return sp2;
         } catch (Exception ignored) {
         }
         return null;
@@ -252,10 +251,10 @@ public class HomeViewController {
             Stage ownerStage = (Stage) projectsGrid.getScene().getWindow();
 
             ModalEffects.ModalOverlay overlay = null;
-            StackPane dashboard = findDashboardRootForBlur();
+            BorderPane dashboard = findDashboardRootForBlur();
             if (dashboard != null) {
                 overlay = ModalEffects.apply(dashboard);
-            } else if (projectsGrid != null && projectsGrid.getParent() instanceof StackPane sp) {
+            } else if (projectsGrid != null && projectsGrid.getParent() instanceof BorderPane sp) {
                 overlay = ModalEffects.apply(sp);
             }
             ModalEffects.ModalOverlay finalOverlay = overlay;
@@ -317,10 +316,10 @@ public class HomeViewController {
             Stage ownerStage = (Stage) projectsGrid.getScene().getWindow();
 
             ModalEffects.ModalOverlay overlay = null;
-            StackPane dashboard = findDashboardRootForBlur();
+            BorderPane dashboard = findDashboardRootForBlur();
             if (dashboard != null) {
                 overlay = ModalEffects.apply(dashboard);
-            } else if (projectsGrid != null && projectsGrid.getParent() instanceof StackPane sp) {
+            } else if (projectsGrid != null && projectsGrid.getParent() instanceof BorderPane sp) {
                 overlay = ModalEffects.apply(sp);
             }
             ModalEffects.ModalOverlay finalOverlay = overlay;

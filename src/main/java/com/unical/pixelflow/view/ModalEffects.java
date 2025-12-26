@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -30,13 +31,13 @@ public final class ModalEffects {
     private static final Duration ANIM_OUT = Duration.millis(120);
 
     public static final class ModalOverlay {
-        private final StackPane parent;
+        private final BorderPane parent;
         private final Rectangle glass;
         private final Effect oldParentEffect;
         private final java.util.Map<Node, Effect> previousChildEffects;
         private final java.util.Map<Node, GaussianBlur> blurByNode;
 
-        private ModalOverlay(StackPane parent,
+        private ModalOverlay(BorderPane parent,
                              Rectangle glass,
                              Effect oldParentEffect,
                              java.util.Map<Node, Effect> previousChildEffects,
@@ -124,7 +125,7 @@ public final class ModalEffects {
      * Applica blur + glass pane al contenuto root.
      * Richiede che il root sia un StackPane.
      */
-    public static ModalOverlay apply(StackPane ownerRoot) {
+    public static ModalOverlay apply(BorderPane ownerRoot) {
         if (ownerRoot == null) {
             return new ModalOverlay(null, new Rectangle(), null, null, null);
         }

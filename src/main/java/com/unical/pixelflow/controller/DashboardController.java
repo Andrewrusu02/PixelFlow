@@ -8,9 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -21,6 +19,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DashboardController {
 
@@ -31,10 +31,10 @@ public class DashboardController {
     private Button btnNewProject;
 
     @FXML
-    private Button btnProjects;
+    private ToggleButton btnProjects;
 
     @FXML
-    private Button btnSettings;
+    private ToggleButton btnSettings;
 
     @FXML
     private ProgressBar busy_indicator;
@@ -45,8 +45,6 @@ public class DashboardController {
     @FXML
     private ImageView logoHeader;
 
-    @FXML
-    private BorderPane mainPane;
 
     @FXML
     private ImageView userAvatar;
@@ -55,30 +53,26 @@ public class DashboardController {
     private Label userNameLabel;
 
     @FXML
-    private StackPane dashboardRoot;
+    private BorderPane dashboardRoot;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     @FXML
     public void initialize() {
-        // 0. Bind traduzioni (sempre)
+        DataPF.esm.register(executorService);
+
         btnNewProject.textProperty().bind(DataPF.lsp.lsb("dashboard.new_project"));
         btnProjects.textProperty().bind(DataPF.lsp.lsb("dashboard.recent_projects"));
         btnSettings.textProperty().bind(DataPF.lsp.lsb("dashboard.profile_settings"));
         btnLogout.textProperty().bind(DataPF.lsp.lsb("dashboard.logout"));
 
-        // 1. Setup Utente Loggato
         if (DataPF.dbUser != null) {
             userNameLabel.setText(DataPF.dbUser.getUsername());
-
-            // Assicura il clip circolare (in caso venga rimosso dal FXML)
             userAvatar.setClip(new Circle(20, 20, 20));
-
-            // Caricamento iniziale avatar (custom se presente, altrimenti default)
             loadUserAvatar(DataPF.dbUser.getProfileImage());
 
-            // Listener dinamico: se cambia il path nel model, ricarica l'immagine
             DataPF.dbUser.profileImageProperty().addListener((obs, oldVal, newVal) -> loadUserAvatar(newVal));
 
-            // Carica logo header
             try {
                 Image logo = new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream("/com/unical/pixelflow/assets/logo/LogoPixelFlow.png")
@@ -89,8 +83,40 @@ public class DashboardController {
             }
         }
 
-        // 2. Carica la vista Progetti all'avvio
-        showProjects(null);
+        DataPF.dbUser.themeProperty().addListener((_, _, newValue) -> {
+            System.out.println("Theme changed to " + newValue);
+            Scene scene = dashboardRoot.getScene();
+            switch (newValue) {
+                case DARK, SYSTEM:
+                    scene.getStylesheets().remove(getClass().getResource("/com/unical/pixelflow/css/style-light.css").toExternalForm());
+                    scene.getStylesheets().add(getClass().getResource("/com/unical/pixelflow/css/style-dark.css").toExternalForm());
+                    break;
+                case LIGHT:
+                    scene.getStylesheets().remove(getClass().getResource("/com/unical/pixelflow/css/style-dark.css").toExternalForm());
+                    scene.getStylesheets().add(getClass().getResource("/com/unical/pixelflow/css/style-light.css").toExternalForm());
+                    break;
+            }
+        });
+        ToggleGroup navGroup = new ToggleGroup();
+        btnProjects.setToggleGroup(navGroup);
+        btnSettings.setToggleGroup(navGroup);
+
+        navGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) {
+                if (oldVal != null) oldVal.setSelected(true);
+            } else {
+                if (newVal == btnProjects) {
+                    showProjects();
+                } else if (newVal == btnSettings) {
+                    showSettings();
+                }
+            }
+        });
+        btnProjects.setSelected(true);
+
+
+
+        showProjects();
     }
 
     private void loadUserAvatar(String avatarPath) {
@@ -113,16 +139,20 @@ public class DashboardController {
         }
     }
 
-    @FXML
-    void showProjects(ActionEvent event) {
+
+    void showProjects() {
+        if (!btnProjects.isSelected()) {
+            btnProjects.setSelected(true);
+        }
         loadView("/com/unical/pixelflow/fxml/HomeView.fxml");
-        updateNavStyle(btnProjects, btnSettings);
     }
 
-    @FXML
-    void showSettings(ActionEvent event) {
+
+    void showSettings() {
+        if (!btnSettings.isSelected()) {
+            btnSettings.setSelected(true);
+        }
         loadView("/com/unical/pixelflow/fxml/ProfileSettings.fxml");
-        updateNavStyle(btnSettings, btnProjects);
     }
 
     @FXML
@@ -182,7 +212,7 @@ public class DashboardController {
             dialogStage.showAndWait();
 
             if (controller.isCreated()) {
-                showProjects(null);
+                showProjects();
             }
 
         } catch (IOException e) {
@@ -190,9 +220,7 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Carica dinamicamente una vista nel contentPane centrale
-     */
+
     private void loadView(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -205,24 +233,9 @@ public class DashboardController {
         }
     }
 
-    /**
-     * Gestisce lo stile "Attivo/Inattivo" dei bottoni di navigazione
-     */
-    private void updateNavStyle(Button active, Button inactive) {
-        // Stile per bottone attivo (Giallo PixelFlow)
-        active.setStyle(
-            "-fx-text-fill: #E1C106; " +
-            "-fx-background-color: transparent; " +
-            "-fx-border-color: #E1C106; " +
-            "-fx-border-width: 0 0 2 0; " +
-            "-fx-font-weight: bold;"
-        );
 
-        // Stile per bottone inattivo (Grigio)
-        inactive.setStyle(
-            "-fx-text-fill: white; " +
-            "-fx-background-color: transparent; " +
-            "-fx-border-color: transparent;"
-        );
+    private void updateNavStyle(Button active, Button inactive) {
+
+
     }
 }

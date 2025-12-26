@@ -46,7 +46,12 @@
 }
 
 .toggle-button:selected {
+    -fx-text-fill: -fu-accent;
     -fx-background-color: -fu-accent, -fu-foreground-selected;
+
+}
+.toggle-button:selected SVGPath {
+    -fx-fill: -fu-accent;
 }
 
 .icon-toggle-button:selected {
@@ -179,21 +184,33 @@
     -fx-opacity: 1;
 }
 
+.full-button SVGPath {
+    -fx-fill: black;
+}
+
+.full-button:selected SVGPath {
+    -fx-fill: -fu-text-1;
+}
+
+.full-button:hover SVGPath {
+    -fx-fill: -fu-text-1;
+}
+
 .full-button:hover {
     -fx-background-color: -fu-stroke-hover, -fu-background-1;
     -fx-opacity: 1;
 
-    -fx-text-fill: white;
+    -fx-text-fill:  -fu-text-1;
 }
 
 .full-button:pressed {
     -fx-background-color: -fu-stroke-hover, -fu-background-1;
-    -fx-text-fill: white;
+    -fx-text-fill:  -fu-text-1;
 }
 
 .full-button:hover:pressed {
     -fx-background-color: -fu-stroke-hover, -fu-background-1;
-    -fx-text-fill: white;
+    -fx-text-fill:  -fu-text-1;
 }
 
 
