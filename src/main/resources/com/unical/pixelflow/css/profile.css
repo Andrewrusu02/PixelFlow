@@ -2,7 +2,12 @@
     -fx-opacity: 0.8;
 }
 
-
+.avatar-border-container {
+    -fx-border-color: #E1C302;
+    -fx-border-width: 2px;
+    -fx-border-radius: 50%;
+    -fx-padding: 2px;
+}
 
 .profile_image .profile_label {
     -fx-text-fill: -fu-text-3;

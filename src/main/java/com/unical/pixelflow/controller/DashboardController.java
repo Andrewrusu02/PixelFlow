@@ -13,9 +13,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -69,6 +71,7 @@ public class DashboardController {
         if (DataPF.dbUser != null) {
             userNameLabel.setText(DataPF.dbUser.getUsername());
             userAvatar.setClip(new Circle(20, 20, 20));
+
             loadUserAvatar(DataPF.dbUser.getProfileImage());
 
             DataPF.dbUser.profileImageProperty().addListener((obs, oldVal, newVal) -> loadUserAvatar(newVal));
@@ -129,7 +132,7 @@ public class DashboardController {
                 }
             }
 
-            // Fallback: avatar di default
+
             Image img = new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream("/com/unical/pixelflow/images/IconPixelFlow.png")
             ));
@@ -158,13 +161,10 @@ public class DashboardController {
     @FXML
     void handleLogout(ActionEvent event) {
         DataPF.dbUser = null;
-        Stage stage = (Stage) userNameLabel.getScene().getWindow();
+        Stage stage = (Stage) btnLogout.getScene().getWindow();
         SceneHandler.getInstance(stage).showLoginScreen();
     }
 
-    /**
-     * Apre il wizard per creare un nuovo progetto
-     */
     @FXML
     private void handleNewProject(ActionEvent event) {
         try {
@@ -177,10 +177,11 @@ public class DashboardController {
             dialogStage.setTitle(DataPF.lsp.lsb("dialog.new_project.window_title").get());
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(btnNewProject.getScene().getWindow());
-            dialogStage.initStyle(javafx.stage.StageStyle.UNDECORATED);
-
+            dialogStage.initStyle(StageStyle.TRANSPARENT);
             Scene scene = new Scene(page);
+
             dialogStage.setScene(scene);
+            scene.setFill(Color.TRANSPARENT);
             dialogStage.setResizable(false);
 
             NewProjectController controller = loader.getController();
@@ -233,9 +234,4 @@ public class DashboardController {
         }
     }
 
-
-    private void updateNavStyle(Button active, Button inactive) {
-
-
-    }
 }
