@@ -35,7 +35,7 @@ public class NewProjectController {
 
     private File selectedImageFile;
     private Stage dialogStage;
-    private boolean isCreated = false; // Flag per dire alla Dashboard di aggiornare
+    private boolean isCreated = false;
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;

@@ -38,7 +38,7 @@
 }
 
 .toggle-button:hover {
-    -fx-background-color: -fu-stroke-hover, -fu-foreground-hover;
+    -fx-background-color: -fu-accent, -fu-foreground-hover;
 }
 
 .toggle-button:pressed {
@@ -46,7 +46,7 @@
 }
 
 .toggle-button:selected {
-    -fx-text-fill: -fu-accent;
+    -fx-text-fill: -fu-accent-2;
     -fx-background-color: -fu-accent, -fu-foreground-selected;
 
 }
@@ -174,7 +174,7 @@
 }
 
 .full-button {
-    -fx-text-fill: black;
+    -fx-text-fill: -fu-text-3;
     -fx-background-color: -fu-stroke-rest, -fu-accent;
     -fx-background-insets: 0, 2;
     -fx-background-radius: 6, 4;
@@ -185,7 +185,7 @@
 }
 
 .full-button SVGPath {
-    -fx-fill: black;
+    -fx-fill: -fu-text-3;
 }
 
 .full-button:selected SVGPath {

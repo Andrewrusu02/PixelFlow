@@ -17,7 +17,7 @@
 <?import com.unical.pixelflow.components.SwitchTheme?>
 
 <?import com.unical.pixelflow.components.ComboPasswordField?>
-<BorderPane styleClass="background-1"  maxHeight="500" stylesheets="@../css/style-dark.css"   xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.ProfileSettingsController">
+<BorderPane styleClass="background-1"  maxHeight="400" stylesheets="@../css/style-dark.css"   xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.ProfileSettingsController">
    <center>
       <HBox alignment="CENTER" spacing="60" styleClass="background-1" stylesheets="@../css/style-dark.css">
           <padding>
@@ -98,12 +98,11 @@
                     <HBox spacing="15" alignment="CENTER_LEFT">
                         <children>
                             <SwitchTheme fx:id="themeSwitch" />
-                            <Label text="Notte" textFill="WHITE" />
                         </children>
                     </HBox>
                 </VBox>
 
-               <Label fx:id="themeStatusLabel" style="-fx-text-fill: #4CAF50; -fx-font-size: 12px; -fx-font-weight: bold;" text="" wrapText="true" />
+               <Label fx:id="themeStatusLabel"  style="-fx-text-fill: #4CAF50; -fx-font-size: 12px; -fx-font-weight: bold;" text="" wrapText="true" />
             </children>
             <padding>
                <Insets top="10.0" />

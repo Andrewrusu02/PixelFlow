@@ -17,7 +17,7 @@ public class SceneHandler {
     private static final String STYLE_LIGHT_CSS_PATH = "/com/unical/pixelflow/css/style-light.css";
     private static final String ICON_PATH = "/com/unical/pixelflow/images/IconPixelFlow.png";
     private static final double MIN_WIDTH = 960;
-    private static final double MIN_HEIGHT = 540;
+    private static final double MIN_HEIGHT = 600;
     private static final double BASE_WIDTH = 1440;
     private static final double BASE_HEIGHT = 810;
 

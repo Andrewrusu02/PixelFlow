@@ -10,6 +10,7 @@ Design directions:
 .root {
     /* Accento */
     -fu-accent: #E1C106;
+    -fu-accent-2: #E1C106;
     -fu-accent-rest: -fu-accent;
     -fu-accent-hover: -fu-accent;
     -fu-accent-pressed: -fu-accent;

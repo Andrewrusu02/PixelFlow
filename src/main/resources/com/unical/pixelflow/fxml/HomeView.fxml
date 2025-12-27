@@ -7,12 +7,12 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #1E1E1E;"  xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeViewController">
+<VBox alignment="CENTER" spacing="20" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeViewController">
     <padding>
         <Insets bottom="30" left="40" right="40" top="30" />
     </padding>
 
-    <Label fx:id="titleLabel" style="-fx-text-fill: #E1C106; -fx-font-size: 28px; -fx-font-weight: bold;" text="Recent Projects" />
+    <Label fx:id="titleLabel" styleClass="text-title-home" text="Recent Projects" />
 
     <StackPane VBox.vgrow="ALWAYS">
         <!-- Messaggio centrato quando non ci sono progetti -->
@@ -23,7 +23,7 @@
 
         <!-- Griglia progetti (sopra al messaggio) -->
         <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" style="-fx-background: transparent; -fx-background-color: transparent;">
-            <FlowPane fx:id="projectsGrid" hgap="25" style="-fx-background-color: transparent;" vgap="25">
+            <FlowPane fx:id="projectsGrid" hgap="25" vgap="25">
                 <padding>
                     <Insets bottom="10" left="0" right="0" top="10" />
                 </padding>

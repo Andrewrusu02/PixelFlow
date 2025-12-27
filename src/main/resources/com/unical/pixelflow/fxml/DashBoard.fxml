@@ -14,7 +14,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" stylesheets="@../css/style-dark.css"  xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
+<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
 
               <top>
          <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="background-4">
@@ -38,16 +38,16 @@
      </top>
 
               <center>
-         <StackPane>
+         <StackPane styleClass="background-1">
 
                       <ProgressBar fx:id="busy_indicator" maxHeight="10" prefWidth="300" visible="false" StackPane.alignment="TOP_CENTER" />
-             <StackPane fx:id="contentPane" styleClass="-fu-background-1" />
+             <StackPane fx:id="contentPane" styleClass="background-1" />
          </StackPane>
      </center>
 
               <bottom>
          <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="background-4">
-         <ToggleButton fx:id="btnProjects" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Recent Projects">
+         <ToggleButton fx:id="btnProjects" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Recent Projects">
             <graphic>
                <SVGPath content="M1 6V15H6V11C6 9.89543 6.89543 9 8 9C9.10457 9 10 9.89543 10 11V15H15V6L8 0L1 6Z" styleClass="icon_general" translateX="-6.0" />
             </graphic>
@@ -55,7 +55,7 @@
                <Insets bottom="10.0" top="10.0" />
             </padding>
          </ToggleButton>
-         <ToggleButton fx:id="btnSettings" layoutX="50.0" layoutY="27.0" maxHeight="-Infinity" mnemonicParsing="false" prefHeight="40.0" prefWidth="200.0" text="Profile Settings">
+         <ToggleButton fx:id="btnSettings" layoutX="50.0" layoutY="27.0" maxHeight="-Infinity" mnemonicParsing="false" prefHeight="50.0" prefWidth="200.0" text="Profile Settings">
             <padding>
                <Insets bottom="15.0" top="15.0" />
             </padding>
@@ -66,7 +66,7 @@
 
                       <Region HBox.hgrow="ALWAYS" />
 
-                      <Label fx:id="userNameLabel" style="-fx-text-fill: white; -fx-font-size: 14px;" text="Username" />
+                      <Label fx:id="userNameLabel" text="Username" />
          <StackPane styleClass="avatar-border-container">
             <children>
       

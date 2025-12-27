@@ -8,6 +8,7 @@ import com.unical.pixelflow.utility.Encrypter;
 import com.unical.pixelflow.utility.FieldAnimationUtils;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.binding.Bindings;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -71,8 +72,6 @@ public class ProfileSettingsController {
         statusLabel.setOpacity(0);
         themeStatusLabel.setOpacity(0);
 
-        // Rimosso il clip statico qui, viene gestito dinamicamente da setCenteredCircleImage
-
         usernameField1.setEditable(false);
         if (DataPF.dbUser != null) {
             usernameField1.setText(String.valueOf(DataPF.dbUser.getId()));
@@ -115,6 +114,17 @@ public class ProfileSettingsController {
         languageLabel.textProperty().bind(DataPF.lsp.lsb("settings.language"));
         saveButton.textProperty().bind(DataPF.lsp.lsb("profile.save"));
         cancelButton.textProperty().bind(DataPF.lsp.lsb("profile.discard"));
+
+        themeLabel.textProperty().bind(Bindings.createStringBinding(() -> {
+            boolean isDark = themeSwitch.isSwitchedOn();
+            String key = isDark ? "settings.theme.dark" : "settings.theme.light";
+            try {
+                return DataPF.lsp.lsb(key).get();
+            } catch (Exception e) {
+                return DataPF.lsp.lsb("settings.theme").get() + (isDark ? " (Dark)" : " (Light)");
+            }
+        }, themeSwitch.switchedOnProperty(), DataPF.lsp.selectedLanguageProperty()));
+
     }
 
     private void loadUserData() {
@@ -169,6 +179,7 @@ public class ProfileSettingsController {
                 DataPF.dbUser.setTheme(newVal ? Theme.DARK : Theme.LIGHT);
             } catch (Exception e) { e.printStackTrace(); }
         });
+
     }
 
     private void handleImageChange() {
@@ -227,9 +238,6 @@ public class ProfileSettingsController {
         double fitW = imageView.getFitWidth();
         double fitH = imageView.getFitHeight();
 
-        // Assicurati che nel FXML l'ImageView abbia dimensioni definite (es. 140x140)
-        // Se fitWidth è 0, usa un fallback o attendi il layout,
-        // ma di solito in initialize/loading è già settato se da FXML.
         if (fitW <= 0) fitW = 140;
         if (fitH <= 0) fitH = 140;
 
@@ -237,7 +245,6 @@ public class ProfileSettingsController {
         imageView.setClip(clip);
     }
 
-    // ---------------------------------------------------------
 
     @FXML
     void handleSave(ActionEvent event) {
