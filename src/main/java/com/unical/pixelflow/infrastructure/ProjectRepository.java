@@ -16,7 +16,7 @@ public class ProjectRepository {
         }
 
         // Recupera task dal DB
-        Task<List<ProjectMetadata>> task = DataPF.pfDatabase.getUserProjects(DataPF.dbUser.getId());
+        Task<List<ProjectMetadata>> task = DataPF.userDatabase.getUserProjects();
 
         // Esegue il task in un thread separato
         Thread thread = new Thread(task);

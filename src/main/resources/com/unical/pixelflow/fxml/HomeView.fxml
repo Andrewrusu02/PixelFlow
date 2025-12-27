@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #1E1E1E;" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeViewController">
+<VBox alignment="CENTER" spacing="20" style="-fx-background-color: #1E1E1E;"  xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.HomeViewController">
     <padding>
         <Insets bottom="30" left="40" right="40" top="30" />
     </padding>

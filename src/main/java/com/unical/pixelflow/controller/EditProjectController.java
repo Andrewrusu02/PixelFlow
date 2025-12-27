@@ -80,7 +80,7 @@ public class EditProjectController {
             return;
         }
 
-        Task<Boolean> task = DataPF.pfDatabase.renameProject(project.getId(), newName);
+        Task<Boolean> task = DataPF.userDatabase.renameProject(project.getId(), newName);
         task.setOnSucceeded(e -> {
             Boolean ok = task.getValue();
             if (Boolean.TRUE.equals(ok)) {

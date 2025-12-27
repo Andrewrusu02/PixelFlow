@@ -1,6 +1,9 @@
 package com.unical.pixelflow.controller;
 
+import javafx.application.Platform;
 import com.unical.pixelflow.model.DataPF;
+import com.unical.pixelflow.model.UserDatabase;
+import com.unical.pixelflow.model.types.Theme;
 import com.unical.pixelflow.view.ModalEffects;
 import com.unical.pixelflow.view.SceneHandler;
 import javafx.event.ActionEvent;
@@ -18,7 +21,8 @@ import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
+import javafx.geometry.Rectangle2D;
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -62,29 +66,13 @@ public class DashboardController {
     @FXML
     public void initialize() {
         DataPF.esm.register(executorService);
+        DataPF.userDatabase = new UserDatabase();
 
         btnNewProject.textProperty().bind(DataPF.lsp.lsb("dashboard.new_project"));
         btnProjects.textProperty().bind(DataPF.lsp.lsb("dashboard.recent_projects"));
         btnSettings.textProperty().bind(DataPF.lsp.lsb("dashboard.profile_settings"));
         btnLogout.textProperty().bind(DataPF.lsp.lsb("dashboard.logout"));
 
-        if (DataPF.dbUser != null) {
-            userNameLabel.setText(DataPF.dbUser.getUsername());
-            userAvatar.setClip(new Circle(20, 20, 20));
-
-            loadUserAvatar(DataPF.dbUser.getProfileImage());
-
-            DataPF.dbUser.profileImageProperty().addListener((obs, oldVal, newVal) -> loadUserAvatar(newVal));
-
-            try {
-                Image logo = new Image(Objects.requireNonNull(
-                    getClass().getResourceAsStream("/com/unical/pixelflow/assets/logo/LogoPixelFlow.png")
-                ));
-                logoHeader.setImage(logo);
-            } catch (Exception e) {
-                System.err.println("Logo non trovato: " + e.getMessage());
-            }
-        }
 
         DataPF.dbUser.themeProperty().addListener((_, _, newValue) -> {
             System.out.println("Theme changed to " + newValue);
@@ -100,6 +88,39 @@ public class DashboardController {
                     break;
             }
         });
+
+        btnProjects.sceneProperty().addListener((_, _, newValue) -> {
+            if (newValue != null) {
+                if (DataPF.dbUser.themeProperty().get() == Theme.LIGHT) {
+                    newValue.getStylesheets().remove(getClass().getResource("/com/unical/pixelflow/css/style-dark.css").toExternalForm());
+                    newValue.getStylesheets().add(getClass().getResource("/com/unical/pixelflow/css/style-light.css").toExternalForm());
+                } else {
+                    newValue.getStylesheets().remove(getClass().getResource("/com/unical/pixelflow/css/style-light.css").toExternalForm());
+                    newValue.getStylesheets().add(getClass().getResource("/com/unical/pixelflow/css/style-dark.css").toExternalForm());
+                }
+                DataPF.lsp.setSelectedLanguage(DataPF.dbUser.languageProperty().get());
+            }
+        });
+
+
+        DataPF.userUpdated.addListener((_, _, newValue) -> {
+            if (newValue) {
+                Platform.runLater(() -> {
+                    update_user();
+                    DataPF.userUpdated.set(false);
+                });
+            }
+        });
+
+        DataPF.dbUser.usernameProperty().addListener((_, _, _) -> {
+            Platform.runLater(() -> {
+                update_user();
+                DataPF.userUpdated.set(false);
+            });
+        });
+
+
+
         ToggleGroup navGroup = new ToggleGroup();
         btnProjects.setToggleGroup(navGroup);
         btnSettings.setToggleGroup(navGroup);
@@ -116,32 +137,71 @@ public class DashboardController {
             }
         });
         btnProjects.setSelected(true);
-
-
-
+        update_user();
         showProjects();
     }
 
-    private void loadUserAvatar(String avatarPath) {
-        try {
-            if (avatarPath != null && !avatarPath.isBlank()) {
-                java.io.File f = new java.io.File(avatarPath);
-                if (f.exists()) {
-                    userAvatar.setImage(new Image(f.toURI().toString()));
-                    return;
-                }
-            }
+    public void update_user() {
+        File directory = new File(DataPF.users_images_directory);
+        String username = String.valueOf(DataPF.dbUser.getId());
+        File[] files = directory.listFiles((_, name) -> name.startsWith(username + "."));
 
-
-            Image img = new Image(Objects.requireNonNull(
-                getClass().getResourceAsStream("/com/unical/pixelflow/images/IconPixelFlow.png")
+        Image image;
+        if (files != null && files.length > 0) {
+            String fileExtension = files[0].getName().substring(files[0].getName().lastIndexOf('.'));
+            File newFile = new File(DataPF.users_images_directory, username + fileExtension);
+            image = new Image(newFile.toURI().toString());
+        } else {
+            image = new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream("/com/unical/pixelflow/assets/logo/LogoPixelFlow.png")
             ));
-            userAvatar.setImage(img);
-        } catch (Exception e) {
-            System.err.println("Avatar non trovato: " + e.getMessage());
+        }
+
+        // Imposta l'immagine con la logica di ritaglio centrale
+        setCenteredCircleImage(userAvatar, image);
+
+        userNameLabel.setText(DataPF.dbUser.getUsername());
+    }
+
+    private void setCenteredCircleImage(ImageView imageView, Image image) {
+        imageView.setImage(image);
+
+        // Resetta la viewport nel caso l'immagine precedente avesse dimensioni diverse
+        imageView.setViewport(null);
+
+        // Poiché il caricamento dell'immagine potrebbe essere asincrono,
+        // usiamo un listener per assicurarci di avere le dimensioni reali
+        if (image.getWidth() == 0) {
+            image.widthProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal.doubleValue() > 0 && image.getHeight() > 0) {
+                    cropAndClip(imageView, image);
+                }
+            });
+        } else {
+            cropAndClip(imageView, image);
         }
     }
 
+    private void cropAndClip(ImageView imageView, Image image) {
+        double w = image.getWidth();
+        double h = image.getHeight();
+
+        double minDim = Math.min(w, h);
+
+
+        double x = (w - minDim) / 2;
+        double y = (h - minDim) / 2;
+
+        imageView.setViewport(new Rectangle2D(x, y, minDim, minDim));
+        double fitW = imageView.getFitWidth();
+        double fitH = imageView.getFitHeight();
+
+        imageView.setSmooth(true);
+        imageView.setPreserveRatio(true);
+
+        Circle clip = new Circle(fitW / 2, fitH / 2, Math.min(fitW, fitH) / 2);
+        imageView.setClip(clip);
+    }
 
     void showProjects() {
         if (!btnProjects.isSelected()) {

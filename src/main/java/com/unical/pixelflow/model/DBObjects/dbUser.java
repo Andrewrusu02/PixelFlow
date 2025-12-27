@@ -97,7 +97,7 @@ public final class dbUser {
         this.username.set(newUsername);
     }
 
-    public void setPassword(String newPassword) throws SQLException {
+    public void setPassword_hash(String newPassword) throws SQLException {
         updateField("password_hash", newPassword);
         this.password.set(newPassword);
     }

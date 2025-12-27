@@ -110,8 +110,7 @@ public class NewProjectController {
             BufferedImage thumbnailImage = createThumbnail(sourceImage, 380, 280);
             ImageIO.write(thumbnailImage, "png", new File(thumbPath));
 
-            Task<Boolean> dbTask = DataPF.pfDatabase.saveProject(
-                    DataPF.dbUser.getId(),
+            Task<Boolean> dbTask = DataPF.userDatabase.saveProject(
                     name,
                     pfpPath,
                     thumbPath

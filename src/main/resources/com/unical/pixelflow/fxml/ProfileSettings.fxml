@@ -16,7 +16,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import com.unical.pixelflow.components.SwitchTheme?>
 
-<BorderPane styleClass="background-1" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.ProfileSettingsController">
+<?import com.unical.pixelflow.components.ComboPasswordField?>
+<BorderPane styleClass="background-1"  maxHeight="500" stylesheets="@../css/style-dark.css"   xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.ProfileSettingsController">
    <center>
       <HBox alignment="CENTER" spacing="60" styleClass="background-1" stylesheets="@../css/style-dark.css">
           <padding>
@@ -41,7 +42,7 @@
       
               <VBox spacing="8">
                   <Label fx:id="usernameLabel" style="-fx-text-fill: #AAAAAA; -fx-font-size: 13px;" text="Username" />
-                  <TextField fx:id="usernameField" editable="false" promptText="Username" styleClass="text-field" />
+                  <TextField fx:id="usernameField" promptText="Username" styleClass="text-field" />
                   <Label fx:id="userIdLabel" text="ID" />
                <TextField fx:id="usernameField1" editable="false" promptText="Username" styleClass="text-field" />
               </VBox>
@@ -62,21 +63,20 @@
       
               <VBox spacing="8">
                   <Label fx:id="newPasswordLabel" text="Old Password" />
-                  <PasswordField fx:id="newPass" promptText="Enter Old Password" styleClass="text-field" />
+                  <ComboPasswordField fx:id="newPass" />
               </VBox>
       
               <VBox spacing="8">
                   <Label fx:id="confirmPasswordLabel" text="Confirm Password" />
-                  <PasswordField fx:id="confirmPass" promptText="Confirm password" styleClass="text-field" />
+                  <ComboPasswordField fx:id="confirmPass"  />
               </VBox>
             <VBox spacing="8">
                <children>
                   <Label fx:id="newPasswordLabel1" text="New Password" />
-                  <PasswordField fx:id="newPass1" promptText="Enter new password" styleClass="text-field" />
+                  <ComboPasswordField fx:id="newPass1"  />
                </children>
             </VBox>
-      
-                       <Label fx:id="statusLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="" wrapText="true" />
+
             <padding>
                <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
             </padding>
@@ -103,7 +103,7 @@
                     </HBox>
                 </VBox>
 
-               <Label fx:id="statusLabel1" style="-fx-text-fill: #4CAF50; -fx-font-size: 12px; -fx-font-weight: bold;" text="" wrapText="true" />
+               <Label fx:id="themeStatusLabel" style="-fx-text-fill: #4CAF50; -fx-font-size: 12px; -fx-font-weight: bold;" text="" wrapText="true" />
             </children>
             <padding>
                <Insets top="10.0" />
@@ -112,12 +112,21 @@
       
       </HBox>
    </center>
-   <bottom>
-      <HBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="500.0" spacing="20.0" BorderPane.alignment="CENTER">
-         <children>
-             <Button fx:id="saveButton" maxWidth="Infinity" onAction="#handleSave" styleClass="full-button" text="Save" HBox.hgrow="ALWAYS" />
-             <Button fx:id="cancelButton" maxWidth="Infinity" onAction="#handleSave" styleClass="transparent-button" text="Cancel" HBox.hgrow="ALWAYS" />
-         </children>
-      </HBox>
-   </bottom>
+    <bottom>
+        <VBox alignment="CENTER" spacing="10.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="statusLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" text="" wrapText="true" />
+
+                <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="60.0" prefWidth="500.0" spacing="20.0">
+                    <children>
+                        <Button fx:id="saveButton" maxWidth="Infinity" onAction="#handleSave" styleClass="full-button" text="Save" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="cancelButton" maxWidth="Infinity" onAction="#handleCancel" styleClass="transparent-button" text="Cancel" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+            </children>
+            <padding>
+                <Insets bottom="20.0" top="10.0"/>
+            </padding>
+        </VBox>
+    </bottom>
 </BorderPane>

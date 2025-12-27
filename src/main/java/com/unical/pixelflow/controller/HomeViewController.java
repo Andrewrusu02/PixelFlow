@@ -350,7 +350,7 @@ public class HomeViewController {
             }
 
             // 1) DB
-            Task<Boolean> task = DataPF.pfDatabase.deleteProject(project.getId());
+            Task<Boolean> task = DataPF.userDatabase.deleteProject(project.getId());
             task.setOnSucceeded(ev -> {
                 // 2) filesystem (best-effort)
                 safeDeleteFile(project.getPath());

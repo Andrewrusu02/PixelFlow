@@ -21,6 +21,8 @@ public class Database implements AutoCloseable {
 
     private static final String TEMPLATE_PATH = "/com/unical/pixelflow/databases/usertemplate.db";
     private static final String USER_DB_FOLDER = "Data/user_dbs";
+    private static final String USER_IMGS_FOLDER = "Data/user_imgs";
+    private static final String DEFAULT_PROFILE_IMAGE_PATH = "/com/unical/pixelflow/images/userprofile.png";
 
     protected final ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -95,6 +97,28 @@ public class Database implements AutoCloseable {
         } catch (IOException e) {
             e.printStackTrace();
             throw new IOException("Error during copy db", e);
+        }
+        createDefaultProfileImage(id);
+    }
+
+    private static void createDefaultProfileImage(int id) throws IOException {
+        // Crea la cartella se non esiste
+        File imgFolder = new File(USER_IMGS_FOLDER);
+        if (!imgFolder.exists()) {
+            imgFolder.mkdirs();
+        }
+
+        Path destImgPath = Paths.get(USER_IMGS_FOLDER, id + ".png");
+
+        try (InputStream is = Database.class.getResourceAsStream(DEFAULT_PROFILE_IMAGE_PATH)) {
+            if (is == null) {
+                throw new IOException("Default profile image not found in resources: " + DEFAULT_PROFILE_IMAGE_PATH);
+            }
+            Files.copy(is, destImgPath, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("Default profile image copied: " + destImgPath.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IOException("Error copying default profile image", e);
         }
     }
 
