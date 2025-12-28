@@ -1,0 +1,12 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "C:\\Users\\sebas\\Pictures\\Screenshots\\Screenshot 2025-12-11 133414.png",
+  "nodes" : [ {
+    "id" : "d6ff0ae3-681f-40d5-ac81-ebab2a9d5a39",
+    "type" : "InputNode",
+    "x" : 0.0,
+    "y" : 0.0,
+    "parameters" : null
+  } ],
+  "connections" : [ ]
+}

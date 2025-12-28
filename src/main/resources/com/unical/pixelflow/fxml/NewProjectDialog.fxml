@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="30.0" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NewProjectController">
+<VBox spacing="30.0" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NewProjectController">
 
     <padding><Insets bottom="30" left="30" right="30" top="30" /></padding>
 

@@ -14,7 +14,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
+<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
 
               <top>
          <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="background-4">

@@ -1,0 +1,44 @@
+.project-card {
+        -fx-background-color: -fu-stroke-rest, -fu-background-1;
+        -fx-background-insets: 0, 2;
+        -fx-background-radius: 6, 4;
+        -fx-opacity: 1;
+    }
+
+.project-card:hover {
+    -fx-background-color: -fu-accent, -fu-background-1;
+}
+
+.project-card:pressed {
+    -fx-background-color: -fu-background-1;
+}
+
+.card-thumbnail-container {
+    -fx-background-color: -fu-background-1;
+    -fx-background-radius: 10;
+    -fx-alignment: center;
+}
+
+.card-title {
+    -fx-text-fill: -fu-text-1;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.card-date {
+    -fx-text-fill:-fu-text-1;
+    -fx-font-size: 11px;
+}
+
+.card-placeholder-icon {
+    -fx-fill: #444444;
+    -fx-scale-x: 2;
+    -fx-scale-y: 2;
+}
+
+.project-menu-popup {
+    -fx-background-color: -fu-stroke-rest, -fu-background-1;
+    -fx-background-insets: 0, 2;
+    -fx-background-radius: 6, 4;
+    -fx-opacity: 1;
+}

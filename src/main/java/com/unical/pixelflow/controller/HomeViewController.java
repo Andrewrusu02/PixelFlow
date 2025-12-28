@@ -7,16 +7,10 @@ import com.unical.pixelflow.view.ModalEffects;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
@@ -24,51 +18,34 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.File;
+
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class HomeViewController {
 
-    @FXML
-    private FlowPane projectsGrid;
-
-    @FXML
-    private VBox emptyMessage;
-
-    @FXML
-    private Label titleLabel;
-
-    @FXML
-    private Label emptyTitleLabel;
-
-    @FXML
-    private Label emptySubtitleLabel;
+    @FXML private FlowPane projectsGrid;
+    @FXML private VBox emptyMessage;
+    @FXML private Label titleLabel;
+    @FXML private Label emptyTitleLabel;
+    @FXML private Label emptySubtitleLabel;
 
     private final ProjectRepository repo = new ProjectRepository();
 
     @FXML
     public void initialize() {
-        // Bind traduzioni (istananee quando cambia lingua)
-        if (titleLabel != null) {
-            titleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.title"));
-        }
-        if (emptyTitleLabel != null) {
-            emptyTitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.title"));
-        }
-        if (emptySubtitleLabel != null) {
-            emptySubtitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.subtitle"));
-        }
+        if (titleLabel != null) titleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.title"));
+        if (emptyTitleLabel != null) emptyTitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.title"));
+        if (emptySubtitleLabel != null) emptySubtitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.subtitle"));
 
         loadProjects();
     }
 
     private void loadProjects() {
         projectsGrid.getChildren().clear();
-
         var projects = repo.getRecentProjects();
 
-        // Gestione visibilità messaggio vuoto
         if (projects.isEmpty()) {
             emptyMessage.setVisible(true);
             emptyMessage.setManaged(true);
@@ -76,195 +53,78 @@ public class HomeViewController {
             emptyMessage.setVisible(false);
             emptyMessage.setManaged(false);
 
-            // Popola griglia
             for (ProjectMetadata project : projects) {
-                projectsGrid.getChildren().add(createProjectCard(project));
-            }
-        }
-    }
+                try {
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/components/ProjectCard.fxml"));
+                    Parent cardNode = loader.load();
 
-    private VBox createProjectCard(ProjectMetadata project) {
-        VBox card = new VBox(12);
-        card.setAlignment(Pos.TOP_LEFT);
-        card.setStyle(
-            "-fx-background-color: #2D2D2D; " +
-            "-fx-padding: 15; " +
-            "-fx-background-radius: 10; " +
-            "-fx-cursor: hand; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);"
-        );
-        card.setPrefSize(220, 240);
-        card.setMaxSize(220, 240);
-        card.setMinSize(220, 240);
+                    ProjectCardController controller = loader.getController();
+                    controller.setData(project, this::openProject, this::openEditDialog, this::deleteProject);
 
-        // Hover effect
-        card.setOnMouseEntered(_ -> card.setStyle(
-            "-fx-background-color: #353535; " +
-            "-fx-padding: 15; " +
-            "-fx-background-radius: 10; " +
-            "-fx-cursor: hand; " +
-            "-fx-effect: dropshadow(gaussian, rgba(225,193,6,0.4), 15, 0, 0, 3);"
-        ));
-
-        card.setOnMouseExited(_ -> card.setStyle(
-            "-fx-background-color: #2D2D2D; " +
-            "-fx-padding: 15; " +
-            "-fx-background-radius: 10; " +
-            "-fx-cursor: hand; " +
-            "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);"
-        ));
-
-        ContextMenu contextMenu = new ContextMenu();
-
-        MenuItem openItem = new MenuItem("Apri");
-        MenuItem editItem = new MenuItem("Modifica");
-        MenuItem deleteItem = new MenuItem("Elimina");
-
-        contextMenu.getItems().setAll(openItem, editItem, deleteItem);
-
-        openItem.setOnAction(_ -> openProject(project));
-        editItem.setOnAction(_ -> openEditDialog(project));
-        deleteItem.setOnAction(_ -> deleteProject(project));
-
-        card.setOnContextMenuRequested(e -> {
-            contextMenu.hide();
-            contextMenu.show(card, e.getScreenX(), e.getScreenY());
-            e.consume();
-        });
-
-        card.setOnMouseClicked(e -> {
-            if (e.getButton() == MouseButton.PRIMARY) {
-                openProject(project);
-            } else if (e.getButton() == MouseButton.SECONDARY) {
-                contextMenu.hide();
-                contextMenu.show(card, e.getScreenX(), e.getScreenY());
-                e.consume();
-            }
-        });
-
-        // Thumbnail container
-        BorderPane thumbnail = new BorderPane();
-        thumbnail.setPrefSize(190, 140);
-        thumbnail.setMaxSize(190, 140);
-        thumbnail.setMinSize(190, 140);
-        thumbnail.setStyle(
-            "-fx-background-color: #1E1E1E; " +
-            "-fx-background-radius: 5;"
-        );
-
-        // Carica thumbnail
-        if (project.getThumbnailPath() != null && !project.getThumbnailPath().isEmpty()) {
-            try {
-                // Le thumbnail sono su file system, non nel classpath
-                // Usa file:// URL per caricare da disco
-                File thumbnailFile = new File(project.getThumbnailPath());
-
-                if (thumbnailFile.exists()) {
-                    Image thumbnailImage = new Image(thumbnailFile.toURI().toString());
-                    ImageView thumbnailView = new ImageView(thumbnailImage);
-                    thumbnailView.setFitWidth(190);
-                    thumbnailView.setFitHeight(140);
-                    thumbnailView.setPreserveRatio(false);
-                    thumbnailView.setSmooth(true);
-                    thumbnail.getChildren().add(thumbnailView);
-                } else {
-                    // File non esiste, usa fallback
-                    System.err.println("Thumbnail non trovata: " + project.getThumbnailPath());
-                    Label iconLabel = new Label("📷");
-                    iconLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #666;");
-                    thumbnail.getChildren().add(iconLabel);
+                    projectsGrid.getChildren().add(cardNode);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception ex) {
-                // Fallback a emoji se caricamento fallisce
-                System.err.println("Errore caricamento thumbnail: " + ex.getMessage());
-                Label iconLabel = new Label("📷");
-                iconLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #666;");
-                thumbnail.getChildren().add(iconLabel);
             }
-        } else {
-            // Fallback a emoji se nessun thumbnail
-            Label iconLabel = new Label("📷");
-            iconLabel.setStyle("-fx-font-size: 48px; -fx-text-fill: #666;");
-            thumbnail.getChildren().add(iconLabel);
         }
-
-        // Project name
-        Label nameLabel = new Label(project.getName());
-        nameLabel.setStyle(
-            "-fx-text-fill: white; " +
-            "-fx-font-weight: bold; " +
-            "-fx-font-size: 14px;"
-        );
-        nameLabel.setWrapText(true);
-        nameLabel.setMaxWidth(190);
-
-        // Last modified date
-        Label dateLabel = new Label(project.getFormattedDate());
-        dateLabel.setStyle(
-            "-fx-text-fill: #AAAAAA; " +
-            "-fx-font-size: 11px;"
-        );
-
-        // Traduzioni delle voci menu (live)
-        openItem.textProperty().bind(DataPF.lsp.lsb("project.menu.open"));
-        editItem.textProperty().bind(DataPF.lsp.lsb("project.menu.edit"));
-        deleteItem.textProperty().bind(DataPF.lsp.lsb("project.menu.delete"));
-
-        card.getChildren().addAll(thumbnail, nameLabel, dateLabel);
-
-        return card;
     }
 
-    private BorderPane findDashboardRootForBlur() {
-        try {
-            if (projectsGrid == null || projectsGrid.getScene() == null) return null;
-            var root = projectsGrid.getScene().getRoot();
-            if (root instanceof BorderPane sp && sp.lookup("#dashboardRoot") != null) {
-                // root è dashboardRoot
-                return sp;
-            }
-            // se siamo dentro dashboardRoot ma root diverso, prova lookup
-            var n = root.lookup("#dashboardRoot");
-            if (n instanceof BorderPane sp2) return sp2;
-        } catch (Exception ignored) {
-        }
-        return null;
+    private void openProject(ProjectMetadata project) {
+        repo.openProject(project.getPath());
     }
+
 
     private void openEditDialog(ProjectMetadata project) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/EditProjectDialog.fxml"));
             Parent page = loader.load();
 
+            Scene scene = new Scene(page);
+
+            // --- GESTIONE CSS (Copiata dal tuo esempio) ---
+            String cssPath;
+            if (DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK) {
+                cssPath = "/com/unical/pixelflow/css/style-dark.css";
+            } else {
+                cssPath = "/com/unical/pixelflow/css/style-light.css";
+            }
+            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+
+            // Fondamentale per la trasparenza dello stage
+            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+
             Stage dialogStage = new Stage();
-            dialogStage.setTitle(DataPF.lsp.lsb("dialog.edit_project.window_title").get());
+            dialogStage.setScene(scene);
+
+            // Titolo Finestra
+            if (DataPF.lsp.lsb("dialog.edit_project.window_title").get() != null) {
+                dialogStage.setTitle(DataPF.lsp.lsb("dialog.edit_project.window_title").get());
+            }
+
+            // Setup Stage Trasparente
             dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.initOwner(projectsGrid.getScene().getWindow());
-            dialogStage.initStyle(StageStyle.UNDECORATED);
-            dialogStage.setScene(new Scene(page));
+            dialogStage.initOwner(projectsGrid.getScene().getWindow()); // Usa projectsGrid per trovare la finestra padre
+            dialogStage.initStyle(StageStyle.TRANSPARENT);
             dialogStage.setResizable(false);
 
+            // Setup Controller
             EditProjectController controller = loader.getController();
             controller.setDialogStage(dialogStage);
             controller.setProject(project);
 
+            // --- GESTIONE OVERLAY / BLUR ---
             Stage ownerStage = (Stage) projectsGrid.getScene().getWindow();
 
-            ModalEffects.ModalOverlay overlay = null;
-            BorderPane dashboard = findDashboardRootForBlur();
-            if (dashboard != null) {
-                overlay = ModalEffects.apply(dashboard);
-            } else if (projectsGrid != null && projectsGrid.getParent() instanceof BorderPane sp) {
-                overlay = ModalEffects.apply(sp);
-            }
-            ModalEffects.ModalOverlay finalOverlay = overlay;
+            // Cerchiamo la root della Dashboard per applicare l'effetto sfocato
+            BorderPane dashboardRoot = findDashboardRoot();
+            ModalEffects.ModalOverlay overlay = dashboardRoot != null ? ModalEffects.apply(dashboardRoot) : null;
+
             dialogStage.setOnHidden(e -> {
-                if (finalOverlay != null) {
-                    finalOverlay.remove();
-                }
+                if (overlay != null) overlay.remove();
             });
 
-            dialogStage.setOnShown(ev -> {
+            // --- CENTRATURA DIALOG ---
+            dialogStage.setOnShown(e -> {
                 double dialogWidth = dialogStage.getWidth();
                 double dialogHeight = dialogStage.getHeight();
 
@@ -273,27 +133,22 @@ public class HomeViewController {
                 double ownerWidth = ownerStage.getWidth();
                 double ownerHeight = ownerStage.getHeight();
 
-                double centerX = ownerX + (ownerWidth - dialogWidth) / 2;
-                double centerY = ownerY + (ownerHeight - dialogHeight) / 2;
-
-                dialogStage.setX(centerX);
-                dialogStage.setY(centerY);
+                dialogStage.setX(ownerX + (ownerWidth - dialogWidth) / 2);
+                dialogStage.setY(ownerY + (ownerHeight - dialogHeight) / 2);
             });
 
             dialogStage.showAndWait();
 
+            // Ricarica se salvato
             if (controller.isSaved()) {
                 loadProjects();
             }
-        } catch (Exception e) {
+
+        } catch (IOException e) {
             e.printStackTrace();
-            Alert a = new Alert(Alert.AlertType.ERROR);
-            a.setTitle("PixelFlow");
-            a.setHeaderText("Errore");
-            a.setContentText("Impossibile aprire la finestra di modifica progetto.");
-            a.showAndWait();
         }
     }
+
 
     private void deleteProject(ProjectMetadata project) {
         try {
@@ -302,100 +157,100 @@ public class HomeViewController {
             loader.setController(controller);
             Parent page = loader.load();
 
-            Stage dialogStage = new Stage();
-            dialogStage.setTitle(DataPF.lsp.lsb("dialog.delete_project.window_title").get());
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.initOwner(projectsGrid.getScene().getWindow());
-            dialogStage.initStyle(StageStyle.UNDECORATED);
-            dialogStage.setScene(new Scene(page));
-            dialogStage.setResizable(false);
-
+            Stage dialogStage = createDialogStage(page, "dialog.delete_project.window_title");
             controller.setDialogStage(dialogStage);
             controller.setProjectName(project.getName());
 
-            Stage ownerStage = (Stage) projectsGrid.getScene().getWindow();
-
-            ModalEffects.ModalOverlay overlay = null;
-            BorderPane dashboard = findDashboardRootForBlur();
-            if (dashboard != null) {
-                overlay = ModalEffects.apply(dashboard);
-            } else if (projectsGrid != null && projectsGrid.getParent() instanceof BorderPane sp) {
-                overlay = ModalEffects.apply(sp);
-            }
-            ModalEffects.ModalOverlay finalOverlay = overlay;
-            dialogStage.setOnHidden(e -> {
-                if (finalOverlay != null) finalOverlay.remove();
-            });
-
-            dialogStage.setOnShown(ev -> {
-                double dialogWidth = dialogStage.getWidth();
-                double dialogHeight = dialogStage.getHeight();
-
-                double ownerX = ownerStage.getX();
-                double ownerY = ownerStage.getY();
-                double ownerWidth = ownerStage.getWidth();
-                double ownerHeight = ownerStage.getHeight();
-
-                double centerX = ownerX + (ownerWidth - dialogWidth) / 2;
-                double centerY = ownerY + (ownerHeight - dialogHeight) / 2;
-
-                dialogStage.setX(centerX);
-                dialogStage.setY(centerY);
-            });
-
-            dialogStage.showAndWait();
+            showDialogWithBlur(dialogStage);
 
             if (!controller.isConfirmed()) {
                 return;
             }
 
-            // 1) DB
             Task<Boolean> task = DataPF.userDatabase.deleteProject(project.getId());
             task.setOnSucceeded(ev -> {
-                // 2) filesystem (best-effort)
                 safeDeleteFile(project.getPath());
                 safeDeleteFile(project.getThumbnailPath());
                 loadProjects();
             });
             task.setOnFailed(ev -> {
-                Throwable ex = task.getException();
-                if (ex != null) {
-                    ex.printStackTrace();
-                }
-                Alert err = new Alert(Alert.AlertType.ERROR);
-                err.setTitle("PixelFlow");
-                err.setHeaderText("Errore eliminazione");
-                err.setContentText("Impossibile eliminare il progetto dal database.");
-                err.showAndWait();
+                ev.getSource().getException().printStackTrace();
+                showError("Impossibile eliminare il progetto dal database.");
             });
 
             Thread t = new Thread(task);
             t.setDaemon(true);
             t.start();
+
         } catch (Exception ex) {
             ex.printStackTrace();
-            Alert err = new Alert(Alert.AlertType.ERROR);
-            err.setTitle("PixelFlow");
-            err.setHeaderText("Errore");
-            err.setContentText("Impossibile aprire la conferma di eliminazione.");
-            err.showAndWait();
+            showError("Impossibile aprire la conferma di eliminazione.");
         }
+    }
+
+    private Stage createDialogStage(Parent page, String titleKey) {
+        Stage stage = new Stage();
+        stage.setTitle(DataPF.lsp.lsb(titleKey).get());
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.initOwner(projectsGrid.getScene().getWindow());
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.setScene(new Scene(page));
+        stage.setResizable(false);
+        return stage;
+    }
+
+    private void showDialogWithBlur(Stage dialogStage) {
+        Stage ownerStage = (Stage) projectsGrid.getScene().getWindow();
+        ModalEffects.ModalOverlay overlay = null;
+
+        BorderPane dashboard = findDashboardRoot();
+        if (dashboard != null) {
+            overlay = ModalEffects.apply(dashboard);
+        }
+
+        ModalEffects.ModalOverlay finalOverlay = overlay;
+        dialogStage.setOnHidden(e -> {
+            if (finalOverlay != null) finalOverlay.remove();
+        });
+
+        dialogStage.setOnShown(ev -> {
+            double centerX = ownerStage.getX() + (ownerStage.getWidth() - dialogStage.getWidth()) / 2;
+            double centerY = ownerStage.getY() + (ownerStage.getHeight() - dialogStage.getHeight()) / 2;
+            dialogStage.setX(centerX);
+            dialogStage.setY(centerY);
+        });
+
+        dialogStage.showAndWait();
+    }
+
+    private BorderPane findDashboardRoot() {
+        if (projectsGrid == null || projectsGrid.getScene() == null) return null;
+        Parent root = projectsGrid.getScene().getRoot();
+
+        if (root.lookup("#dashboardRoot") instanceof BorderPane bp) {
+            return bp;
+        }
+        if (root instanceof BorderPane bp) {
+            return bp;
+        }
+        return null;
     }
 
     private void safeDeleteFile(String filePath) {
         try {
-            if (filePath == null || filePath.isBlank()) return;
-            Path p = Path.of(filePath);
-            Files.deleteIfExists(p);
+            if (filePath != null && !filePath.isBlank()) {
+                Files.deleteIfExists(Path.of(filePath));
+            }
         } catch (Exception ex) {
-            System.err.println("Warning: impossibile eliminare file '" + filePath + "': " + ex.getMessage());
+            ex.printStackTrace();
         }
     }
 
-    private void openProject(ProjectMetadata project) {
-        System.out.println("Opening project: " + project.getName() + " at " + project.getPath());
-        // TODO: Implementare apertura progetto
-        repo.openProject(project.getPath());
+    private void showError(String content) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("PixelFlow Error");
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }
-
