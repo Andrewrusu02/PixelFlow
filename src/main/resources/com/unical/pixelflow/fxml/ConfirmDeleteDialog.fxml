@@ -6,28 +6,20 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox spacing="16"
-      style="-fx-background-color: #1E1E1E; -fx-border-color: #E1C106; -fx-border-width: 1;"
-      xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      prefWidth="460">
+<VBox alignment="CENTER" prefWidth="460" spacing="16" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1">
 
     <padding>
-        <Insets top="26" right="26" bottom="26" left="26"/>
+        <Insets bottom="26" left="26" right="26" top="26" />
     </padding>
 
-    <Label fx:id="titleLabel" text="ELIMINA PROGETTO"
-           style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+    <Label fx:id="titleLabel" styleClass="card-title" text="ELIMINA PROGETTO" textAlignment="CENTER" />
 
-    <Label fx:id="messageLabel" wrapText="true"
-           style="-fx-text-fill: #AAAAAA; -fx-font-size: 13px;"/>
+    <Label fx:id="messageLabel" alignment="CENTER" textAlignment="CENTER" wrapText="true" />
 
-    <Label fx:id="warningLabel" text="Questa operazione è irreversibile."
-           style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+    <Label fx:id="warningLabel" alignment="CENTER" text="Questa operazione è irreversibile." textAlignment="CENTER" />
 
-    <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 6 0 0 0;">
-        <Button fx:id="btnCancel" text="Annulla"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAA; -fx-cursor: hand; -fx-underline: true;"/>
-        <Button fx:id="btnConfirm" text="Elimina"
-                style="-fx-background-color: #FF5555; -fx-text-fill: black; -fx-font-weight: bold; -fx-background-radius: 4; -fx-cursor: hand;"/>
+    <HBox alignment="CENTER_RIGHT" spacing="15" VBox.vgrow="ALWAYS">
+        <Button fx:id="btnCancel" maxWidth="1.7976931348623157E308" prefHeight="40.0" styleClass="transparent-button" text="Annulla" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnConfirm" maxWidth="1.7976931348623157E308" prefHeight="40.0" styleClass="full-button" text="Elimina" HBox.hgrow="ALWAYS" />
     </HBox>
 </VBox>
