@@ -7,10 +7,10 @@ import java.awt.image.BufferedImage;
 public class InputNode extends Node {
     private BufferedImage sourceImage;
 
+    // Modifica: ora image può essere null
     public InputNode(BufferedImage image) {
         super("Input");
         this.sourceImage = image;
-        // L'InputNode ha solo 1 Output, nessun Input
         this.outputs.add(new Socket(this, Socket.Type.OUTPUT));
     }
 
@@ -20,15 +20,12 @@ public class InputNode extends Node {
 
     @Override
     protected boolean validateInput(BufferedImage input) {
-        // Override critico: L'InputNode non ha bisogno di un input valido dal nodo precedente
-        // (che sarà null), ma deve avere una sourceImage interna valida.
+        // Se sourceImage è null (progetto vuoto), il nodo non è valido per l'esecuzione
         return sourceImage != null;
     }
 
     @Override
     protected BufferedImage applyEffect(BufferedImage input) {
-        // Ignora l'input (che è null) e restituisce la sorgente
         return sourceImage;
     }
 }
-

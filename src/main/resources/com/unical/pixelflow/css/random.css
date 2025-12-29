@@ -21,5 +21,9 @@
     -fx-border-width: 0.8;
 }
 
+.node-socket{
+    -fx-fill: -fu-accent;
+}
+
 
 

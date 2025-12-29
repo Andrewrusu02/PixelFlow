@@ -1,14 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.SVGPath?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
+<fx:root maxWidth="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0" stylesheets="@../css/style-dark.css" type="BorderPane" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.components.NodeWidget">
 
-</AnchorPane>
+    <left>
+        <StackPane BorderPane.alignment="CENTER">
+            <Circle fx:id="inputSocket" fill="WHITE" radius="6.0" styleClass="node-socket" />
+        </StackPane>
+    </left>
+
+    <center>
+        <VBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" spacing="5.0" style="-fx-background-radius: 10;" styleClass="background-3" BorderPane.alignment="CENTER">
+             <SVGPath fx:id="iconShape" content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" styleClass="icon_general" />
+
+            <Label fx:id="nodeTitle" styleClass="node-title" text="Filter Name" />
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+        </VBox>
+    </center>
+
+    <right>
+        <StackPane alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
+            <Circle fx:id="outputSocket" radius="6.0" styleClass="node-socket" />
+        </StackPane>
+    </right>
+
+</fx:root>

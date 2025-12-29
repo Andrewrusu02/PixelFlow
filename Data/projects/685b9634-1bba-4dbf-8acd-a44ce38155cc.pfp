@@ -1,0 +1,12 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "",
+  "nodes" : [ {
+    "id" : "a6ab4e08-ef86-4388-95ee-2eb69b102bbf",
+    "type" : "InputNode",
+    "x" : 0.0,
+    "y" : 0.0,
+    "parameters" : null
+  } ],
+  "connections" : [ ]
+}

@@ -76,14 +76,19 @@ public class NewProjectController {
     private void handleCreate() {
         String name = nameField.getText().trim();
 
+        // 1. Validazione Nome (QUESTA RESTA)
         if (name.isEmpty()) {
             showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.name").get());
             return;
         }
-        if (selectedImageFile == null || !selectedImageFile.exists()) {
-            showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.source").get());
-            return;
-        }
+
+        // 2. Validazione Sorgente (QUESTA VA RIMOSSA O COMMENTATA!)
+    /*
+    if (selectedImageFile == null || !selectedImageFile.exists()) {
+        showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.source").get());
+        return;
+    }
+    */
 
         try {
             String uuid = UUID.randomUUID().toString();
@@ -96,20 +101,37 @@ public class NewProjectController {
             String pfpPath = new File(projectsDir, uuid + ".pfp").getAbsolutePath();
             String thumbPath = new File(thumbsDir, uuid + ".png").getAbsolutePath();
 
-            BufferedImage sourceImage = ImageIO.read(selectedImageFile);
-            if (sourceImage == null) {
-                showAlert(DataPF.lsp.lsb("common.error").get(), "Impossibile leggere l'immagine selezionata.");
-                return;
+            // 3. Gestione Immagine: Controlla SE esiste prima di leggere
+            BufferedImage sourceImage = null;
+            String sourcePathToSave = ""; // Default vuoto
+
+            if (selectedImageFile != null && selectedImageFile.exists()) {
+                sourceImage = ImageIO.read(selectedImageFile);
+                if (sourceImage == null) {
+                    showAlert(DataPF.lsp.lsb("common.error").get(), "Impossibile leggere l'immagine selezionata.");
+                    return;
+                }
+                sourcePathToSave = selectedImageFile.getAbsolutePath();
             }
 
+            // 4. Crea Pipeline (InputNode accetterà null se sourceImage è null)
             Pipeline pipeline = new Pipeline();
             pipeline.addNode(new InputNode(sourceImage));
 
-            new ProjectSerializer().save(pipeline, selectedImageFile.getAbsolutePath(), pfpPath);
+            // 5. Salva (passando sourcePathToSave che può essere stringa vuota)
+            new ProjectSerializer().save(pipeline, sourcePathToSave, pfpPath);
 
-            BufferedImage thumbnailImage = createThumbnail(sourceImage, 380, 280);
+            // 6. Crea Thumbnail (Gestisci il caso null)
+            BufferedImage thumbnailImage;
+            if (sourceImage != null) {
+                thumbnailImage = createThumbnail(sourceImage, 380, 280);
+            } else {
+                // Se non c'è immagine, crea una thumbnail vuota
+                thumbnailImage = createDefaultThumbnail(380, 280);
+            }
             ImageIO.write(thumbnailImage, "png", new File(thumbPath));
 
+            // 7. Salva nel DB
             Task<Boolean> dbTask = DataPF.userDatabase.saveProject(
                     name,
                     pfpPath,
@@ -131,6 +153,29 @@ public class NewProjectController {
             e.printStackTrace();
             showAlert("Errore Critico", "Errore durante la creazione: " + e.getMessage());
         }
+    }
+
+    // Metodo helper per la thumbnail vuota (copia anche questo se non l'hai messo)
+    private BufferedImage createDefaultThumbnail(int width, int height) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        java.awt.Graphics2D g2d = img.createGraphics();
+
+        // Sfondo grigio scuro
+        g2d.setColor(new java.awt.Color(30, 30, 30));
+        g2d.fillRect(0, 0, width, height);
+
+        // Testo "Empty Project" o simile
+        g2d.setColor(java.awt.Color.GRAY);
+        g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
+
+        String text = "Empty Project";
+        java.awt.FontMetrics fm = g2d.getFontMetrics();
+        int x = (width - fm.stringWidth(text)) / 2;
+        int y = (height - fm.getHeight()) / 2 + fm.getAscent();
+
+        g2d.drawString(text, x, y);
+        g2d.dispose();
+        return img;
     }
 
     @FXML
