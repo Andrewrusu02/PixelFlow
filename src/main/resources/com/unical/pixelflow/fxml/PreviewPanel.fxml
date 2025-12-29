@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.SVGPath?>
+
+<BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="350.0" prefWidth="400.0" styleClass="background-3" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.PreviewPanelController">
+   <center>
+   
+          <StackPane prefWidth="400.0">
+           <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+               <content>
+                   <StackPane fx:id="imageContainer" styleClass="transparency-grid">
+                       <ImageView fx:id="previewImage" preserveRatio="true" />
+                   </StackPane>
+               </content>
+           </ScrollPane>
+       </StackPane>
+   </center>
+   <top>
+   
+          <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
+           <padding>
+               <Insets left="15.0" right="15.0" />
+           </padding>
+           <children>
+               <Label fx:id="titlePreview" style="-fx-font-weight: bold; -fx-text-fill: white;" text="PREVIEW" />
+               <Pane HBox.hgrow="ALWAYS" />
+           </children>
+       </HBox>
+   </top>
+   <bottom>
+   
+          <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 1 0 0 0; -fx-background-color: #1E1E1E;" BorderPane.alignment="CENTER">
+           <padding>
+               <Insets left="15.0" right="15.0" />
+           </padding>
+           <children>
+               <Label fx:id="zoomLabel" styleClass="text-body" text="100%" />
+               <Pane HBox.hgrow="ALWAYS" />
+   
+                  <Button onAction="#handleResetZoom" styleClass="transparent-button">
+                   <graphic>
+                  <SVGPath content="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z" styleClass="icon_general" />
+               </graphic>
+               </Button>
+   
+                  <Button onAction="#handleFitToScreen" styleClass="transparent-button">
+                   <graphic>
+                  <SVGPath content="M5 5h5V3H3v7h2V5zm5 14H5v-5H3v7h7v-2zm9-9h-2V5h-5V3h7v7zm-2 9h-5v2h7v-7h-2v5z" styleClass="icon_general" />
+               </graphic>
+               </Button>
+           </children>
+       </HBox>
+   </bottom>
+</BorderPane>
