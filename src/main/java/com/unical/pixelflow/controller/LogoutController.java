@@ -1,5 +1,6 @@
 package com.unical.pixelflow.controller;
 
+import com.unical.pixelflow.model.DataPF;
 import com.unical.pixelflow.view.SceneHandler;
 import javafx.fxml.FXML;
 import javafx.stage.Stage;
@@ -16,11 +17,9 @@ public class LogoutController {
 
     @FXML
     private void handleLogout() {
-        // TODO: Inserisci qui la logica di logout (es. clear sessione DataPF)
-        System.out.println("Logout effettuato");
-
+        DataPF.dbUser = null;
+        DataPF.userDatabase = null;
         closeDialog();
-
         SceneHandler.getInstance(null).showLoginScreen();
     }
 

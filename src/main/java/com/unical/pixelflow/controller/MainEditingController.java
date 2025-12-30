@@ -33,7 +33,6 @@ public class MainEditingController {
     @FXML private BorderPane ProprietiesPane;
     @FXML private BorderPane RighPane;
     @FXML private BorderPane homeViewRoot;
-
     @FXML private Button browseButton;
     @FXML private Button buttonHome;
     @FXML private TextField pathField;

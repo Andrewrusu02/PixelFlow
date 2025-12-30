@@ -5,7 +5,6 @@ import com.unical.pixelflow.model.UserDatabase;
 import com.unical.pixelflow.model.types.Theme;
 import com.unical.pixelflow.popUp.NewProjectController;
 import com.unical.pixelflow.view.ModalEffects;
-import com.unical.pixelflow.view.SceneHandler;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +28,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 public class DashboardController {
 
@@ -111,9 +111,101 @@ public class DashboardController {
         showProjects();
     }
 
+    @FXML
+    void handleLogout(ActionEvent event) {
+        openModal("/com/unical/pixelflow/fxml/LogoutView.fxml", "Logout", null);
+    }
+
+    @FXML
+    private void handleNewProject(ActionEvent event) {
+        openModal("/com/unical/pixelflow/fxml/NewProjectDialog.fxml",
+                DataPF.lsp.lsb("dialog.new_project.window_title").get(),
+                (loader, stage) -> {
+                    NewProjectController controller = loader.getController();
+                    controller.setDialogStage(stage);
+                },
+                (loader) -> {
+                    NewProjectController controller = loader.getController();
+                    if (controller.isCreated()) {
+                        showProjects();
+                    }
+                }
+        );
+    }
+
+    private void openModal(String fxmlPath, String title, Consumer<FXMLLoader> simpleConfig) {
+        openModal(fxmlPath, title, simpleConfig, null, null);
+    }
+
+    private void openModal(String fxmlPath, String title,
+                           java.util.function.BiConsumer<FXMLLoader, Stage> stageConfig,
+                           Consumer<FXMLLoader> afterCloseAction) {
+        openModal(fxmlPath, title, null, stageConfig, afterCloseAction);
+    }
+
+    private void openModal(String fxmlPath, String title,
+                           Consumer<FXMLLoader> simpleConfig,
+                           java.util.function.BiConsumer<FXMLLoader, Stage> stageConfig,
+                           Consumer<FXMLLoader> afterCloseAction) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent page = loader.load();
+
+            Scene scene = new Scene(page);
+            scene.setFill(Color.TRANSPARENT);
+
+            String cssPath = (DataPF.dbUser.getTheme() == Theme.DARK)
+                    ? "/com/unical/pixelflow/css/style-dark.css"
+                    : "/com/unical/pixelflow/css/style-light.css";
+            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+
+            Stage dialogStage = new Stage();
+            dialogStage.setScene(scene);
+            if (title != null) dialogStage.setTitle(title);
+
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initOwner(dashboardRoot.getScene().getWindow());
+            dialogStage.initStyle(StageStyle.TRANSPARENT);
+            dialogStage.setResizable(false);
+
+            if (simpleConfig != null) {
+                simpleConfig.accept(loader);
+            }
+            if (stageConfig != null) {
+                stageConfig.accept(loader, dialogStage);
+            }
+
+            Stage ownerStage = (Stage) dashboardRoot.getScene().getWindow();
+            ModalEffects.ModalOverlay overlay = (dashboardRoot != null) ? ModalEffects.apply(dashboardRoot) : null;
+
+            dialogStage.setOnHidden(e -> {
+                if (overlay != null) overlay.remove();
+            });
+
+            dialogStage.setOnShown(e -> {
+                double dialogWidth = dialogStage.getWidth();
+                double dialogHeight = dialogStage.getHeight();
+                double ownerX = ownerStage.getX();
+                double ownerY = ownerStage.getY();
+                double ownerWidth = ownerStage.getWidth();
+                double ownerHeight = ownerStage.getHeight();
+                dialogStage.setX(ownerX + (ownerWidth - dialogWidth) / 2);
+                dialogStage.setY(ownerY + (ownerHeight - dialogHeight) / 2);
+            });
+
+            dialogStage.showAndWait();
+
+            if (afterCloseAction != null) {
+                afterCloseAction.accept(loader);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void applyTheme(Scene scene, Theme theme) {
         if (scene == null) return;
-
         String lightCss = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/css/style-light.css")).toExternalForm();
         String darkCss = Objects.requireNonNull(getClass().getResource("/com/unical/pixelflow/css/style-dark.css")).toExternalForm();
 
@@ -131,6 +223,9 @@ public class DashboardController {
         try {
             File directory = new File(DataPF.users_images_directory);
             String username = String.valueOf(DataPF.dbUser.getId());
+
+            if (!directory.exists()) directory.mkdirs();
+
             File[] files = directory.listFiles((_, name) -> name.startsWith(username + "."));
 
             Image image;
@@ -194,79 +289,6 @@ public class DashboardController {
         loadView("/com/unical/pixelflow/fxml/ProfileSettings.fxml");
     }
 
-    @FXML
-    void handleLogout(ActionEvent event) {
-        DataPF.dbUser = null;
-        DataPF.userDatabase = null;
-        Stage stage = (Stage) btnLogout.getScene().getWindow();
-        SceneHandler.getInstance(stage).showLoginScreen();
-    }
-
-    @FXML
-    private void handleNewProject(ActionEvent event) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/NewProjectDialog.fxml"));
-            Parent page = loader.load();
-
-            Scene scene = new Scene(page);
-
-            String cssPath;
-            if (DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK) {
-                cssPath = "/com/unical/pixelflow/css/style-dark.css";
-            } else {
-                cssPath = "/com/unical/pixelflow/css/style-light.css";
-            }
-
-            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-
-            Stage dialogStage = new Stage();
-
-
-            dialogStage.setScene(scene);
-
-            if (DataPF.lsp.lsb("dialog.new_project.window_title").get() != null) {
-                dialogStage.setTitle(DataPF.lsp.lsb("dialog.new_project.window_title").get());
-            }
-
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.initOwner(btnNewProject.getScene().getWindow());
-            dialogStage.initStyle(StageStyle.TRANSPARENT);
-            dialogStage.setScene(scene);
-            scene.setFill(Color.TRANSPARENT);
-            dialogStage.setResizable(false);
-
-            NewProjectController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
-
-            Stage ownerStage = (Stage) btnNewProject.getScene().getWindow();
-            ModalEffects.ModalOverlay overlay = dashboardRoot != null ? ModalEffects.apply(dashboardRoot) : null;
-
-            dialogStage.setOnHidden(e -> {
-                if (overlay != null) overlay.remove();
-            });
-
-            dialogStage.setOnShown(e -> {
-                double dialogWidth = dialogStage.getWidth();
-                double dialogHeight = dialogStage.getHeight();
-                double ownerX = ownerStage.getX();
-                double ownerY = ownerStage.getY();
-                double ownerWidth = ownerStage.getWidth();
-                double ownerHeight = ownerStage.getHeight();
-                dialogStage.setX(ownerX + (ownerWidth - dialogWidth) / 2);
-                dialogStage.setY(ownerY + (ownerHeight - dialogHeight) / 2);
-            });
-
-            dialogStage.showAndWait();
-
-            if (controller.isCreated()) {
-                showProjects();
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void loadView(String fxmlPath) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -275,7 +297,6 @@ public class DashboardController {
             contentPane.getChildren().add(view);
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Errore caricamento vista: " + fxmlPath);
         }
     }
 }

@@ -5,6 +5,7 @@ import com.unical.pixelflow.infrastructure.ProjectRepository;
 import com.unical.pixelflow.model.DataPF;
 import com.unical.pixelflow.model.ProjectMetadata;
 import com.unical.pixelflow.popUp.ConfirmDeleteController;
+import com.unical.pixelflow.popUp.EditProjectController;
 import com.unical.pixelflow.view.ModalEffects;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -80,19 +81,36 @@ public class HomeViewController {
     }
 
     private void openProject(ProjectMetadata project) {
-        // repo.openProject(project.getPath()); // Vecchia logica
         loadEditor(project);
     }
 
     private void openEditDialog(ProjectMetadata project) {
-        // Invece di aprire il dialog, apriamo l'editor
-        loadEditor(project);
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/EditProjectDialog.fxml"));
+            Parent page = loader.load();
+
+            EditProjectController controller = loader.getController();
+            Stage dialogStage = createDialogStage(page, "dialog.edit_project.title");
+            controller.setDialogStage(dialogStage);
+            controller.setProject(project);
+
+            showDialogWithBlur(dialogStage);
+
+            if (controller.isSaved()) {
+                loadProjects();
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            showError("Impossibile aprire la finestra di modifica progetto.");
+        }
     }
+
+
 
     private void loadEditor(ProjectMetadata project) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/MainView.fxml"));
-            // Se l'errore precedente non è stato risolto, questa riga potrebbe ancora lanciare eccezione
             Parent root = loader.load();
 
             MainEditingController controller = loader.getController();
@@ -158,10 +176,17 @@ public class HomeViewController {
     private Stage createDialogStage(Parent page, String titleKey) {
         Stage stage = new Stage();
         stage.setTitle(DataPF.lsp.lsb(titleKey).get());
+
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(projectsGrid.getScene().getWindow());
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(new Scene(page));
+
+        stage.initStyle(StageStyle.TRANSPARENT);
+
+
+        Scene scene = new Scene(page);
+        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+
+        stage.setScene(scene);
         stage.setResizable(false);
         return stage;
     }
