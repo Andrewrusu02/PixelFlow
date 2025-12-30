@@ -3,11 +3,14 @@ package com.unical.pixelflow.controller;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -26,6 +29,13 @@ public class NodesViewController {
     private static final double GRID_STEP = 40.0;
     private static final int GRID_MAJOR_EVERY = 5;
 
+    private enum ToolMode {
+        PAN,
+        MOVE_NODES
+    }
+
+    private ToolMode toolMode = ToolMode.PAN;
+
     private double zoom = 1.0;
     private double offsetX = 0.0;
     private double offsetY = 0.0;
@@ -38,13 +48,13 @@ public class NodesViewController {
 
     private final Affine worldToScreen = new Affine();
 
-    @FXML private ToggleButton CopyButton;
-    @FXML private ToggleButton DeleteButton;
-    @FXML private ToggleButton DisableButton;
+    @FXML private Button CopyButton;
+    @FXML private Button DeleteButton;
+    @FXML private Button DisableButton;
     @FXML private ToggleButton MoveButton;
-    @FXML private ToggleButton RedoButton;
-    @FXML private ToggleButton SaveProjectButton;
-    @FXML private ToggleButton UndoButton;
+    @FXML private Button RedoButton;
+    @FXML private Button SaveProjectButton;
+    @FXML private Button UndoButton;
 
     @FXML private Pane canvas;
     @FXML private SVGPath hideShowIcon;
@@ -55,8 +65,12 @@ public class NodesViewController {
     @FXML private Canvas gridCanvas;
     @FXML private Pane inputOverlay;
 
+    @FXML private javafx.scene.layout.HBox viewportControls;
+
     @FXML private Button ZoomIndicatorButton;
     @FXML private Button ResetViewButton;
+
+    private Scene installedGlobalScene;
 
     @FXML
     private void initialize() {
@@ -73,6 +87,7 @@ public class NodesViewController {
         });
 
         installInputHandlers();
+        bindToolMode();
         applyWorldTransform();
 
         new AnimationTimer() {
@@ -94,20 +109,112 @@ public class NodesViewController {
             ResetViewButton.setFocusTraversable(false);
             ResetViewButton.setOnAction(e -> resetView());
         }
+
+        if (root != null) {
+            root.sceneProperty().addListener((obs, oldScene, newScene) -> {
+                uninstallGlobalSceneFilters(oldScene);
+                installGlobalSceneFilters(newScene);
+            });
+            installGlobalSceneFilters(root.getScene());
+        }
+
+        updateInteractionModeUI();
+    }
+
+    private void bindToolMode() {
+        if (MoveButton == null) return;
+
+        toolMode = MoveButton.isSelected() ? ToolMode.MOVE_NODES : ToolMode.PAN;
+        MoveButton.selectedProperty().addListener((obs, was, isSelected) -> {
+            toolMode = isSelected ? ToolMode.MOVE_NODES : ToolMode.PAN;
+            updateInteractionModeUI();
+        });
+    }
+
+    private void updateInteractionModeUI() {
+        if (inputOverlay == null) return;
+
+        switch (toolMode) {
+            case PAN -> inputOverlay.setCursor(Cursor.OPEN_HAND);
+            case MOVE_NODES -> inputOverlay.setCursor(Cursor.DEFAULT);
+        }
+
+        if (toolMode == ToolMode.MOVE_NODES && isPanning) {
+            isPanning = false;
+            panStartScene = null;
+        }
+    }
+
+    private void installGlobalSceneFilters(Scene scene) {
+        if (scene == null || scene == installedGlobalScene) return;
+        installedGlobalScene = scene;
+
+        scene.addEventFilter(ScrollEvent.SCROLL, this::handleScrollOrZoom);
+        scene.addEventFilter(ZoomEvent.ZOOM, this::handlePinchZoom);
+
+        scene.addEventFilter(MouseEvent.MOUSE_MOVED, this::handleGlobalCursorHints);
+        scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleGlobalCursorHints);
+
+        scene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalModifierKey);
+        scene.addEventFilter(KeyEvent.KEY_RELEASED, this::handleGlobalModifierKey);
+    }
+
+    private void uninstallGlobalSceneFilters(Scene scene) {
+        if (scene == null) return;
+        scene.removeEventFilter(ScrollEvent.SCROLL, this::handleScrollOrZoom);
+        scene.removeEventFilter(ZoomEvent.ZOOM, this::handlePinchZoom);
+        scene.removeEventFilter(MouseEvent.MOUSE_MOVED, this::handleGlobalCursorHints);
+        scene.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleGlobalCursorHints);
+        scene.removeEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalModifierKey);
+        scene.removeEventFilter(KeyEvent.KEY_RELEASED, this::handleGlobalModifierKey);
+        if (scene == installedGlobalScene) installedGlobalScene = null;
+    }
+
+    private void handleGlobalModifierKey(KeyEvent e) {
+        if (inputOverlay == null || root == null) return;
+        if (!root.isHover()) return;
+
+        if (toolMode == ToolMode.PAN) {
+            inputOverlay.setCursor(Cursor.OPEN_HAND);
+            return;
+        }
+
+        boolean wantsPanHint = e.isShortcutDown() || e.isShiftDown();
+        inputOverlay.setCursor(wantsPanHint ? Cursor.OPEN_HAND : Cursor.DEFAULT);
+    }
+
+    private void handleGlobalCursorHints(MouseEvent e) {
+        if (inputOverlay == null || root == null) return;
+        if (!root.isHover()) return;
+
+        if (toolMode == ToolMode.PAN) {
+            inputOverlay.setCursor(Cursor.OPEN_HAND);
+            return;
+        }
+
+        boolean wantsPanDragHint =
+                e.isShortcutDown() ||
+                        e.isShiftDown() ||
+                        e.isMiddleButtonDown() ||
+                        e.isSecondaryButtonDown();
+
+        inputOverlay.setCursor(wantsPanDragHint ? Cursor.OPEN_HAND : Cursor.DEFAULT);
     }
 
     private void installInputHandlers() {
-        // Trackpad: scroll a due dita => pan; pinch => zoom; Ctrl+scroll => zoom.
         inputOverlay.addEventFilter(ScrollEvent.SCROLL, this::handleScrollOrZoom);
         inputOverlay.addEventFilter(ZoomEvent.ZOOM, this::handlePinchZoom);
 
-        // Fallback pan: middle/right mouse, Cmd+drag or Shift+drag.
         inputOverlay.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handlePanStart);
         inputOverlay.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handlePanDrag);
         inputOverlay.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handlePanEnd);
     }
 
     private void handleScrollOrZoom(ScrollEvent e) {
+        if (root != null && !root.isHover() && e.getSource() instanceof Scene) {
+            return;
+        }
+
         if (e.isControlDown()) {
             handleZoomFromScroll(e);
         } else {
@@ -148,6 +255,10 @@ public class NodesViewController {
     }
 
     private void handlePinchZoom(ZoomEvent e) {
+        if (root != null && !root.isHover() && e.getSource() instanceof Scene) {
+            return;
+        }
+
         double factor = e.getZoomFactor();
         if (factor == 0 || Double.isNaN(factor) || Double.isInfinite(factor)) return;
 
@@ -170,11 +281,20 @@ public class NodesViewController {
     }
 
     private void handlePanStart(MouseEvent e) {
-        boolean wantsPanDrag =
-                e.getButton() == MouseButton.MIDDLE ||
-                        e.getButton() == MouseButton.SECONDARY ||
-                        (e.getButton() == MouseButton.PRIMARY && e.isShortcutDown()) ||
-                        (e.getButton() == MouseButton.PRIMARY && e.isShiftDown());
+        boolean wantsPanDrag;
+
+        if (toolMode == ToolMode.PAN) {
+            wantsPanDrag =
+                    e.getButton() == MouseButton.PRIMARY ||
+                            e.getButton() == MouseButton.MIDDLE ||
+                            e.getButton() == MouseButton.SECONDARY;
+        } else {
+            wantsPanDrag =
+                    e.getButton() == MouseButton.MIDDLE ||
+                            e.getButton() == MouseButton.SECONDARY ||
+                            (e.getButton() == MouseButton.PRIMARY && e.isShortcutDown()) ||
+                            (e.getButton() == MouseButton.PRIMARY && e.isShiftDown());
+        }
 
         if (!wantsPanDrag) return;
 
@@ -182,6 +302,8 @@ public class NodesViewController {
         panStartScene = new Point2D(e.getSceneX(), e.getSceneY());
         panStartOffsetX = offsetX;
         panStartOffsetY = offsetY;
+
+        if (inputOverlay != null) inputOverlay.setCursor(Cursor.CLOSED_HAND);
         e.consume();
     }
 
@@ -201,15 +323,17 @@ public class NodesViewController {
     }
 
     private void handlePanEnd(MouseEvent e) {
-        if (isPanning && (e.getButton() == MouseButton.MIDDLE || e.getButton() == MouseButton.SECONDARY)) {
+        if (!isPanning) return;
+
+        if (e.getButton() == MouseButton.PRIMARY || e.getButton() == MouseButton.MIDDLE || e.getButton() == MouseButton.SECONDARY) {
             isPanning = false;
             panStartScene = null;
+            updateInteractionModeUI();
             e.consume();
         }
     }
 
     private void applyWorldTransform() {
-        // screen = (world - offset) * zoom
         worldToScreen.setToIdentity();
         worldToScreen.appendTranslation(-offsetX, -offsetY);
         worldToScreen.appendScale(zoom, zoom);
