@@ -7,15 +7,15 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
+<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
    <center>
       <StackPane styleClass="background-3">
-      
-          <Canvas fx:id="canvas" height="150" width="250" />
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
-      
+         <children>
+            <Canvas fx:id="waveformCanvas" height="150.0" width="250.0" />
+         </children>
       </StackPane>
    </center>
    <top>
