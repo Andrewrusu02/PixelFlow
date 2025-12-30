@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="300.0" spacing="10.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LibraryPanelController">
+<VBox fx:id="root" maxHeight="700.0" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" spacing="10.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LibraryPanelController">
 
     <padding>
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -30,7 +30,7 @@
       </HBox>
     </VBox>
 
-    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" prefWidth="370.0" styleClass="background-3" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
+    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" prefWidth="370.0" styleClass="background-3" vbarPolicy="AS_NEEDED" VBox.vgrow="ALWAYS">
         <content>
             <VBox fx:id="itemsContainer" spacing="8.0" styleClass="background-3">
             </VBox>
