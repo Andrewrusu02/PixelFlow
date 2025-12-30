@@ -116,17 +116,28 @@ public class HomeViewController {
             MainEditingController controller = loader.getController();
             controller.setProject(project);
 
-            Scene currentScene = projectsGrid.getScene();
+            // Ottieni lo stage attuale
+            Stage stage = (Stage) projectsGrid.getScene().getWindow();
 
-            // Cambio il contenuto della scena
-            currentScene.setRoot(root);
+            // Cambia scena
+            Scene newScene = new Scene(root);
 
-            // --- MODIFICA PER FULL SCREEN ---
-            // Recuperiamo lo Stage (la finestra) dalla scena
-            Stage stage = (Stage) currentScene.getWindow();
+            // Applica il tema corretto (Dark/Light) per evitare flash bianchi
+            String cssPath = (DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK)
+                    ? "/com/unical/pixelflow/css/style-dark.css"
+                    : "/com/unical/pixelflow/css/style-light.css";
+            newScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+
+            stage.setScene(newScene);
             stage.setTitle("Pixel Flow - " + project.getName());
+
+            // --- FORZA MASSIMIZZAZIONE ---
+            // A volte cambiando scena si perde lo stato maximized. Lo riapplichiamo.
             stage.setMaximized(true);
-            // --------------------------------
+
+            // Opzionale: Impedisci che diventi piccola
+            stage.setMinWidth(1000);
+            stage.setMinHeight(700);
 
         } catch (IOException e) {
             e.printStackTrace();

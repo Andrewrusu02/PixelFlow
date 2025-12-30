@@ -2,6 +2,8 @@ package com.unical.pixelflow.controller;
 
 import com.unical.pixelflow.application.AppController;
 import com.unical.pixelflow.domain.nodes.InputNode;
+import com.unical.pixelflow.infrastructure.ProjectSerializer;
+import com.unical.pixelflow.infrastructure.dto.ProjectDTO;
 import com.unical.pixelflow.model.ProjectMetadata;
 import com.unical.pixelflow.view.ModalEffects;
 import javafx.fxml.FXML;
@@ -13,6 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -38,7 +41,6 @@ public class MainEditingController {
     @FXML private TextField pathField;
 
     private AppController backend;
-
     private NodesViewController nodesViewController;
 
     @FXML
@@ -54,28 +56,25 @@ public class MainEditingController {
         }
     }
 
-
     @FXML
     private void handleHome() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/ExitProjectView.fxml"));
             Parent root = loader.load();
 
-            // Setup del popup
             Stage popupStage = new Stage();
             popupStage.initOwner(buttonHome.getScene().getWindow());
             popupStage.initModality(Modality.WINDOW_MODAL);
             popupStage.initStyle(StageStyle.TRANSPARENT);
 
             Scene scene = new Scene(root);
-            scene.setFill(null);
+            scene.setFill(Color.TRANSPARENT);
             popupStage.setScene(scene);
 
-            popupStage.showAndWait();
+            showDialogWithBlur(popupStage);
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Impossibile caricare ExitProjectView.fxml");
         }
     }
 
@@ -89,7 +88,6 @@ public class MainEditingController {
 
         Stage stage = (Stage) browseButton.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(stage);
-        showDialogWithBlur(stage);
 
         if (selectedFile != null) {
             pathField.setText(selectedFile.getName());
@@ -103,15 +101,16 @@ public class MainEditingController {
 
             if (sourceImage != null) {
                 InputNode inputNode = new InputNode(sourceImage);
-
                 backend.getPipeline().addNode(inputNode);
 
-                System.out.println("Immagine caricata e nodo creato: " + file.getName());
+                if (nodesViewController != null) {
+                    // nodesViewController.setBackend(backend);
+                    // nodesViewController.drawGraph();
+                }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
-            System.err.println("Errore nel caricamento dell'immagine: " + e.getMessage());
         }
     }
 
@@ -119,40 +118,52 @@ public class MainEditingController {
         this.backend = new AppController();
         if (project != null) {
             backend.loadProject(project.getPath());
-        }
 
+            try {
+                ProjectSerializer serializer = new ProjectSerializer();
+                ProjectDTO dto = serializer.loadDto(project.getPath());
+
+                if (dto != null && dto.sourcePath != null && !dto.sourcePath.isBlank()) {
+                    File sourceFile = new File(dto.sourcePath);
+                    pathField.setText(sourceFile.getName());
+                } else {
+                    pathField.setText("");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (nodesViewController != null) {
+                // nodesViewController.setBackend(backend);
+                // nodesViewController.drawGraph();
+            }
+        }
     }
 
     private void loadSubViews() throws IOException {
-        // Library Panel
         FXMLLoader libLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/LibraryPanel.fxml"));
         LibraryPanelPane.getChildren().add(libLoader.load());
 
-        // WaveForm View
         FXMLLoader waveLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/WaveFormView.fxml"));
         GraphPane.getChildren().add(waveLoader.load());
 
-        // --- NODES VIEW (Cruciale: salviamo il controller) ---
         FXMLLoader nodesLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/NodesView.fxml"));
         Parent nodesRoot = nodesLoader.load();
         this.nodesViewController = nodesLoader.getController();
         CenterNodePane.getChildren().add(nodesRoot);
 
-        // Preview Panel
         FXMLLoader prevLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/PreviewPanel.fxml"));
         PreviewPane.setCenter(prevLoader.load());
 
-        // Properties Panel
         FXMLLoader propLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/NodeInfoView.fxml"));
         ProprietiesPane.setCenter(propLoader.load());
     }
-
 
     private void showDialogWithBlur(Stage dialogStage) {
         Stage ownerStage = (Stage) buttonHome.getScene().getWindow();
         ModalEffects.ModalOverlay overlay = null;
 
-        if (homeViewRoot!= null) {
+        if (homeViewRoot != null) {
             overlay = ModalEffects.apply(homeViewRoot);
         }
 
