@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefWidth="460" spacing="16" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LogoutController">
+
+    <padding>
+        <Insets bottom="26" left="26" right="26" top="26" />
+    </padding>
+
+    <Label fx:id="titleLabel" styleClass="card-title" text="LOGOUT" textAlignment="CENTER" />
+
+    <Label fx:id="messageLabel" alignment="CENTER" text="Sei sicuro di voler effettuare il logout?" textAlignment="CENTER" wrapText="true" />
+
+    <Label fx:id="warningLabel" alignment="CENTER" text="Dovrai inserire nuovamente le credenziali per accedere." textAlignment="CENTER" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="15" VBox.vgrow="ALWAYS">
+        <Button fx:id="btnCancel" maxWidth="1.7976931348623157E308" prefHeight="40.0" onAction="#handleCancel" styleClass="transparent-button" text="Annulla" HBox.hgrow="ALWAYS" />
+        <Button fx:id="btnConfirm" maxWidth="1.7976931348623157E308" prefHeight="40.0" onAction="#handleLogout" styleClass="full-button" text="Esci" HBox.hgrow="ALWAYS" />
+    </HBox>
+</VBox>

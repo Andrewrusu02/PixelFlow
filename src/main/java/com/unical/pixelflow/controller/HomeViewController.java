@@ -5,7 +5,6 @@ import com.unical.pixelflow.infrastructure.ProjectRepository;
 import com.unical.pixelflow.model.DataPF;
 import com.unical.pixelflow.model.ProjectMetadata;
 import com.unical.pixelflow.popUp.ConfirmDeleteController;
-import com.unical.pixelflow.popUp.EditProjectController;
 import com.unical.pixelflow.view.ModalEffects;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;

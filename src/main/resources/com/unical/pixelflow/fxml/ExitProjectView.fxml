@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefWidth="480" spacing="16" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.ExitProjectController">
+
+    <padding>
+        <Insets bottom="26" left="26" right="26" top="26" />
+    </padding>
+
+    <Label fx:id="titleLabel" styleClass="card-title" text="TORNA ALLA HOME" textAlignment="CENTER" />
+
+    <Label fx:id="messageLabel" alignment="CENTER" text="Vuoi salvare le modifiche al progetto prima di uscire?" textAlignment="CENTER" wrapText="true" />
+
+    <Label fx:id="warningLabel" alignment="CENTER" text="Le modifiche non salvate andranno perse." textAlignment="CENTER" />
+
+    <HBox alignment="CENTER_RIGHT" spacing="10" VBox.vgrow="ALWAYS">
+        <Button fx:id="btnCancel" prefHeight="40.0" onAction="#handleCancel" styleClass="transparent-button" text="Annulla" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+
+        <Button fx:id="btnDontSave" prefHeight="40.0" onAction="#handleDontSave" styleClass="transparent-button" text="Non Salvare" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+
+        <Button fx:id="btnSave" prefHeight="40.0" onAction="#handleSaveAndExit" styleClass="full-button" text="Salva" HBox.hgrow="ALWAYS" maxWidth="Infinity"/>
+    </HBox>
+</VBox>
