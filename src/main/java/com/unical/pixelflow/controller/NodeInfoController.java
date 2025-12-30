@@ -8,7 +8,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.SVGPath;
-import javafx.scene.text.Text;
 
 public class NodeInfoController {
 
@@ -19,13 +18,13 @@ public class NodeInfoController {
     private VBox PanelControlsEffects;
 
     @FXML
-    private Text alertInfoLabel;
+    private Label alertInfoLabel;
 
     @FXML
-    private Text connectionsCountText;
+    private Label connectionsCountText;
 
     @FXML
-    private Text connectionsLabel;
+    private Label connectionsLabel;
 
     @FXML
     private HBox connectionsStatsBox;
@@ -43,16 +42,16 @@ public class NodeInfoController {
     private SVGPath infoIcon;
 
     @FXML
-    private Text nodesCountText;
+    private Label nodesCountText;
 
     @FXML
-    private Text nodesLabel;
+    private Label nodesLabel;
 
     @FXML
     private HBox nodesStatsBox;
 
     @FXML
-    private Text projectOverviewTitle;
+    private Label projectOverviewTitle;
 
     @FXML
     private BorderPane root;

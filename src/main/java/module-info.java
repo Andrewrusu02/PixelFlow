@@ -32,4 +32,6 @@ module com.unical.pixelflow {
     opens com.unical.pixelflow.infrastructure.dto to com.fasterxml.jackson.databind;
     opens com.unical.pixelflow.domain.model to com.fasterxml.jackson.databind;
     opens com.unical.pixelflow.domain.nodes to com.fasterxml.jackson.databind;
+    exports com.unical.pixelflow.popUp;
+    opens com.unical.pixelflow.popUp to javafx.fxml;
 }

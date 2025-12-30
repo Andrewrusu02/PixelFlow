@@ -1,26 +1,18 @@
 package com.unical.pixelflow.controller;
 
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import java.util.function.Consumer;
 
 public class LibraryPanelController {
 
-    @FXML
-    private VBox itemsContainer;
+    @FXML private VBox root;
+
+    private Consumer<String> onNodeRequested;
 
     @FXML
-    private VBox root;
-
-    @FXML
-    private Button searchButton;
-
-    @FXML
-    private TextField searchField;
-
-    @FXML
-    private Label titleLibrary;
+    public void initialize() {
+        // Qui andrà la logica per popolare la lista dei filtri
+    }
 
 }

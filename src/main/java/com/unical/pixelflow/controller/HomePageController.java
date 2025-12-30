@@ -3,19 +3,15 @@ package com.unical.pixelflow.controller;
 import com.unical.pixelflow.model.DataPF;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import com.unical.pixelflow.view.SceneHandler;
 
-import java.io.InputStream;
 import java.util.Objects;
 
-public class HomeController {
+public class HomePageController {
 
     @FXML
     private ImageView ImageHome;

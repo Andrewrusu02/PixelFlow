@@ -10,9 +10,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
 
-<StackPane fx:id="root" alignment="TOP_CENTER" styleClass="background-1" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodesViewController ">
+<StackPane fx:id="root" alignment="TOP_CENTER" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" >
 
-    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" style="-fx-background-color: #181818;" vbarPolicy="NEVER">
+    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="background-1"  vbarPolicy="NEVER">
       <content>
             <Pane fx:id="canvas" prefHeight="2000.0" prefWidth="3000.0" styleClass="graph-canvas">
             </Pane>

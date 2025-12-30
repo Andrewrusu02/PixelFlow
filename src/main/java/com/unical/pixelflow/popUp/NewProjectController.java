@@ -1,11 +1,16 @@
-package com.unical.pixelflow.controller;
+package com.unical.pixelflow.popUp;
 
+import com.unical.pixelflow.controller.MainEditingController;
 import com.unical.pixelflow.domain.model.Pipeline;
 import com.unical.pixelflow.domain.nodes.InputNode;
 import com.unical.pixelflow.infrastructure.ProjectSerializer;
 import com.unical.pixelflow.model.DataPF;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,9 +19,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NewProjectController {
 
@@ -26,16 +38,14 @@ public class NewProjectController {
     @FXML private Button browseButton;
     @FXML private Button cancelButton;
     @FXML private Button createButton;
-
-    @FXML
-    private TextField nameField;
-
-    @FXML
-    private TextField pathField;
+    @FXML private TextField nameField;
+    @FXML private TextField pathField;
 
     private File selectedImageFile;
     private Stage dialogStage;
     private boolean isCreated = false;
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public void setDialogStage(Stage dialogStage) {
         this.dialogStage = dialogStage;
@@ -47,6 +57,8 @@ public class NewProjectController {
 
     @FXML
     public void initialize() {
+        DataPF.esm.register(executorService);
+
         if (titleLabel != null) titleLabel.textProperty().bind(DataPF.lsp.lsb("dialog.new_project.title"));
         if (nameLabel != null) nameLabel.textProperty().bind(DataPF.lsp.lsb("dialog.new_project.name"));
         if (sourceLabel != null) sourceLabel.textProperty().bind(DataPF.lsp.lsb("dialog.new_project.source"));
@@ -76,23 +88,13 @@ public class NewProjectController {
     private void handleCreate() {
         String name = nameField.getText().trim();
 
-        // 1. Validazione Nome (QUESTA RESTA)
         if (name.isEmpty()) {
             showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.name").get());
             return;
         }
 
-        // 2. Validazione Sorgente (QUESTA VA RIMOSSA O COMMENTATA!)
-    /*
-    if (selectedImageFile == null || !selectedImageFile.exists()) {
-        showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.source").get());
-        return;
-    }
-    */
-
         try {
             String uuid = UUID.randomUUID().toString();
-
             File projectsDir = new File("Data/projects");
             File thumbsDir = new File("Data/thumbnails");
             projectsDir.mkdirs();
@@ -101,9 +103,8 @@ public class NewProjectController {
             String pfpPath = new File(projectsDir, uuid + ".pfp").getAbsolutePath();
             String thumbPath = new File(thumbsDir, uuid + ".png").getAbsolutePath();
 
-            // 3. Gestione Immagine: Controlla SE esiste prima di leggere
             BufferedImage sourceImage = null;
-            String sourcePathToSave = ""; // Default vuoto
+            String sourcePathToSave = "";
 
             if (selectedImageFile != null && selectedImageFile.exists()) {
                 sourceImage = ImageIO.read(selectedImageFile);
@@ -114,40 +115,42 @@ public class NewProjectController {
                 sourcePathToSave = selectedImageFile.getAbsolutePath();
             }
 
-            // 4. Crea Pipeline (InputNode accetterà null se sourceImage è null)
             Pipeline pipeline = new Pipeline();
             pipeline.addNode(new InputNode(sourceImage));
 
-            // 5. Salva (passando sourcePathToSave che può essere stringa vuota)
             new ProjectSerializer().save(pipeline, sourcePathToSave, pfpPath);
 
-            // 6. Crea Thumbnail (Gestisci il caso null)
             BufferedImage thumbnailImage;
             if (sourceImage != null) {
                 thumbnailImage = createThumbnail(sourceImage, 380, 280);
             } else {
-                // Se non c'è immagine, crea una thumbnail vuota
                 thumbnailImage = createDefaultThumbnail(380, 280);
             }
             ImageIO.write(thumbnailImage, "png", new File(thumbPath));
 
-            // 7. Salva nel DB
             Task<Boolean> dbTask = DataPF.userDatabase.saveProject(
                     name,
                     pfpPath,
                     thumbPath
             );
 
-            Thread thread = new Thread(dbTask);
-            thread.setDaemon(true);
-            thread.start();
+            dbTask.setOnSucceeded(e -> {
+                if (dbTask.getValue()) {
+                    isCreated = true;
+                    dialogStage.close();
+                    openEditor(pipeline);
+                } else {
+                    showAlert("Errore Database", "Impossibile salvare il progetto nel database.");
+                }
+            });
 
-            if (dbTask.get()) {
-                isCreated = true;
-                dialogStage.close();
-            } else {
-                showAlert("Errore Database", "Impossibile salvare il progetto nel database.");
-            }
+            dbTask.setOnFailed(e -> {
+                Throwable ex = dbTask.getException();
+                ex.printStackTrace();
+                showAlert("Errore Database", "Errore durante il salvataggio: " + ex.getMessage());
+            });
+
+            executorService.submit(dbTask);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,87 +158,98 @@ public class NewProjectController {
         }
     }
 
-    // Metodo helper per la thumbnail vuota (copia anche questo se non l'hai messo)
-    private BufferedImage createDefaultThumbnail(int width, int height) {
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        java.awt.Graphics2D g2d = img.createGraphics();
-
-        // Sfondo grigio scuro
-        g2d.setColor(new java.awt.Color(30, 30, 30));
-        g2d.fillRect(0, 0, width, height);
-
-        // Testo "Empty Project" o simile
-        g2d.setColor(java.awt.Color.GRAY);
-        g2d.setFont(new java.awt.Font("Arial", java.awt.Font.BOLD, 20));
-
-        String text = "Empty Project";
-        java.awt.FontMetrics fm = g2d.getFontMetrics();
-        int x = (width - fm.stringWidth(text)) / 2;
-        int y = (height - fm.getHeight()) / 2 + fm.getAscent();
-
-        g2d.drawString(text, x, y);
-        g2d.dispose();
-        return img;
-    }
-
     @FXML
     private void handleCancel() {
         dialogStage.close();
     }
 
+    private void openEditor(Pipeline pipeline) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/MainView.fxml"));
+            Parent root = loader.load();
+
+            MainEditingController editorCtrl = loader.getController();
+
+
+            Stage primaryStage = (Stage) dialogStage.getOwner();
+
+            if (primaryStage == null) {
+                System.err.println("Primary Stage non trovato, impossibile cambiare scena.");
+                return;
+            }
+
+            primaryStage.setScene(new Scene(root));
+            primaryStage.setMaximized(true);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            showAlert("Errore Caricamento", "Impossibile aprire l'editor: " + ex.getMessage());
+        }
+    }
+
     private void showAlert(String title, String content) {
+        if (Platform.isFxApplicationThread()) {
+            showAlertDialog(title, content);
+        } else {
+            Platform.runLater(() -> showAlertDialog(title, content));
+        }
+    }
+
+    private void showAlertDialog(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
-
-        // Rende l'alert modale rispetto al dialog
-        alert.initOwner(dialogStage);
+        if (dialogStage != null) {
+            alert.initOwner(dialogStage);
+        }
         alert.initModality(javafx.stage.Modality.APPLICATION_MODAL);
-
-        // Rimuove bordi Windows e rende NON trascinabile
-        alert.initStyle(javafx.stage.StageStyle.UTILITY);
-
-        // Centra rispetto al dialog parent
         alert.showAndWait();
     }
 
-    /**
-     * Crea una thumbnail ridimensionata mantenendo l'aspect ratio.
-     * Riempie lo spazio rimanente con nero.
-     */
     private BufferedImage createThumbnail(BufferedImage source, int targetWidth, int targetHeight) {
         int sourceWidth = source.getWidth();
         int sourceHeight = source.getHeight();
-
-        // Calcola il fattore di scala mantenendo le proporzioni
         double scaleX = (double) targetWidth / sourceWidth;
         double scaleY = (double) targetHeight / sourceHeight;
-        double scale = Math.min(scaleX, scaleY); // Scala più piccola per contenere l'immagine
+        double scale = Math.min(scaleX, scaleY);
 
         int scaledWidth = (int) Math.round(sourceWidth * scale);
         int scaledHeight = (int) Math.round(sourceHeight * scale);
 
-        // Crea l'immagine thumbnail con sfondo nero
         BufferedImage thumbnail = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-        java.awt.Graphics2D g2d = thumbnail.createGraphics();
+        Graphics2D g2d = thumbnail.createGraphics();
 
-        // Riempie con nero
-        g2d.setColor(java.awt.Color.BLACK);
+        g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, targetWidth, targetHeight);
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        // Rendering di alta qualità
-        g2d.setRenderingHint(java.awt.RenderingHints.KEY_INTERPOLATION,
-                java.awt.RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        g2d.setRenderingHint(java.awt.RenderingHints.KEY_RENDERING,
-                java.awt.RenderingHints.VALUE_RENDER_QUALITY);
-
-        // Centra l'immagine ridimensionata
         int x = (targetWidth - scaledWidth) / 2;
         int y = (targetHeight - scaledHeight) / 2;
         g2d.drawImage(source, x, y, scaledWidth, scaledHeight, null);
         g2d.dispose();
 
         return thumbnail;
+    }
+
+    private BufferedImage createDefaultThumbnail(int width, int height) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = img.createGraphics();
+
+        g2d.setColor(new Color(30, 30, 30));
+        g2d.fillRect(0, 0, width, height);
+
+        g2d.setColor(Color.GRAY);
+        g2d.setFont(new Font("Arial", Font.BOLD, 20));
+
+        String text = "Empty Project";
+        FontMetrics fm = g2d.getFontMetrics();
+        int x = (width - fm.stringWidth(text)) / 2;
+        int y = (height - fm.getHeight()) / 2 + fm.getAscent();
+
+        g2d.drawString(text, x, y);
+        g2d.dispose();
+        return img;
     }
 }

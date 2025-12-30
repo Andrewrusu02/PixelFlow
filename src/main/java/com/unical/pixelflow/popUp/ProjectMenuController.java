@@ -1,4 +1,4 @@
-package com.unical.pixelflow.controller;
+package com.unical.pixelflow.popUp;
 
 import com.unical.pixelflow.model.DataPF;
 import javafx.fxml.FXML;

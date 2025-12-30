@@ -2,13 +2,30 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<fx:root styleClass="background-3" type="StackPane" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
-
-    <Canvas fx:id="canvas" height="150" width="250" />
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
-
-</fx:root>
+<BorderPane maxWidth="-Infinity" minWidth="-Infinity" prefWidth="300.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
+   <center>
+      <StackPane styleClass="background-3">
+      
+          <Canvas fx:id="canvas" height="150" width="250" />
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      
+      </StackPane>
+   </center>
+   <top>
+      <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
+         <padding>
+            <Insets left="15.0" right="15.0" />
+         </padding>
+         <children>
+            <Label fx:id="titleWaveform" styleClass="title-text" text="WAVEFORM" />
+         </children>
+      </HBox>
+   </top>
+</BorderPane>

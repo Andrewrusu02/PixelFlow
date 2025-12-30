@@ -3,6 +3,7 @@ package com.unical.pixelflow.controller;
 import com.unical.pixelflow.model.DataPF;
 import com.unical.pixelflow.model.UserDatabase;
 import com.unical.pixelflow.model.types.Theme;
+import com.unical.pixelflow.popUp.NewProjectController;
 import com.unical.pixelflow.view.ModalEffects;
 import com.unical.pixelflow.view.SceneHandler;
 import javafx.application.Platform;

@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="350.0" prefWidth="400.0" styleClass="background-3" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.PreviewPanelController">
+<BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="350.0" prefWidth="300.0" styleClass="background-3" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.PreviewPanelController">
    <center>
    
           <StackPane prefWidth="400.0">
@@ -31,14 +31,14 @@
                <Insets left="15.0" right="15.0" />
            </padding>
            <children>
-               <Label fx:id="titlePreview" style="-fx-font-weight: bold; -fx-text-fill: white;" text="PREVIEW" />
+               <Label fx:id="titlePreview" styleClass="text-title" text="PREVIEW" />
                <Pane HBox.hgrow="ALWAYS" />
            </children>
        </HBox>
    </top>
    <bottom>
    
-          <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 1 0 0 0; -fx-background-color: #1E1E1E;" BorderPane.alignment="CENTER">
+          <HBox alignment="CENTER_LEFT" prefHeight="40.0" spacing="10.0" BorderPane.alignment="CENTER">
            <padding>
                <Insets left="15.0" right="15.0" />
            </padding>

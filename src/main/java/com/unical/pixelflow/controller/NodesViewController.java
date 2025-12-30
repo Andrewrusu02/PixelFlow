@@ -7,7 +7,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 
-public class NodesViewController {
+public class NodesViewController  {
 
     @FXML
     private ToggleButton CopyButton;

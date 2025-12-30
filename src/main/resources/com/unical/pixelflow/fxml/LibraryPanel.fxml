@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<VBox fx:id="root" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" spacing="10.0" styleClass="background-3" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LibraryPanelController">
+<VBox fx:id="root" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="300.0" spacing="10.0" styleClass="background-3" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LibraryPanelController">
 
     <padding>
         <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
@@ -17,10 +17,10 @@
 
     <Label fx:id="titleLibrary" styleClass="text-title" text="LIBRERIA NODI" />
 
-    <VBox spacing="5.0" styleClass="search-bar-tag">
-      <HBox alignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="350.0">
+    <VBox maxWidth="1.7976931348623157E308" prefWidth="300.0" spacing="5.0" styleClass="search-bar-tag">
+      <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
          <children>
-              <TextField fx:id="searchField" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="300.0" promptText="Cerca un filtro..." styleClass="tag-filter-menu-item" />
+              <TextField fx:id="searchField" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="200.0" promptText="Cerca un filtro..." styleClass="tag-filter-menu-item" />
             <Button fx:id="searchButton" alignment="CENTER" contentDisplay="CENTER" maxWidth="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefWidth="50.0" styleClass="transparent-button">
                <graphic>
                   <SVGPath content="M10 2.5a7.5 7.5 0 0 1 5.964 12.048l4.743 4.745a1 1 0 0 1-1.32 1.497l-.094-.083-4.745-4.743A7.5 7.5 0 1 1 10 2.5Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z" styleClass="icon_general" />

@@ -1,8 +1,11 @@
 package com.unical.pixelflow.controller;
 
+import com.unical.pixelflow.components.ProjectCardController;
 import com.unical.pixelflow.infrastructure.ProjectRepository;
 import com.unical.pixelflow.model.DataPF;
 import com.unical.pixelflow.model.ProjectMetadata;
+import com.unical.pixelflow.popUp.ConfirmDeleteController;
+import com.unical.pixelflow.popUp.EditProjectController;
 import com.unical.pixelflow.view.ModalEffects;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -18,26 +21,33 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class HomeViewController {
 
-    @FXML private FlowPane projectsGrid;
-    @FXML private VBox emptyMessage;
-    @FXML private Label titleLabel;
-    @FXML private Label emptyTitleLabel;
-    @FXML private Label emptySubtitleLabel;
+    @FXML
+    private FlowPane projectsGrid;
+    @FXML
+    private VBox emptyMessage;
+    @FXML
+    private Label titleLabel;
+    @FXML
+    private Label emptyTitleLabel;
+    @FXML
+    private Label emptySubtitleLabel;
 
     private final ProjectRepository repo = new ProjectRepository();
 
     @FXML
     public void initialize() {
-        if (titleLabel != null) titleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.title"));
-        if (emptyTitleLabel != null) emptyTitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.title"));
-        if (emptySubtitleLabel != null) emptySubtitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.subtitle"));
+        if (titleLabel != null)
+            titleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.title"));
+        if (emptyTitleLabel != null)
+            emptyTitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.title"));
+        if (emptySubtitleLabel != null)
+            emptySubtitleLabel.textProperty().bind(DataPF.lsp.lsb("homeview.empty.subtitle"));
 
         loadProjects();
     }
@@ -55,7 +65,8 @@ public class HomeViewController {
 
             for (ProjectMetadata project : projects) {
                 try {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/components/ProjectCard.fxml"));
+                    FXMLLoader loader = new FXMLLoader(
+                            getClass().getResource("/com/unical/pixelflow/components/ProjectCard.fxml"));
                     Parent cardNode = loader.load();
 
                     ProjectCardController controller = loader.getController();
@@ -70,89 +81,46 @@ public class HomeViewController {
     }
 
     private void openProject(ProjectMetadata project) {
-        repo.openProject(project.getPath());
+        // repo.openProject(project.getPath()); // Vecchia logica
+        loadEditor(project);
     }
 
-
     private void openEditDialog(ProjectMetadata project) {
+        // Invece di aprire il dialog, apriamo l'editor
+        loadEditor(project);
+    }
+
+    private void loadEditor(ProjectMetadata project) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/EditProjectDialog.fxml"));
-            Parent page = loader.load();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/MainView.fxml"));
+            // Se l'errore precedente non è stato risolto, questa riga potrebbe ancora lanciare eccezione
+            Parent root = loader.load();
 
-            Scene scene = new Scene(page);
-
-            // --- GESTIONE CSS (Copiata dal tuo esempio) ---
-            String cssPath;
-            if (DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK) {
-                cssPath = "/com/unical/pixelflow/css/style-dark.css";
-            } else {
-                cssPath = "/com/unical/pixelflow/css/style-light.css";
-            }
-            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-
-            // Fondamentale per la trasparenza dello stage
-            scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
-
-            Stage dialogStage = new Stage();
-            dialogStage.setScene(scene);
-
-            // Titolo Finestra
-            if (DataPF.lsp.lsb("dialog.edit_project.window_title").get() != null) {
-                dialogStage.setTitle(DataPF.lsp.lsb("dialog.edit_project.window_title").get());
-            }
-
-            // Setup Stage Trasparente
-            dialogStage.initModality(Modality.APPLICATION_MODAL);
-            dialogStage.initOwner(projectsGrid.getScene().getWindow()); // Usa projectsGrid per trovare la finestra padre
-            dialogStage.initStyle(StageStyle.TRANSPARENT);
-            dialogStage.setResizable(false);
-
-            // Setup Controller
-            EditProjectController controller = loader.getController();
-            controller.setDialogStage(dialogStage);
+            MainEditingController controller = loader.getController();
             controller.setProject(project);
 
-            // --- GESTIONE OVERLAY / BLUR ---
-            Stage ownerStage = (Stage) projectsGrid.getScene().getWindow();
+            Scene currentScene = projectsGrid.getScene();
 
-            // Cerchiamo la root della Dashboard per applicare l'effetto sfocato
-            BorderPane dashboardRoot = findDashboardRoot();
-            ModalEffects.ModalOverlay overlay = dashboardRoot != null ? ModalEffects.apply(dashboardRoot) : null;
+            // Cambio il contenuto della scena
+            currentScene.setRoot(root);
 
-            dialogStage.setOnHidden(e -> {
-                if (overlay != null) overlay.remove();
-            });
-
-            // --- CENTRATURA DIALOG ---
-            dialogStage.setOnShown(e -> {
-                double dialogWidth = dialogStage.getWidth();
-                double dialogHeight = dialogStage.getHeight();
-
-                double ownerX = ownerStage.getX();
-                double ownerY = ownerStage.getY();
-                double ownerWidth = ownerStage.getWidth();
-                double ownerHeight = ownerStage.getHeight();
-
-                dialogStage.setX(ownerX + (ownerWidth - dialogWidth) / 2);
-                dialogStage.setY(ownerY + (ownerHeight - dialogHeight) / 2);
-            });
-
-            dialogStage.showAndWait();
-
-            // Ricarica se salvato
-            if (controller.isSaved()) {
-                loadProjects();
-            }
+            // --- MODIFICA PER FULL SCREEN ---
+            // Recuperiamo lo Stage (la finestra) dalla scena
+            Stage stage = (Stage) currentScene.getWindow();
+            stage.setTitle("Pixel Flow - " + project.getName());
+            stage.setMaximized(true);
+            // --------------------------------
 
         } catch (IOException e) {
             e.printStackTrace();
+            showError("Impossibile caricare l'editor del progetto.");
         }
     }
 
-
     private void deleteProject(ProjectMetadata project) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/ConfirmDeleteDialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/com/unical/pixelflow/fxml/ConfirmDeleteDialog.fxml"));
             ConfirmDeleteController controller = new ConfirmDeleteController();
             loader.setController(controller);
             Parent page = loader.load();
@@ -210,7 +178,8 @@ public class HomeViewController {
 
         ModalEffects.ModalOverlay finalOverlay = overlay;
         dialogStage.setOnHidden(e -> {
-            if (finalOverlay != null) finalOverlay.remove();
+            if (finalOverlay != null)
+                finalOverlay.remove();
         });
 
         dialogStage.setOnShown(ev -> {
@@ -224,7 +193,8 @@ public class HomeViewController {
     }
 
     private BorderPane findDashboardRoot() {
-        if (projectsGrid == null || projectsGrid.getScene() == null) return null;
+        if (projectsGrid == null || projectsGrid.getScene() == null)
+            return null;
         Parent root = projectsGrid.getScene().getRoot();
 
         if (root.lookup("#dashboardRoot") instanceof BorderPane bp) {

@@ -8,7 +8,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 
-<fx:root maxWidth="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0" stylesheets="@../css/style-dark.css" type="BorderPane" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.components.NodeWidget">
+<BorderPane maxWidth="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="120.0" stylesheets="@../css/style-dark.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.components.NodeWidget">
 
     <left>
         <StackPane BorderPane.alignment="CENTER">
@@ -33,4 +33,4 @@
         </StackPane>
     </right>
 
-</fx:root>
+</BorderPane>
