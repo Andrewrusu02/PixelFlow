@@ -1,7 +1,9 @@
 package com.unical.pixelflow.domain.nodes;
 
 import com.unical.pixelflow.domain.model.Node;
+import com.unical.pixelflow.domain.model.NodeRole;
 import com.unical.pixelflow.domain.model.Socket;
+
 import java.awt.image.BufferedImage;
 
 public class InputNode extends Node {
@@ -10,12 +12,17 @@ public class InputNode extends Node {
     // Modifica: ora image può essere null
     public InputNode(BufferedImage image) {
         super("Input");
+        setRole(NodeRole.INPUT);
         this.sourceImage = image;
         this.outputs.add(new Socket(this, Socket.Type.OUTPUT));
     }
 
     public void setSourceImage(BufferedImage image) {
         this.sourceImage = image;
+    }
+
+    public BufferedImage getSourceImage() {
+        return sourceImage;
     }
 
     @Override

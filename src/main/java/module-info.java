@@ -3,6 +3,7 @@ module com.unical.pixelflow {
     requires javafx.fxml;
     requires java.desktop;
     requires javafx.web;
+    requires javafx.swing;
     requires java.sql;
     requires org.xerial.sqlitejdbc;
     requires spring.security.crypto;

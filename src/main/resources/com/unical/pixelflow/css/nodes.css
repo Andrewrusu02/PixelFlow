@@ -1,0 +1,42 @@
+/* Node widgets (canvas) - keep consistent with existing palette vars */
+
+.node-widget {
+    -fx-background-color: -fu-background-3;
+    -fx-background-radius: 10;
+    -fx-border-color: -fu-stroke-rest;
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+}
+
+.node-widget .node-title {
+    -fx-text-fill: -fu-text-1;
+    -fx-font-size: 13;
+    -fx-font-weight: 700;
+}
+
+.node-widget.node-filter {
+    -fx-border-color: -fu-stroke-rest;
+}
+
+.node-widget.node-input {
+    -fx-border-color: #2ecc71; /* green */
+}
+
+.node-widget.node-output {
+    -fx-border-color: #e67e22; /* orange */
+}
+
+.node-socket {
+    -fx-fill: -fu-accent;
+    -fx-stroke: -fu-stroke-rest;
+    -fx-stroke-width: 1;
+}
+
+.node-socket-disabled {
+    -fx-opacity: 0.15;
+}
+
+.edge-curve {
+    -fx-stroke: rgba(255, 255, 255, 0.55);
+    -fx-stroke-line-cap: round;
+}

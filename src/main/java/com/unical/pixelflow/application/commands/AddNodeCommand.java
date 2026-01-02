@@ -19,7 +19,9 @@ public class AddNodeCommand implements Command {
 
     @Override
     public void undo() {
+        if (node == null || node.isStructural()) {
+            return;
+        }
         pipeline.removeNode(node.getId());
     }
 }
-

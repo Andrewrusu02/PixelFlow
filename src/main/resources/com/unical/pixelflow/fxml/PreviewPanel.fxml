@@ -19,6 +19,7 @@
                <content>
                    <StackPane fx:id="imageContainer" styleClass="transparency-grid">
                        <ImageView fx:id="previewImage" preserveRatio="true" />
+                       <Label fx:id="placeholderLabel" styleClass="text-body" text="" wrapText="true" visible="false" />
                    </StackPane>
                </content>
            </ScrollPane>

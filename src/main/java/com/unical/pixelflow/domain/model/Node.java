@@ -15,6 +15,12 @@ public abstract class Node {
     protected double x; // Posizione UI (coordinate nel modello per persistenza)
     protected double y;
 
+    /**
+     * Ruolo del nodo nella pipeline.
+     * Di default un nodo è un FILTER (compatibile con la codebase esistente).
+     */
+    protected NodeRole role = NodeRole.FILTER;
+
     protected List<Socket> inputs = new ArrayList<>();
     protected List<Socket> outputs = new ArrayList<>();
 
@@ -47,6 +53,22 @@ public abstract class Node {
     public String getId() { return id; }
     public void setId(String id) { this.id = id; } // Utile per caricamento
     public String getName() { return name; }
+
+    public NodeRole getRole() { return role; }
+    protected void setRole(NodeRole role) { this.role = role; }
+
+    public boolean isStructural() {
+        return role == NodeRole.INPUT || role == NodeRole.OUTPUT;
+    }
+
+    public boolean isInput() {
+        return role == NodeRole.INPUT;
+    }
+
+    public boolean isOutput() {
+        return role == NodeRole.OUTPUT;
+    }
+
     public double getX() { return x; }
     public void setX(double x) { this.x = x; }
     public double getY() { return y; }
@@ -58,4 +80,3 @@ public abstract class Node {
     public Socket getInputSocket(int index) { return inputs.get(index); }
     public Socket getOutputSocket(int index) { return outputs.get(index); }
 }
-

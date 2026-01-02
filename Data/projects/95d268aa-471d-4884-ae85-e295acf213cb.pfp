@@ -1,0 +1,21 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "/Users/kaniska/Documents/Varie/Memini/2025-09-17 18.11.05.jpg",
+  "nodes" : [ {
+    "id" : "321e4712-471f-41e4-bcc3-5c8e9b34701d",
+    "type" : "OutputNode",
+    "x" : 820.0,
+    "y" : 200.0,
+    "parameters" : null
+  }, {
+    "id" : "2495aff0-4660-4467-ad9c-b75499059bc3",
+    "type" : "InputNode",
+    "x" : 80.0,
+    "y" : 200.0,
+    "parameters" : null
+  } ],
+  "connections" : [ {
+    "sourceId" : "2495aff0-4660-4467-ad9c-b75499059bc3",
+    "destId" : "321e4712-471f-41e4-bcc3-5c8e9b34701d"
+  } ]
+}

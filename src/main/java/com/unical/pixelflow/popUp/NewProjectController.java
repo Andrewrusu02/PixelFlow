@@ -3,6 +3,7 @@ package com.unical.pixelflow.popUp;
 import com.unical.pixelflow.controller.MainEditingController;
 import com.unical.pixelflow.domain.model.Pipeline;
 import com.unical.pixelflow.domain.nodes.InputNode;
+import com.unical.pixelflow.domain.nodes.OutputNode;
 import com.unical.pixelflow.infrastructure.ProjectSerializer;
 import com.unical.pixelflow.model.DataPF;
 import javafx.application.Platform;
@@ -44,6 +45,7 @@ public class NewProjectController {
     private File selectedImageFile;
     private Stage dialogStage;
     private boolean isCreated = false;
+    private String createdProjectPfpPath;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -101,6 +103,7 @@ public class NewProjectController {
             thumbsDir.mkdirs();
 
             String pfpPath = new File(projectsDir, uuid + ".pfp").getAbsolutePath();
+            createdProjectPfpPath = pfpPath;
             String thumbPath = new File(thumbsDir, uuid + ".png").getAbsolutePath();
 
             BufferedImage sourceImage = null;
@@ -116,7 +119,23 @@ public class NewProjectController {
             }
 
             Pipeline pipeline = new Pipeline();
-            pipeline.addNode(new InputNode(sourceImage));
+            InputNode input = new InputNode(sourceImage);
+            OutputNode output = new OutputNode();
+
+            // Posizioni di default (coerenti con l'editor)
+            input.setX(80);
+            input.setY(200);
+            output.setX(820);
+            output.setY(200);
+
+            pipeline.addNode(input);
+            pipeline.addNode(output);
+
+            // Se abbiamo un'immagine, creiamo anche la connessione di default Input -> Output.
+            // Se l'immagine è null (progetto vuoto), lasciamo la pipeline non connessa.
+            if (sourceImage != null) {
+                pipeline.connect(input.getId(), output.getId());
+            }
 
             new ProjectSerializer().save(pipeline, sourcePathToSave, pfpPath);
 
@@ -138,7 +157,7 @@ public class NewProjectController {
                 if (dbTask.getValue()) {
                     isCreated = true;
                     dialogStage.close();
-                    openEditor(pipeline);
+                    openEditor();
                 } else {
                     showAlert("Errore Database", "Impossibile salvare il progetto nel database.");
                 }
@@ -163,22 +182,32 @@ public class NewProjectController {
         dialogStage.close();
     }
 
-    private void openEditor(Pipeline pipeline) {
+    private void openEditor() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/MainView.fxml"));
             Parent root = loader.load();
 
             MainEditingController editorCtrl = loader.getController();
-
+            if (editorCtrl != null && createdProjectPfpPath != null) {
+                // Carica il .pfp appena creato, così la pipeline (Input/Output) viene visualizzata.
+                editorCtrl.setProject(new com.unical.pixelflow.model.ProjectMetadata("New Project", createdProjectPfpPath));
+            }
 
             Stage primaryStage = (Stage) dialogStage.getOwner();
-
             if (primaryStage == null) {
                 System.err.println("Primary Stage non trovato, impossibile cambiare scena.");
                 return;
             }
 
-            primaryStage.setScene(new Scene(root));
+            Scene scene = new Scene(root);
+            // Mantieni theme omogeneo come fa HomeViewController
+            String cssPath = (com.unical.pixelflow.model.DataPF.dbUser != null &&
+                    com.unical.pixelflow.model.DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK)
+                    ? "/com/unical/pixelflow/css/style-dark.css"
+                    : "/com/unical/pixelflow/css/style-light.css";
+            scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+
+            primaryStage.setScene(scene);
             primaryStage.setMaximized(true);
 
         } catch (Exception ex) {
