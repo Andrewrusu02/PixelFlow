@@ -15,7 +15,7 @@
    <center>
    
           <StackPane prefWidth="400.0">
-           <ScrollPane fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+           <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
                <content>
                    <StackPane fx:id="imageContainer" styleClass="transparency-grid">
                        <ImageView fx:id="previewImage" preserveRatio="true" />

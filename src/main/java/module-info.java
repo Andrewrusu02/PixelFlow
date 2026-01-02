@@ -17,6 +17,7 @@ module com.unical.pixelflow {
     exports com.unical.pixelflow.components;
     exports com.unical.pixelflow.model;
     exports com.unical.pixelflow.model.DBObjects;
+    exports com.unical.pixelflow.application;
 
     // Exports per Jackson (serializzazione .pfp)
     exports com.unical.pixelflow.infrastructure.dto;

@@ -12,9 +12,8 @@ public class BlurFilter extends Filter {
 
     public BlurFilter() {
         super("Blur");
-        // Parametro raggio: default 3, min 1, max 10
-        // Nota: valori troppo alti rallentano molto senza ottimizzazioni
-        this.parameters.put("radius", new Parameter<>("radius", 3, 1, 10));
+        // Parametro raggio: default 1 (nessun effetto), min 1, max 10
+        this.parameters.put("radius", new Parameter<>("radius", 1, 1, 10));
     }
 
     @Override
@@ -38,9 +37,8 @@ public class BlurFilter extends Filter {
         // Applica l'operazione di convoluzione
         Kernel kernel = new Kernel(size, size, data);
 
-        // EDGE_NO_OP significa che i bordi dell'immagine non vengono processati
-        // (per evitare crash sui pixel esterni).
-        ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_NO_OP, null);
+        // EDGE_ZERO_FILL applica la convoluzione anche sui bordi (riempendo fuori immagine con 0)
+        ConvolveOp op = new ConvolveOp(kernel, ConvolveOp.EDGE_ZERO_FILL, null);
 
         // ConvolveOp richiede che l'immagine di destinazione sia compatibile
         BufferedImage output = new BufferedImage(
@@ -50,4 +48,3 @@ public class BlurFilter extends Filter {
         return op.filter(input, output);
     }
 }
-

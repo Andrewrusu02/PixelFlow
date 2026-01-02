@@ -48,9 +48,19 @@ public class MainEditingController {
     private AppController backend;
     private NodesViewController nodesViewController;
     private PreviewPanelController previewPanelController;
+    private NodeInfoController nodeInfoController;
 
     private String currentProjectFilePath;
     private String currentSourceImagePath;
+    private String lastSelectedNodeId;
+
+    private final java.util.concurrent.ExecutorService previewExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "preview-executor");
+        t.setDaemon(true);
+        return t;
+    });
+
+    private final java.util.concurrent.atomic.AtomicLong previewRequestSeq = new java.util.concurrent.atomic.AtomicLong();
 
     @FXML
     public void initialize() {
@@ -296,11 +306,23 @@ public class MainEditingController {
         PreviewPane.setCenter(prevRoot);
 
         FXMLLoader propLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/NodeInfoView.fxml"));
-        ProprietiesPane.setCenter(propLoader.load());
+        Parent propRoot = propLoader.load();
+        this.nodeInfoController = propLoader.getController();
+        if (this.nodeInfoController != null) {
+            this.nodeInfoController.setOnParametersChanged(() -> {
+                if (lastSelectedNodeId != null && !lastSelectedNodeId.isBlank()) {
+                    refreshPreviewForSelectedNode(lastSelectedNodeId);
+                }
+            });
+            this.nodeInfoController.showNoSelection();
+        }
+        ProprietiesPane.setCenter(propRoot);
 
         // Wiring minimo: permettere a NodesViewController di abilitare/disabilitare Export.
         if (nodesViewController != null) {
             nodesViewController.setBackend(backend);
+            nodesViewController.setOnNodeSelected(this::refreshPreviewForSelectedNode);
+            nodesViewController.setOnSaveRequested(this::handleSaveProject);
         }
     }
 
@@ -326,5 +348,97 @@ public class MainEditingController {
         });
 
         dialogStage.showAndWait();
+    }
+
+    private void refreshPreviewForSelectedNode(String nodeId) {
+        if (backend == null) return;
+
+        lastSelectedNodeId = (nodeId == null || nodeId.isBlank()) ? null : nodeId;
+
+        // Deselezione: placeholder e reset controlli
+        if (nodeId == null || nodeId.isBlank()) {
+            if (previewPanelController != null) {
+                previewPanelController.showPlaceholder("Seleziona un nodo per vedere l’anteprima");
+            }
+            if (nodeInfoController != null) {
+                nodeInfoController.showNoSelection();
+            }
+            if (nodesViewController != null) {
+                nodesViewController.setExportEnabled(false, "Seleziona un nodo per abilitare l’export");
+            }
+            return;
+        }
+
+        if (nodeInfoController != null) {
+            nodeInfoController.showForNode(backend.getPipeline().getNode(nodeId));
+        }
+
+        GraphValidationResult result = backend.getPipeline().validateGraph();
+        if (!result.isValid()) {
+            if (previewPanelController != null) {
+                previewPanelController.showPlaceholder(buildPreviewErrorMessage(result));
+            }
+            if (nodesViewController != null) {
+                nodesViewController.setExportEnabled(false, buildExportTooltip(result));
+            }
+            return;
+        }
+
+        long reqId = previewRequestSeq.incrementAndGet();
+
+        previewExecutor.submit(() -> {
+            BufferedImage img;
+            try {
+                img = backend.getPreviewForNode(nodeId);
+            } catch (Exception ex) {
+                javafx.application.Platform.runLater(() -> {
+                    if (reqId != previewRequestSeq.get()) return;
+                    if (previewPanelController != null) {
+                        previewPanelController.showPlaceholder("Preview non disponibile: " + ex.getMessage());
+                    }
+                    if (nodesViewController != null) {
+                        nodesViewController.setExportEnabled(false, "Preview non disponibile");
+                    }
+                });
+                return;
+            }
+
+            Image fxImage = (img == null) ? null : SwingFXUtils.toFXImage(img, null);
+            javafx.application.Platform.runLater(() -> {
+                if (reqId != previewRequestSeq.get()) return;
+                if (previewPanelController == null) return;
+
+                if (fxImage == null) {
+                    previewPanelController.showPlaceholder("Preview non disponibile per il nodo selezionato");
+                    if (nodesViewController != null) {
+                        nodesViewController.setExportEnabled(false, "Preview non disponibile");
+                    }
+                } else {
+                    previewPanelController.clearPlaceholder();
+                    previewPanelController.setPreviewImage(fxImage);
+                    if (nodesViewController != null) {
+                        nodesViewController.setExportEnabled(true, null);
+                    }
+                }
+            });
+        });
+    }
+
+    private void handleSaveProject() {
+        if (backend == null) {
+            if (nodesViewController != null) nodesViewController.showSaveToast(false, "Salvataggio non riuscito");
+            return;
+        }
+        if (currentProjectFilePath == null || currentProjectFilePath.isBlank()) {
+            if (nodesViewController != null) nodesViewController.showSaveToast(false, "Salvataggio non riuscito");
+            return;
+        }
+
+        try {
+            new ProjectSerializer().save(backend.getPipeline(), currentSourceImagePath, currentProjectFilePath);
+            if (nodesViewController != null) nodesViewController.showSaveToast(true, "Salvataggio completato");
+        } catch (Exception ex) {
+            if (nodesViewController != null) nodesViewController.showSaveToast(false, "Salvataggio non riuscito");
+        }
     }
 }

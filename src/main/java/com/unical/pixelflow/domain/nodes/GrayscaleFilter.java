@@ -8,6 +8,7 @@ public class GrayscaleFilter extends Filter {
 
     public GrayscaleFilter() {
         super("Grayscale");
+        // Default 100%: i test assumono che un GrayscaleFilter istanziato applichi la conversione.
         this.parameters.put("intensity", new Parameter<>("intensity", 100, 0, 100));
     }
 
@@ -15,7 +16,7 @@ public class GrayscaleFilter extends Filter {
     protected BufferedImage applyEffect(BufferedImage input) {
         double intensity = (int) getParameterValue("intensity") / 100.0;
 
-        if (intensity <= 0.01) return input;
+        if (intensity <= 0.0) return input;
 
         BufferedImage result = new BufferedImage(
             input.getWidth(), input.getHeight(), input.getType()
@@ -44,4 +45,3 @@ public class GrayscaleFilter extends Filter {
         return result;
     }
 }
-

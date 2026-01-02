@@ -8,7 +8,7 @@ public class PixelateFilter extends Filter {
 
     public PixelateFilter() {
         super("Pixelate");
-        this.parameters.put("pixelSize", new Parameter<>("pixelSize", 10, 2, 100));
+        this.parameters.put("pixelSize", new Parameter<>("pixelSize", 1, 1, 100));
     }
 
     @Override
@@ -53,4 +53,3 @@ public class PixelateFilter extends Filter {
         return output;
     }
 }
-

@@ -13,6 +13,9 @@ import javafx.scene.layout.StackPane;
  */
 final class NodeCanvasController {
 
+    //flag di debug
+    private static final boolean DEBUG_FXML = false;
+
     private NodeCanvasController() {}
 
     static final class NodeView {
@@ -39,14 +42,16 @@ final class NodeCanvasController {
             root.setLayoutY(node.getY());
             root.setUserData(node.getId());
             return new NodeView(root, controller);
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            if (DEBUG_FXML) {
+                ex.printStackTrace();
+            }
             Parent root = createNodeView(node);
             return new NodeView(root, null);
         }
     }
 
     static Parent createNodeView(Node node) {
-        // Preferiamo il widget FXML "vero".
         try {
             FXMLLoader loader = new FXMLLoader(NodeCanvasController.class.getResource("/com/unical/pixelflow/components/NodeWidget.fxml"));
             Parent root = loader.load();
@@ -60,7 +65,10 @@ final class NodeCanvasController {
             root.setLayoutY(node.getY());
             root.setUserData(node.getId());
             return root;
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            if (DEBUG_FXML) {
+                ex.printStackTrace();
+            }
             // Fallback: render minimale sempre visibile.
             Label title = new Label(node.getName() == null ? node.getClass().getSimpleName() : node.getName());
             title.getStyleClass().add("text-body");

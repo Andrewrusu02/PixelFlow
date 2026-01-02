@@ -8,7 +8,7 @@ public class InvertFilter extends Filter {
 
     public InvertFilter() {
         super("Invert");
-        this.parameters.put("intensity", new Parameter<>("intensity", 100, 0, 100));
+        this.parameters.put("intensity", new Parameter<>("intensity", 0, 0, 100));
     }
 
     @Override
@@ -43,4 +43,3 @@ public class InvertFilter extends Filter {
         return output;
     }
 }
-

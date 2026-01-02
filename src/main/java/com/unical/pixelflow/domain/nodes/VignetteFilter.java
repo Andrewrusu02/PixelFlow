@@ -8,7 +8,7 @@ public class VignetteFilter extends Filter {
 
     public VignetteFilter() {
         super("Vignette");
-        this.parameters.put("intensity", new Parameter<>("intensity", 50, 0, 100));
+        this.parameters.put("intensity", new Parameter<>("intensity", 0, 0, 100));
     }
 
     @Override
@@ -52,4 +52,3 @@ public class VignetteFilter extends Filter {
         return output;
     }
 }
-

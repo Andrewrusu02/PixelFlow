@@ -8,6 +8,19 @@
     -fx-border-width: 2;
 }
 
+/* Hover leggero ma visibile */
+.node-widget:hover {
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.16), 10, 0.25, 0, 0);
+}
+
+/* Evidenza nodo selezionato nel canvas */
+.node-widget.node-selected {
+    -fx-effect: dropshadow(gaussian, rgba(90, 160, 255, 0.55), 18, 0.35, 0, 0);
+    -fx-border-color: rgba(90, 160, 255, 0.9);
+    -fx-border-width: 2;
+}
+
 .node-widget .node-title {
     -fx-text-fill: -fu-text-1;
     -fx-font-size: 13;

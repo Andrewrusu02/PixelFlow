@@ -2,6 +2,7 @@ package com.unical.pixelflow.application;
 
 import com.unical.pixelflow.application.commands.*;
 import com.unical.pixelflow.domain.execution.PipelineExecutor;
+import com.unical.pixelflow.domain.execution.PreviewPipelineExecutor;
 import com.unical.pixelflow.domain.model.Filter;
 import com.unical.pixelflow.domain.model.Node;
 import com.unical.pixelflow.domain.model.Pipeline;
@@ -17,6 +18,7 @@ public class AppController {
     private Pipeline pipeline;
     private final UndoManager undoManager;
     private final PipelineExecutor executor;
+    private final PreviewPipelineExecutor previewExecutor;
     private final ProjectSerializer serializer;
     private final ImageIOHandler imageHandler;
 
@@ -24,6 +26,7 @@ public class AppController {
         this.pipeline = new Pipeline();
         this.undoManager = new UndoManager();
         this.executor = new PipelineExecutor();
+        this.previewExecutor = new PreviewPipelineExecutor();
         this.serializer = new ProjectSerializer();
         this.imageHandler = new ImageIOHandler();
     }
@@ -55,6 +58,10 @@ public class AppController {
     // ================== AZIONI UTENTE (COMMANDS) ==================
 
     public void addFilter(String filterType) {
+        if (pipeline == null) {
+            pipeline = new Pipeline();
+        }
+
         Node newNode = null;
         switch (filterType) {
             case "Brightness": newNode = new BrightnessFilter(); break;
@@ -74,6 +81,7 @@ public class AppController {
             case "Rotate90": newNode = new Rotate90Filter(); break;
             case "Input": newNode = new InputNode(null); break;
             case "Output": newNode = new OutputNode(); break;
+            default: break;
         }
 
         if (newNode != null) {
@@ -135,8 +143,63 @@ public class AppController {
 
     // ================== ESECUZIONE & VIEW ==================
 
+    /**
+     * Restituisce una preview calcolata fino al nodo indicato (output del nodo target).
+     *
+     * <p>Virtual Proxy:
+     * se l'InputNode ha una source full-res, viene temporaneamente sostituita da una proxy low-res
+     * durante l'esecuzione preview, per evitare saturazione RAM e mantenere la UI reattiva.
+     */
+    public BufferedImage getPreviewForNode(String targetNodeId) {
+        if (targetNodeId == null || targetNodeId.isBlank()) {
+            throw new IllegalArgumentException("targetNodeId cannot be null/blank");
+        }
+
+        InputNode input = pipeline.getNodes().values().stream()
+                .filter(n -> n instanceof InputNode)
+                .map(n -> (InputNode) n)
+                .findFirst()
+                .orElse(null);
+
+        if (input == null || input.getSourceImage() == null) {
+            return null;
+        }
+
+        BufferedImage original = input.getSourceImage();
+        BufferedImage proxy = imageHandler.createProxy(original);
+
+        try {
+            input.setSourceImage(proxy);
+            return previewExecutor.executeUntil(pipeline, targetNodeId);
+        } finally {
+            // ripristina sempre la source originale (full-res) nel modello
+            input.setSourceImage(original);
+        }
+    }
+
+    /**
+     * Preview default: pipeline completa. Manteniamo compatibilità, ma applichiamo comunque proxy.
+     */
     public BufferedImage getPreview() {
-        return executor.execute(pipeline);
+        InputNode input = pipeline.getNodes().values().stream()
+                .filter(n -> n instanceof InputNode)
+                .map(n -> (InputNode) n)
+                .findFirst()
+                .orElse(null);
+
+        if (input == null || input.getSourceImage() == null) {
+            return executor.execute(pipeline);
+        }
+
+        BufferedImage original = input.getSourceImage();
+        BufferedImage proxy = imageHandler.createProxy(original);
+
+        try {
+            input.setSourceImage(proxy);
+            return executor.execute(pipeline);
+        } finally {
+            input.setSourceImage(original);
+        }
     }
 
     public Pipeline getPipeline() {
@@ -147,4 +210,3 @@ public class AppController {
         return imageHandler;
     }
 }
-

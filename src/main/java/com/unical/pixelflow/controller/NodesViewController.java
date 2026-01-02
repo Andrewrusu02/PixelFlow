@@ -84,6 +84,11 @@ public class NodesViewController {
 
     @FXML private Pane edgesLayer;
 
+    @FXML private javafx.scene.layout.HBox saveToastBox;
+    @FXML private javafx.scene.control.Label saveToastLabel;
+
+    private javafx.animation.PauseTransition saveToastHide;
+
     private final java.util.Map<String, javafx.scene.Node> nodeViewsById = new java.util.HashMap<>();
     private final java.util.Map<String, NodeWidget> nodeWidgetById = new java.util.HashMap<>();
 
@@ -99,10 +104,58 @@ public class NodesViewController {
 
     private AppController backend;
 
+    /** Callback invocata quando l'utente seleziona un nodo nel canvas. */
+    private java.util.function.Consumer<String> onNodeSelected;
+
+    private String selectedNodeId;
+
+    private Runnable onSaveRequested;
+
     public void setBackend(AppController backend) {
         this.backend = backend;
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
+    }
+
+    public void setOnNodeSelected(java.util.function.Consumer<String> onNodeSelected) {
+        this.onNodeSelected = onNodeSelected;
+    }
+
+    public void setOnSaveRequested(Runnable onSaveRequested) {
+        this.onSaveRequested = onSaveRequested;
+    }
+
+    private void selectNode(String nodeId) {
+        if (nodeId == null || nodeId.isBlank()) return;
+        selectedNodeId = nodeId;
+
+        for (java.util.Map.Entry<String, javafx.scene.Node> e : nodeViewsById.entrySet()) {
+            String id = e.getKey();
+            javafx.scene.Node viewRoot = e.getValue();
+            if (viewRoot == null) continue;
+
+            viewRoot.getStyleClass().remove("node-selected");
+            if (nodeId.equals(id)) {
+                viewRoot.getStyleClass().add("node-selected");
+            }
+        }
+
+        if (onNodeSelected != null) {
+            onNodeSelected.accept(nodeId);
+        }
+    }
+
+    private void clearSelection() {
+        selectedNodeId = null;
+        for (java.util.Map.Entry<String, javafx.scene.Node> e : nodeViewsById.entrySet()) {
+            javafx.scene.Node viewRoot = e.getValue();
+            if (viewRoot != null) {
+                viewRoot.getStyleClass().remove("node-selected");
+            }
+        }
+        if (onNodeSelected != null) {
+            onNodeSelected.accept(null);
+        }
     }
 
     @FXML
@@ -123,6 +176,9 @@ public class NodesViewController {
         installInputHandlers();
         bindToolMode();
         applyWorldTransform();
+
+        // NEW: selezione robusta a livello canvas
+        installNodeSelectionHandlers();
 
         new AnimationTimer() {
             @Override
@@ -169,6 +225,20 @@ public class NodesViewController {
             rubberBand.getCurve().setVisible(false);
             edgesLayer.getChildren().add(rubberBand.getCurve());
             rubberBand.getCurve().toFront();
+        }
+
+        if (saveProjectButton != null) {
+            saveProjectButton.setOnAction(e -> {
+                if (onSaveRequested != null) {
+                    onSaveRequested.run();
+                }
+            });
+        }
+
+        if (saveToastBox != null) {
+            saveToastBox.setVisible(false);
+            saveToastBox.setManaged(false);
+            saveToastBox.setMouseTransparent(true);
         }
     }
 
@@ -379,8 +449,6 @@ public class NodesViewController {
             targetId = findInputSocketOwnerAtScene(new Point2D(e.getSceneX(), e.getSceneY()));
         }
 
-        System.out.println("[EDGE] release source=" + sourceId + " target=" + targetId);
-
         boolean connected = false;
 
         if (backend != null && backend.getPipeline() != null && sourceId != null) {
@@ -395,7 +463,6 @@ public class NodesViewController {
             } else {
                 backend.connect(sourceId, targetId);
                 connected = backend.getPipeline().isConnected(sourceId, targetId);
-                System.out.println("[EDGE] connected=" + connected + " connections=" + backend.getPipeline().getConnections().size());
                 requestEdgesRedrawOnce();
             }
         }
@@ -483,35 +550,49 @@ public class NodesViewController {
             nodeViewsById.put(n.getId(), nv.root);
             if (nv.controller != null) {
                 nodeWidgetById.put(n.getId(), nv.controller);
-
-                // Drag edge da OUTPUT
-                if (nv.controller.getOutputSocket() != null) {
-                    nv.controller.getOutputSocket().addEventFilter(MouseEvent.DRAG_DETECTED, me -> {
-                        if (me.getButton() != MouseButton.PRIMARY) return;
-                        startConnectingFrom(n.getId());
-                        me.consume();
-                    });
-                    nv.controller.getOutputSocket().addEventFilter(MouseEvent.MOUSE_DRAGGED, me -> {
-                        if (me.getButton() != MouseButton.PRIMARY) return;
-                        if (!isConnecting) startConnectingFrom(n.getId());
-                        me.consume();
-                    });
-                }
-
-                // Rewire trascinando dal socket IN del nodo destinazione
-                if (nv.controller.getInputSocket() != null) {
-                    nv.controller.getInputSocket().addEventFilter(MouseEvent.DRAG_DETECTED, me -> {
-                        if (me.getButton() != MouseButton.PRIMARY) return;
-                        startRewireFromInput(n.getId());
-                        me.consume();
-                    });
-                    nv.controller.getInputSocket().addEventFilter(MouseEvent.MOUSE_DRAGGED, me -> {
-                        if (me.getButton() != MouseButton.PRIMARY) return;
-                        if (!isConnecting) startRewireFromInput(n.getId());
-                        me.consume();
-                    });
-                }
             }
+
+            // Click sul nodo = selezione (agganciato al root per coerenza CSS)
+            if (nv.root != null) {
+                nv.root.addEventFilter(MouseEvent.MOUSE_PRESSED, me -> {
+                    if (me.getButton() != MouseButton.PRIMARY) return;
+                    if (me.getTarget() instanceof javafx.scene.shape.Circle) return; // socket
+                    selectNode(n.getId());
+                });
+            }
+
+            // Drag edge da OUTPUT
+            if (nv.controller != null && nv.controller.getOutputSocket() != null) {
+                nv.controller.getOutputSocket().addEventFilter(MouseEvent.DRAG_DETECTED, me -> {
+                    if (me.getButton() != MouseButton.PRIMARY) return;
+                    startConnectingFrom(n.getId());
+                    me.consume();
+                });
+                nv.controller.getOutputSocket().addEventFilter(MouseEvent.MOUSE_DRAGGED, me -> {
+                    if (me.getButton() != MouseButton.PRIMARY) return;
+                    if (!isConnecting) startConnectingFrom(n.getId());
+                    me.consume();
+                });
+            }
+
+            // Rewire trascinando dal socket IN del nodo destinazione
+            if (nv.controller != null && nv.controller.getInputSocket() != null) {
+                nv.controller.getInputSocket().addEventFilter(MouseEvent.DRAG_DETECTED, me -> {
+                    if (me.getButton() != MouseButton.PRIMARY) return;
+                    startRewireFromInput(n.getId());
+                    me.consume();
+                });
+                nv.controller.getInputSocket().addEventFilter(MouseEvent.MOUSE_DRAGGED, me -> {
+                    if (me.getButton() != MouseButton.PRIMARY) return;
+                    if (!isConnecting) startRewireFromInput(n.getId());
+                    me.consume();
+                });
+            }
+        }
+
+        // Selezione: ripristina style class quando redraw ricrea i nodi
+        if (selectedNodeId != null) {
+            selectNode(selectedNodeId);
         }
 
         redrawEdgesFromPipeline();
@@ -935,7 +1016,78 @@ public class NodesViewController {
         connectingSourceNodeId = sourceId;
         rubberBand.getCurve().setVisible(true);
     }
+
+    private void installNodeSelectionHandlers() {
+        if (canvas == null) return;
+
+        canvas.addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
+            if (e.getButton() != MouseButton.PRIMARY) return;
+            if (backend == null) return;
+
+            // Se stiamo facendo pan/drag/connecting, non cambiamo selezione.
+            if (isPanning || isDraggingNode || isConnecting) {
+                return;
+            }
+
+            // Se il click arriva da un socket, non selezioniamo (serve per connect/rewire)
+            if (e.getTarget() instanceof javafx.scene.shape.Circle) {
+                return;
+            }
+
+            // Trova il parent che ha userData=nodeId
+            javafx.scene.Node n = (javafx.scene.Node) e.getTarget();
+            while (n != null && n.getUserData() == null) {
+                n = n.getParent();
+            }
+
+            // Click sul vuoto/griglia: rimuovi selezione
+            if (n == null || n.getUserData() == null) {
+                if (selectedNodeId != null) {
+                    clearSelection();
+                }
+                return;
+            }
+
+            String nodeId = String.valueOf(n.getUserData());
+            if (backend.getPipeline().getNode(nodeId) == null) {
+                // userData non è un nodeId valido => consideriamo come click sul vuoto
+                if (selectedNodeId != null) {
+                    clearSelection();
+                }
+                return;
+            }
+
+            selectNode(nodeId);
+            // Non consumiamo: permettiamo ad altri handler (es. drag) di funzionare.
+        });
+    }
+
+    public void showSaveToast(boolean success, String message) {
+        javafx.application.Platform.runLater(() -> {
+            if (saveToastBox == null || saveToastLabel == null) return;
+
+            saveToastLabel.setText(message == null ? "" : message);
+            saveToastLabel.setStyle(
+                    "-fx-text-fill: white;" +
+                            "-fx-padding: 10 14 10 14;" +
+                            "-fx-background-radius: 8;" +
+                            (success
+                                    ? "-fx-background-color: rgba(46, 204, 113, 0.92);"
+                                    : "-fx-background-color: rgba(231, 76, 60, 0.92);")
+            );
+
+            saveToastBox.setVisible(true);
+            saveToastBox.setManaged(true);
+
+            if (saveToastHide == null) {
+                saveToastHide = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2.2));
+                saveToastHide.setOnFinished(e -> {
+                    saveToastBox.setVisible(false);
+                    saveToastBox.setManaged(false);
+                });
+            }
+            saveToastHide.stop();
+            saveToastHide.playFromStart();
+        });
+    }
 }
-
-
-

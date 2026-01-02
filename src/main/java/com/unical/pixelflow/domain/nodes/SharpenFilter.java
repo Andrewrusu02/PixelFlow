@@ -10,7 +10,7 @@ public class SharpenFilter extends Filter {
 
     public SharpenFilter() {
         super("Sharpen");
-        this.parameters.put("amount", new Parameter<>("amount", 100, 0, 100));
+        this.parameters.put("amount", new Parameter<>("amount", 0, 0, 100));
     }
 
     @Override
@@ -60,4 +60,3 @@ public class SharpenFilter extends Filter {
         return output;
     }
 }
-

@@ -8,7 +8,7 @@ public class SepiaFilter extends Filter {
 
     public SepiaFilter() {
         super("Sepia");
-        this.parameters.put("intensity", new Parameter<>("intensity", 100, 0, 100));
+        this.parameters.put("intensity", new Parameter<>("intensity", 0, 0, 100));
     }
 
     @Override
@@ -47,4 +47,3 @@ public class SepiaFilter extends Filter {
         return output;
     }
 }
-

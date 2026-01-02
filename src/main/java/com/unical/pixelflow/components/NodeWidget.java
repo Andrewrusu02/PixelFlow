@@ -32,10 +32,10 @@ public class NodeWidget {
     }
 
     public void setNodeTypeCss(String cssClass) {
-        if (body == null) return;
-        body.getStyleClass().removeAll("node-filter", "node-input", "node-output");
+        if (root == null) return;
+        root.getStyleClass().removeAll("node-filter", "node-input", "node-output");
         if (cssClass != null && !cssClass.isBlank()) {
-            body.getStyleClass().add(cssClass);
+            root.getStyleClass().add(cssClass);
         }
     }
 
@@ -60,6 +60,10 @@ public class NodeWidget {
 
     public Circle getOutputSocket() {
         return outputSocket;
+    }
+
+    public VBox getBody() {
+        return body;
     }
 
     public void bindNode(Node node) {

@@ -9,10 +9,12 @@ public class Parameter<T> {
     private T value;
     private T minValue; // Opzionale, per slider
     private T maxValue; // Opzionale, per slider
+    private T defaultValue;
 
     public Parameter(String name, T value) {
         this.name = name;
         this.value = value;
+        this.defaultValue = value;
     }
 
     public Parameter(String name, T value, T minValue, T maxValue) {
@@ -20,6 +22,7 @@ public class Parameter<T> {
         this.value = value;
         this.minValue = minValue;
         this.maxValue = maxValue;
+        this.defaultValue = value;
     }
 
     public String getName() { return name; }
@@ -33,5 +36,9 @@ public class Parameter<T> {
 
     public T getMinValue() { return minValue; }
     public T getMaxValue() { return maxValue; }
-}
+    public T getDefaultValue() { return defaultValue; }
 
+    public void resetToDefault() {
+        this.value = defaultValue;
+    }
+}
