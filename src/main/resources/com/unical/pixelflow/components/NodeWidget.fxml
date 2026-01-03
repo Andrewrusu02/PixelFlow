@@ -9,40 +9,38 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane fx:id="root" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="180.0"
-            styleClass="node-widget"
-            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.unical.pixelflow.components.NodeWidget">
-
-    <left>
-        <StackPane BorderPane.alignment="CENTER">
-            <Circle fx:id="inputSocket" radius="6.0" styleClass="node-socket" />
-        </StackPane>
-    </left>
+<BorderPane fx:id="root" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="180.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.components.NodeWidget">
 
     <center>
-        <VBox fx:id="body" alignment="TOP_CENTER" spacing="8.0" BorderPane.alignment="CENTER">
-            <padding>
-                <Insets bottom="10.0" left="12.0" right="12.0" top="10.0" />
-            </padding>
-
-            <VBox alignment="CENTER" spacing="6.0">
-                <SVGPath fx:id="iconShape"
-                         content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
-                         styleClass="icon_general" />
-
-                <Label fx:id="nodeTitle" styleClass="node-title" text="Node" />
-            </VBox>
-
-            <!-- Slot contenuto (per parametri filtro / button input / button export) -->
-            <HBox fx:id="contentBox" alignment="CENTER" spacing="6.0" />
-        </VBox>
+      <StackPane BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets left="-7.0" right="-7.0" />
+         </BorderPane.margin>
+         <children>
+              <VBox fx:id="body" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="110.0" prefWidth="180.0" spacing="8.0" styleClass="node-widget">
+                  <padding>
+                      <Insets bottom="10.0" left="12.0" right="12.0" top="10.0" />
+                  </padding>
+      
+                  <VBox alignment="CENTER" spacing="6.0">
+                      <SVGPath fx:id="iconShape" content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" styleClass="icon_general" />
+      
+                      <Label fx:id="nodeTitle" styleClass="node-title" text="Node" />
+                  </VBox>
+      
+                  <!-- Slot contenuto (per parametri filtro / button input / button export) -->
+                  <HBox fx:id="contentBox" alignment="CENTER" spacing="6.0" />
+              </VBox>
+            <BorderPane prefHeight="200.0" prefWidth="200.0">
+               <left>
+                     <Circle fx:id="inputSocket" radius="6.0" styleClass="node-socket" BorderPane.alignment="CENTER" />
+               </left>
+               <right>
+                     <Circle fx:id="outputSocket" radius="6.0" styleClass="node-socket" BorderPane.alignment="CENTER" />
+               </right>
+            </BorderPane>
+         </children>
+      </StackPane>
     </center>
-
-    <right>
-        <StackPane alignment="CENTER_RIGHT" BorderPane.alignment="CENTER">
-            <Circle fx:id="outputSocket" radius="6.0" styleClass="node-socket" />
-        </StackPane>
-    </right>
 
 </BorderPane>
