@@ -79,3 +79,10 @@
 .scroll-bar > .increment-button:pressed > .increment-arrow, .scroll-bar > .decrement-button:pressed > .decrement-arrow {
     -fx-padding: 3 3 3 3;
 }
+
+.library-category-header {
+    -fx-text-fill: #808080;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 0 5 5;
+}

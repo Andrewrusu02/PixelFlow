@@ -85,6 +85,9 @@ public class MainEditingController {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/ExitProjectView.fxml"));
             Parent root = loader.load();
 
+            ExitProjectController exitController = loader.getController();
+            exitController.setOnSaveAction(this::handleSaveProject);
+
             Stage popupStage = new Stage();
             popupStage.initOwner(buttonHome.getScene().getWindow());
             popupStage.initModality(Modality.WINDOW_MODAL);
@@ -92,7 +95,10 @@ public class MainEditingController {
 
             Scene scene = new Scene(root);
             scene.setFill(Color.TRANSPARENT);
-            popupStage.setScene(scene);
+
+           if (buttonHome.getScene() != null) {
+                scene.getStylesheets().addAll(buttonHome.getScene().getStylesheets());
+            }            popupStage.setScene(scene);
 
             showDialogWithBlur(popupStage);
 

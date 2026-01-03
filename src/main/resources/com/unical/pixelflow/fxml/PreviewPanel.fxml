@@ -11,15 +11,15 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane maxHeight="-Infinity" minHeight="-Infinity" prefHeight="350.0" prefWidth="300.0" styleClass="background-3" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.PreviewPanelController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="400.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.PreviewPanelController">
    <center>
    
-          <StackPane prefWidth="400.0">
-           <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+          <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+           <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent; -fx-background: transparent;">
                <content>
-                   <StackPane fx:id="imageContainer" styleClass="transparency-grid">
+                   <StackPane fx:id="imageContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="transparency-grid">
                        <ImageView fx:id="previewImage" preserveRatio="true" />
-                       <Label fx:id="placeholderLabel" styleClass="text-body" text="" wrapText="true" visible="false" />
+                       <Label fx:id="placeholderLabel" styleClass="text-body" text="" visible="false" wrapText="true" />
                    </StackPane>
                </content>
            </ScrollPane>

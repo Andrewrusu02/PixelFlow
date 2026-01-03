@@ -130,14 +130,8 @@ public class HomeViewController {
 
             stage.setScene(newScene);
             stage.setTitle("Pixel Flow - " + project.getName());
-
-            // --- FORZA MASSIMIZZAZIONE ---
-            // A volte cambiando scena si perde lo stato maximized. Lo riapplichiamo.
             stage.setMaximized(true);
-
-            // Opzionale: Impedisci che diventi piccola
-            stage.setMinWidth(1000);
-            stage.setMinHeight(700);
+            stage.setResizable(false);
 
         } catch (IOException e) {
             e.printStackTrace();

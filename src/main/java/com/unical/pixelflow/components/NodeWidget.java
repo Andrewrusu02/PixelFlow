@@ -1,6 +1,7 @@
 package com.unical.pixelflow.components;
 
 import com.unical.pixelflow.domain.model.Node;
+import com.unical.pixelflow.utility.FilterResources;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -68,7 +69,12 @@ public class NodeWidget {
 
     public void bindNode(Node node) {
         if (node == null) return;
+
         setTitle(node.getName() == null || node.getName().isBlank() ? node.getClass().getSimpleName() : node.getName());
+
+        String typeName = node.getClass().getSimpleName();
+        String svgContent = FilterResources.getIconForType(typeName);
+        setIcon(svgContent);
 
         if (node.isInput()) {
             setNodeTypeCss("node-input");

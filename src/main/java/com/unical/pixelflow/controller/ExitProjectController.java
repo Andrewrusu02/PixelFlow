@@ -9,6 +9,12 @@ public class ExitProjectController {
 
     @FXML private Button btnCancel;
 
+    private Runnable onSaveAction;
+
+    public void setOnSaveAction(Runnable onSaveAction) {
+        this.onSaveAction = onSaveAction;
+    }
+
     @FXML
     private void handleCancel() {
         closeDialog();
@@ -22,13 +28,14 @@ public class ExitProjectController {
 
     @FXML
     private void handleSaveAndExit() {
-        // TODO: Chiama il metodo di salvataggio del progetto
+        if (onSaveAction != null) {
+            onSaveAction.run();
+        }
         closeDialog();
         goToHome();
     }
 
     private void goToHome() {
-        System.out.println("Torno alla Home...");
         SceneHandler.getInstance(null).startPixeFlow();
     }
 
