@@ -22,6 +22,8 @@ Design directions:
     -fu-background-2: rgb(228, 228, 228);
     -fu-background-3: rgb(234, 234, 234);
     -fu-background-4: rgb(224, 224, 224);
+    -fu-background-5: #141414;
+    -fu-rubberBand: #141414;
 
     -fu-foreground-rest: rgb(255, 255, 255);
     -fu-foreground-hover: rgb(243, 243, 243);

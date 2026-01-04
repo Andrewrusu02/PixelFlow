@@ -26,6 +26,8 @@ Design directions:
     -fu-background-2: #141414;
     -fu-background-3: #1f1f1f;
     -fu-background-4: #292929;
+    -fu-background-5: #141414;
+    -fu-rubberBand: #ffffff;
 
     -fu-foreground-rest: rgba(26, 26, 26, 1);
     -fu-foreground-hover: rgba(38, 38, 38, 1);

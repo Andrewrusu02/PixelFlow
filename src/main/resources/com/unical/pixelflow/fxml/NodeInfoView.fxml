@@ -3,23 +3,30 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane fx:id="root" maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="450.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodeInfoController">
-    <center>
-        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" styleClass="background-3">
+<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodeInfoController">
+   <children>
+        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" styleClass="background-3">
+            <padding>
+                <Insets left="15.0" right="15.0" />
+            </padding>
+            <children>
+                <Label fx:id="titleProperties" styleClass="text-title" text="PROPERTIES" />
+            </children>
+        </HBox>
+        <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" styleClass="background-3" VBox.vgrow="ALWAYS">
             <content>
                 <StackPane fx:id="imageContainer" styleClass="background-3">
 
-                    <VBox fx:id="OverViewNoNodeSelected" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                                <VBox fx:id="OverViewNoNodeSelected" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                         <children>
                             <Label fx:id="projectOverviewTitle" styleClass="text-title" text="Project Overview" />
 
-                            <HBox fx:id="nodesStatsBox" alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
+                                        <HBox fx:id="nodesStatsBox" alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
                                 <children>
                                     <Label fx:id="nodesLabel" maxWidth="Infinity" nodeOrientation="LEFT_TO_RIGHT" text="Nodes:" HBox.hgrow="ALWAYS" />
                                     <Label fx:id="nodesCountText" text="0" />
@@ -29,7 +36,7 @@
                                 </padding>
                             </HBox>
 
-                            <HBox fx:id="connectionsStatsBox" alignment="CENTER_LEFT" layoutX="25.0" layoutY="39.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
+                                        <HBox fx:id="connectionsStatsBox" alignment="CENTER_LEFT" layoutX="25.0" layoutY="39.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
                                 <children>
                                     <Label fx:id="connectionsLabel" maxWidth="Infinity" nodeOrientation="LEFT_TO_RIGHT" text="Connections:" HBox.hgrow="ALWAYS" />
                                     <Label fx:id="connectionsCountText" text="0" />
@@ -44,37 +51,23 @@
                         </padding>
                     </VBox>
 
-                    <VBox fx:id="PanelControlsEffects" prefHeight="200.0" prefWidth="100.0" spacing="15.0" visible="false">
+                                <VBox fx:id="PanelControlsEffects" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" spacing="15.0" visible="false">
                         <padding>
                             <Insets left="15.0" right="15.0" top="10.0" />
                         </padding>
                     </VBox>
 
-                </StackPane>
+                            </StackPane>
             </content>
         </ScrollPane>
-    </center>
-
-    <top>
-        <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" styleClass="background-3" BorderPane.alignment="CENTER">
-            <padding>
-                <Insets left="15.0" right="15.0" />
-            </padding>
-            <children>
-                <Label fx:id="titleProperties" styleClass="text-title" text="PROPERTIES" />
-            </children>
-        </HBox>
-    </top>
-
-    <bottom>
-        <HBox fx:id="infoBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="280.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-pop-up" BorderPane.alignment="CENTER">
+        <HBox fx:id="infoBox" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-pop-up">
             <children>
                 <SVGPath fx:id="infoIcon" content="M2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11 13C11 13.5523 11.4477 14 12 14C12.5523 14 13 13.5523 13 13V8C13 7.44772 12.5523 7 12 7C11.4477 7 11 7.44772 11 8V13ZM13 15.9888C13 15.4365 12.5523 14.9888 12 14.9888C11.4477 14.9888 11 15.4365 11 15.9888V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V15.9888Z" styleClass="icon_general" />
                 <Label fx:id="alertInfoLabel" maxHeight="1.7976931348623157E308" prefHeight="34.0" prefWidth="150.0" text="Select a node to edit its properties" wrapText="true" />
             </children>
-            <BorderPane.margin>
-                <Insets bottom="10.0" />
-            </BorderPane.margin>
+         <VBox.margin>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </VBox.margin>
         </HBox>
-    </bottom>
-</BorderPane>
+   </children>
+</VBox>

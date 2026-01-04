@@ -37,16 +37,10 @@
         private StackPane CenterNodePane;
 
         @FXML
-        private VBox LibraryPanelPane;
+        private VBox LeftPane;
 
         @FXML
-        private BorderPane PreviewPane;
-
-        @FXML
-        private BorderPane ProprietiesPane;
-
-        @FXML
-        private BorderPane RighPane;
+        private VBox RighPane;
 
         @FXML
         private Button browseButton;
@@ -65,6 +59,7 @@
         private NodesViewController nodesViewController;
         private PreviewPanelController previewPanelController;
         private NodeInfoController nodeInfoController;
+        private WaveFormViewController waveFormViewController;
 
         private String currentProjectFilePath;
         private String currentSourceImagePath;
@@ -92,7 +87,7 @@
 
             // Progetto "vuoto" appena aperto: vogliamo comunque Input/Output pronti.
             ensureStructuralNodes();
-            refreshPreviewAndExportState();
+            javafx.application.Platform.runLater(this::refreshPreviewAndExportState);
         }
 
         @FXML
@@ -229,6 +224,9 @@
             if (previewPanelController != null) {
                 previewPanelController.clearPlaceholder();
                 previewPanelController.setPreviewImage(fxImage);
+                if (waveFormViewController != null) {
+                    waveFormViewController.updateWaveform(fxImage);
+                }
             }
             if (nodesViewController != null) {
                 nodesViewController.setExportEnabled(true, null);
@@ -316,9 +314,8 @@
 
             FXMLLoader waveLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/WaveFormView.fxml"));
             Parent waveRoot = waveLoader.load();
-
-            LibraryPanelPane.getChildren().clear();
-            LibraryPanelPane.getChildren().addAll(libRoot, waveRoot);
+            this.waveFormViewController = waveLoader.getController();
+            LeftPane.getChildren().addAll(libRoot, waveRoot);
 
             javafx.scene.layout.VBox.setVgrow(libRoot, javafx.scene.layout.Priority.ALWAYS);
             javafx.scene.layout.VBox.setVgrow(waveRoot, javafx.scene.layout.Priority.NEVER);
@@ -331,7 +328,7 @@
             FXMLLoader prevLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/PreviewPanel.fxml"));
             Parent prevRoot = prevLoader.load();
             this.previewPanelController = prevLoader.getController();
-            PreviewPane.setCenter(prevRoot);
+            RighPane.getChildren().add(prevRoot);
 
             FXMLLoader propLoader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/NodeInfoView.fxml"));
             Parent propRoot = propLoader.load();
@@ -345,13 +342,15 @@
                 });
                 this.nodeInfoController.showNoSelection();
             }
-            ProprietiesPane.setCenter(propRoot);
+            RighPane.getChildren().add(propRoot);
+            javafx.scene.layout.VBox.setVgrow(propRoot, javafx.scene.layout.Priority.ALWAYS);
 
             if (nodesViewController != null) {
                 nodesViewController.setBackend(backend);
                 nodesViewController.setOnNodeSelected(this::refreshPreviewForSelectedNode);
                 nodesViewController.setOnSaveRequested(this::handleSaveProject);
             }
+
         }
 
         private void showDialogWithBlur(Stage dialogStage) {
@@ -447,9 +446,13 @@
                         if (nodesViewController != null) {
                             nodesViewController.setExportEnabled(true, null);
                         }
+                        if (waveFormViewController != null) {
+                            waveFormViewController.updateWaveform(fxImage);
+                        }
                     }
                 });
             });
+
         }
 
         private void handleSaveProject() {

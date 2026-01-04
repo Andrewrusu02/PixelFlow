@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import java.util.concurrent.ExecutorService;
@@ -17,18 +18,29 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class WaveFormViewController {
 
     @FXML private VBox root;
+    @FXML private StackPane canvasContainer;
     @FXML private Canvas waveformCanvas;
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    // DEFINIZIONE EXECUTOR CON THREAD DAEMON (Risolve il problema della chiusura app)
+    private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "waveform-thread");
+        t.setDaemon(true); // Fondamentale: permette all'app di chiudersi completamente
+        return t;
+    });
+
     private final AtomicBoolean isProcessing = new AtomicBoolean(false);
 
     @FXML
     public void initialize() {
-        waveformCanvas.widthProperty().bind(root.widthProperty());
-        waveformCanvas.heightProperty().bind(root.heightProperty());
+        // Binding per il ridimensionamento automatico
+        if (canvasContainer != null && waveformCanvas != null) {
+            waveformCanvas.widthProperty().bind(canvasContainer.widthProperty());
+            waveformCanvas.heightProperty().bind(canvasContainer.heightProperty());
 
-        root.widthProperty().addListener((obs, oldVal, newVal) -> redrawGrid());
-        root.heightProperty().addListener((obs, oldVal, newVal) -> redrawGrid());
+            canvasContainer.widthProperty().addListener((obs, oldVal, newVal) -> redrawGrid());
+            canvasContainer.heightProperty().addListener((obs, oldVal, newVal) -> redrawGrid());
+        }
+        redrawGrid();
     }
 
     public void updateWaveform(Image sourceImage) {
@@ -45,8 +57,18 @@ public class WaveFormViewController {
         int srcH = (int) sourceImage.getHeight();
         PixelReader reader = sourceImage.getPixelReader();
 
+        if (reader == null) {
+            isProcessing.set(false);
+            return;
+        }
+
         int[] srcPixels = new int[srcW * srcH];
-        reader.getPixels(0, 0, srcW, srcH, javafx.scene.image.PixelFormat.getIntArgbInstance(), srcPixels, 0, srcW);
+        try {
+            reader.getPixels(0, 0, srcW, srcH, javafx.scene.image.PixelFormat.getIntArgbInstance(), srcPixels, 0, srcW);
+        } catch (Exception e) {
+            isProcessing.set(false);
+            return;
+        }
 
         executor.submit(() -> {
             try {
@@ -61,78 +83,71 @@ public class WaveFormViewController {
         });
     }
 
+    // Algoritmo Density RGB (stile DaVinci Resolve / Lightroom)
     private WritableImage generateWaveformData(int[] pixels, int srcW, int srcH, int destW, int destH) {
-        int[] accumBuffer = new int[destW * destH];
+        float[][] densityBufferR = new float[destW][destH];
+        float[][] densityBufferG = new float[destW][destH];
+        float[][] densityBufferB = new float[destW][destH];
 
-        int skipX = Math.max(1, srcW / destW);
-        int skipY = Math.max(2, srcH / 300);
+        int skip = 2; // Aumenta a 3 o 4 se noti lag con immagini grandi
+        float intensity = 0.15f;
 
-        for (int x = 0; x < srcW; x += skipX) {
+        for (int x = 0; x < srcW; x += skip) {
             int targetX = (int) ((x / (double) srcW) * destW);
             if (targetX >= destW) continue;
 
-            for (int y = 0; y < srcH; y += skipY) {
+            for (int y = 0; y < srcH; y += skip) {
                 int argb = pixels[y * srcW + x];
 
                 int r = (argb >> 16) & 0xFF;
                 int g = (argb >> 8) & 0xFF;
                 int b = argb & 0xFF;
 
+                // Inversione asse Y per il canvas
                 int yR = (int) (destH - 1 - (r / 255.0 * (destH - 1)));
                 int yG = (int) (destH - 1 - (g / 255.0 * (destH - 1)));
                 int yB = (int) (destH - 1 - (b / 255.0 * (destH - 1)));
 
-                addToBuffer(accumBuffer, targetX, yR, destW, 1, 0, 0);
-                addToBuffer(accumBuffer, targetX, yG, destW, 0, 1, 0);
-                addToBuffer(accumBuffer, targetX, yB, destW, 0, 0, 1);
+                if (yR >= 0 && yR < destH) densityBufferR[targetX][yR] += intensity;
+                if (yG >= 0 && yG < destH) densityBufferG[targetX][yG] += intensity;
+                if (yB >= 0 && yB < destH) densityBufferB[targetX][yB] += intensity;
             }
         }
 
         WritableImage writableImage = new WritableImage(destW, destH);
         PixelWriter writer = writableImage.getPixelWriter();
 
-        for (int i = 0; i < accumBuffer.length; i++) {
-            if (accumBuffer[i] != 0) {
-                int x = i % destW;
-                int y = i / destW;
+        for (int x = 0; x < destW; x++) {
+            for (int y = 0; y < destH; y++) {
+                float valR = densityBufferR[x][y];
+                float valG = densityBufferG[x][y];
+                float valB = densityBufferB[x][y];
 
-                int r = (accumBuffer[i] >> 16) & 0xFF;
-                int g = (accumBuffer[i] >> 8) & 0xFF;
-                int b = accumBuffer[i] & 0xFF;
+                if (valR <= 0 && valG <= 0 && valB <= 0) continue;
 
-                r = Math.min(255, r);
-                g = Math.min(255, g);
-                b = Math.min(255, b);
+                int r = Math.min(255, (int)(valR * 255));
+                int g = Math.min(255, (int)(valG * 255));
+                int b = Math.min(255, (int)(valB * 255));
 
-                int finalColor = (255 << 24) | (r << 16) | (g << 8) | b;
+                int maxVal = Math.max(r, Math.max(g, b));
+                int alpha = Math.min(255, maxVal);
+
+                int finalColor = (alpha << 24) | (r << 16) | (g << 8) | b;
                 writer.setArgb(x, y, finalColor);
             }
         }
         return writableImage;
     }
 
-    private void addToBuffer(int[] buffer, int x, int y, int width, int rInc, int gInc, int bInc) {
-        int index = y * width + x;
-        if (index >= 0 && index < buffer.length) {
-            int current = buffer[index];
-            int r = (current >> 16) & 0xFF;
-            int g = (current >> 8) & 0xFF;
-            int b = current & 0xFF;
-
-            r += rInc * 40;
-            g += gInc * 40;
-            b += bInc * 40;
-
-            buffer[index] = (r << 16) | (g << 8) | b;
-        }
-    }
-
     private void drawResult(WritableImage image) {
+        if (waveformCanvas == null) return;
         GraphicsContext gc = waveformCanvas.getGraphicsContext2D();
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0, 0, waveformCanvas.getWidth(), waveformCanvas.getHeight());
 
-        gc.setStroke(Color.rgb(60, 60, 60));
+        // Pulisce lo sfondo per la trasparenza
+        gc.clearRect(0, 0, waveformCanvas.getWidth(), waveformCanvas.getHeight());
+
+        // Disegna linee guida
+        gc.setStroke(Color.rgb(100, 100, 100));
         gc.setLineWidth(1);
         double h = waveformCanvas.getHeight();
         double w = waveformCanvas.getWidth();
@@ -144,14 +159,15 @@ public class WaveFormViewController {
     }
 
     private void redrawGrid() {
-        if (!isProcessing.get()) {
+        if (!isProcessing.get() && waveformCanvas != null) {
             GraphicsContext gc = waveformCanvas.getGraphicsContext2D();
-            gc.setFill(Color.BLACK);
-            gc.fillRect(0, 0, waveformCanvas.getWidth(), waveformCanvas.getHeight());
+            gc.clearRect(0, 0, waveformCanvas.getWidth(), waveformCanvas.getHeight());
         }
     }
 
     public void dispose() {
-        executor.shutdownNow();
+        if (executor != null) {
+            executor.shutdownNow();
+        }
     }
 }

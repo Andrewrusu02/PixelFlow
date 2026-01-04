@@ -54,7 +54,7 @@ public class NodeInfoController {
     private Label projectOverviewTitle;
 
     @FXML
-    private BorderPane root;
+    private VBox root;
 
     @FXML
     private ScrollPane scrollPane;

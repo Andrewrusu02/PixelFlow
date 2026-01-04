@@ -127,10 +127,10 @@ public class HomeViewController {
                     ? "/com/unical/pixelflow/css/style-dark.css"
                     : "/com/unical/pixelflow/css/style-light.css";
             newScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
-
             stage.setScene(newScene);
             stage.setTitle("Pixel Flow - " + project.getName());
             stage.setMaximized(true);
+            stage.setMinHeight(1000);
 
         } catch (IOException e) {
             e.printStackTrace();

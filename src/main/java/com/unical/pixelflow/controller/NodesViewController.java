@@ -25,13 +25,9 @@ public class NodesViewController {
 
     private static final double MIN_ZOOM = 0.2;
     private static final double MAX_ZOOM = 4.0;
-
-    // Debug: abilita log dettagliati sugli edge (disattivato di default)
     private static final boolean DEBUG_EDGES = false;
-
     private static final double GRID_STEP = 40.0;
     private static final int GRID_MAJOR_EVERY = 5;
-
     private static final double NODE_WIDGET_WIDTH = 180;
     private static final double NODE_WIDGET_HEIGHT = 110;
 
@@ -58,6 +54,11 @@ public class NodesViewController {
     private Point2D dragStartNodePos;
 
     private final Affine worldToScreen = new Affine();
+
+    private Color gridMinorColor = Color.rgb(255, 255, 255, 0.06);
+    private Color gridMajorColor = Color.rgb(255, 255, 255, 0.12);
+
+    private String currentEdgeStyle = "-fx-stroke: rgba(255,255,255,0.75); -fx-stroke-width: 2.2; -fx-stroke-line-cap: round;";
 
     @FXML private Button copyButton;
     @FXML private Button deleteButton;
@@ -92,19 +93,16 @@ public class NodesViewController {
     private final java.util.Map<String, javafx.scene.Node> nodeViewsById = new java.util.HashMap<>();
     private final java.util.Map<String, NodeWidget> nodeWidgetById = new java.util.HashMap<>();
 
-    // Connessione in corso (rubber-band)
     private boolean isConnecting = false;
     private String connectingSourceNodeId = null;
     private final EdgeView rubberBand = new EdgeView();
 
-    // Target socket attualmente sotto al cursore durante una connessione.
     private String hoveredTargetNodeId = null;
 
     private Scene installedGlobalScene;
 
     private AppController backend;
 
-    /** Callback invocata quando l'utente seleziona un nodo nel canvas. */
     private java.util.function.Consumer<String> onNodeSelected;
 
     private String selectedNodeId;
@@ -161,7 +159,6 @@ public class NodesViewController {
     @FXML
     private void initialize() {
         if (inputOverlay != null) {
-            // L'overlay deve lasciare passare gli eventi ai nodi nel canvas.
             inputOverlay.setMouseTransparent(true);
             inputOverlay.setPickOnBounds(true);
         }
@@ -176,8 +173,6 @@ public class NodesViewController {
         installInputHandlers();
         bindToolMode();
         applyWorldTransform();
-
-        // NEW: selezione robusta a livello canvas
         installNodeSelectionHandlers();
 
         new AnimationTimer() {
@@ -211,8 +206,6 @@ public class NodesViewController {
         if (edgesLayer != null) {
             edgesLayer.setMouseTransparent(true);
             edgesLayer.setPickOnBounds(false);
-
-            // Debug-safety: se per qualche motivo il CSS non viene applicato, assicuriamo uno stroke visibile.
             rubberBand.getCurve().setStyle("-fx-stroke: rgba(255,255,255,0.85);");
         }
 
@@ -220,7 +213,6 @@ public class NodesViewController {
         installCanvasDnD();
         installNodeMoveHandlers();
 
-        // Rubber-band edge sempre in layer (ma visibile solo quando serve)
         if (edgesLayer != null) {
             rubberBand.getCurve().setVisible(false);
             edgesLayer.getChildren().add(rubberBand.getCurve());
@@ -240,6 +232,47 @@ public class NodesViewController {
             saveToastBox.setManaged(false);
             saveToastBox.setMouseTransparent(true);
         }
+
+        javafx.application.Platform.runLater(this::updateGridColorsFromTheme);
+    }
+
+    private void updateGridColorsFromTheme() {
+        if (root == null || root.getScene() == null) return;
+
+        javafx.scene.layout.Region dummy = new javafx.scene.layout.Region();
+        dummy.setStyle("-fx-background-color: -fu-background-1;");
+
+        root.getChildren().add(dummy);
+        dummy.applyCss();
+
+        try {
+            var fills = dummy.getBackground().getFills();
+            if (!fills.isEmpty()) {
+                Color c1 = (Color) fills.get(0).getFill();
+                double luminance = c1.getRed() * 0.299 + c1.getGreen() * 0.587 + c1.getBlue() * 0.114;
+
+                if (luminance > 0.6) {
+                    // LIGHT MODE: Sfondo chiaro -> Linee NERE
+                    this.gridMinorColor = new Color(0, 0, 0, 0.06);
+                    this.gridMajorColor = new Color(0, 0, 0, 0.12);
+
+                    this.currentEdgeStyle = "-fx-stroke: rgba(50,50,50,0.85); -fx-stroke-width: 2.2; -fx-stroke-line-cap: round;";
+                    rubberBand.getCurve().setStyle("-fx-stroke: rgba(50,50,50,0.85);");
+                } else {
+                    // DARK MODE: Sfondo scuro -> Linee BIANCHE
+                    this.gridMinorColor = new Color(1, 1, 1, 0.06);
+                    this.gridMajorColor = new Color(1, 1, 1, 0.12);
+
+                    this.currentEdgeStyle = "-fx-stroke: rgba(255,255,255,0.75); -fx-stroke-width: 2.2; -fx-stroke-line-cap: round;";
+                    rubberBand.getCurve().setStyle("-fx-stroke: rgba(255,255,255,0.85);");
+                }
+            }
+        } catch (Exception e) {
+        } finally {
+            root.getChildren().remove(dummy);
+        }
+        gridDirty = true;
+        redrawEdgesFromPipeline();
     }
 
     private void bindToolMode() {
@@ -321,7 +354,6 @@ public class NodesViewController {
     }
 
     private void installInputHandlers() {
-        // Ora che inputOverlay è mouseTransparent, gli eventi arrivano al canvas.
         javafx.scene.Node eventSurface = getEventSurface();
         if (eventSurface == null) return;
 
@@ -332,7 +364,6 @@ public class NodesViewController {
         eventSurface.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handlePanDrag);
         eventSurface.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handlePanEnd);
 
-        // Rubber-band move
         eventSurface.addEventFilter(MouseEvent.MOUSE_MOVED, this::handleRubberBandMove);
         eventSurface.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleRubberBandMove);
         eventSurface.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleRubberBandRelease);
@@ -345,7 +376,6 @@ public class NodesViewController {
         Point2D from = getOutputSocketWorldCenter(connectingSourceNodeId);
         if (from == null) return;
 
-        // Se siamo sopra un input socket, facciamo "snap" al centro del socket.
         String targetUnderMouse = findInputSocketOwnerAtScene(new Point2D(e.getSceneX(), e.getSceneY()));
         hoveredTargetNodeId = targetUnderMouse;
 
@@ -364,9 +394,6 @@ public class NodesViewController {
         rubberBand.getCurve().setVisible(true);
     }
 
-    /**
-     * Converte coordinate Scene nelle coordinate WORLD del graph.
-     */
     private Point2D sceneToWorld(Point2D scenePoint) {
         if (playground == null) return new Point2D(0, 0);
         Point2D playgroundLocal = playground.sceneToLocal(scenePoint);
@@ -412,14 +439,11 @@ public class NodesViewController {
         if (sourceNodeId == null) return;
         if (isPanning || isDraggingNode) return;
 
-        // Se il nodo ha già una connessione in uscita, stiamo facendo 'rewire':
-        // la linea fissa deve sparire immediatamente al click sul socket out.
         if (backend != null && backend.getPipeline() != null) {
             for (com.unical.pixelflow.domain.model.Connection c : backend.getPipeline().getOutgoingConnections(sourceNodeId)) {
                 String prevDest = c.getDestination().getOwner().getId();
                 backend.disconnect(sourceNodeId, prevDest);
             }
-            // Aggiorna subito il rendering: rimuove la linea fissa nell'istante del click.
             redrawEdgesFromPipeline();
         }
 
@@ -428,7 +452,6 @@ public class NodesViewController {
         rubberBand.getCurve().setVisible(true);
     }
 
-    // Debounce per evitare loop infinito di redraw via runLater
     private boolean pendingEdgesRedraw = false;
 
     private void requestEdgesRedrawOnce() {
@@ -453,7 +476,6 @@ public class NodesViewController {
 
         if (backend != null && backend.getPipeline() != null && sourceId != null) {
             if (targetId == null) {
-                // Rilascio nel vuoto: spezza la connessione uscente di source (se esiste)
                 for (com.unical.pixelflow.domain.model.Connection c : backend.getPipeline().getOutgoingConnections(sourceId)) {
                     String prevDest = c.getDestination().getOwner().getId();
                     backend.disconnect(sourceId, prevDest);
@@ -518,7 +540,7 @@ public class NodesViewController {
 
             EdgeView ev = new EdgeView();
             ev.setEndpoints(from, to);
-            ev.getCurve().setStyle("-fx-stroke: rgba(255,255,255,0.75); -fx-stroke-width: 2.2; -fx-stroke-line-cap: round;");
+            ev.getCurve().setStyle(currentEdgeStyle);
             edgesLayer.getChildren().add(ev.getCurve());
             rendered++;
         }
@@ -531,7 +553,6 @@ public class NodesViewController {
     }
 
     private void redrawNodesFromPipeline() {
-        // Evita ricostruzioni del canvas durante drag/connecting, altrimenti i nodi "flashano" a posizioni vecchie.
         if (isDraggingNode || isConnecting) {
             redrawEdgesFromPipeline();
             return;
@@ -552,16 +573,14 @@ public class NodesViewController {
                 nodeWidgetById.put(n.getId(), nv.controller);
             }
 
-            // Click sul nodo = selezione (agganciato al root per coerenza CSS)
             if (nv.root != null) {
                 nv.root.addEventFilter(MouseEvent.MOUSE_PRESSED, me -> {
                     if (me.getButton() != MouseButton.PRIMARY) return;
-                    if (me.getTarget() instanceof javafx.scene.shape.Circle) return; // socket
+                    if (me.getTarget() instanceof javafx.scene.shape.Circle) return;
                     selectNode(n.getId());
                 });
             }
 
-            // Drag edge da OUTPUT
             if (nv.controller != null && nv.controller.getOutputSocket() != null) {
                 nv.controller.getOutputSocket().addEventFilter(MouseEvent.DRAG_DETECTED, me -> {
                     if (me.getButton() != MouseButton.PRIMARY) return;
@@ -575,7 +594,6 @@ public class NodesViewController {
                 });
             }
 
-            // Rewire trascinando dal socket IN del nodo destinazione
             if (nv.controller != null && nv.controller.getInputSocket() != null) {
                 nv.controller.getInputSocket().addEventFilter(MouseEvent.DRAG_DETECTED, me -> {
                     if (me.getButton() != MouseButton.PRIMARY) return;
@@ -590,7 +608,6 @@ public class NodesViewController {
             }
         }
 
-        // Selezione: ripristina style class quando redraw ricrea i nodi
         if (selectedNodeId != null) {
             selectNode(selectedNodeId);
         }
@@ -682,14 +699,11 @@ public class NodesViewController {
         boolean wantsPanDrag;
 
         if (toolMode == ToolMode.PAN) {
-            // Modalità PAN: pan sempre con tasti mouse standard.
             wantsPanDrag =
                     e.getButton() == MouseButton.PRIMARY ||
                             e.getButton() == MouseButton.MIDDLE ||
                             e.getButton() == MouseButton.SECONDARY;
         } else {
-            // Modalità MOVE_NODES: pan solo come override esplicito
-            // (cmd/ctrl, shift, tasto centrale o destro).
             wantsPanDrag =
                     e.getButton() == MouseButton.MIDDLE ||
                             e.getButton() == MouseButton.SECONDARY ||
@@ -708,10 +722,8 @@ public class NodesViewController {
     }
 
     private void handlePanDrag(MouseEvent e) {
-        // In MOVE_NODES, pan solo se è stato attivato come override (isPanning true).
         if (!isPanning || panStartScene == null) return;
 
-        // Se l'utente sta trascinando un nodo, non deve partire anche il pan.
         if (toolMode == ToolMode.MOVE_NODES && isDraggingNode) return;
 
         Point2D now = new Point2D(e.getSceneX(), e.getSceneY());
@@ -729,7 +741,6 @@ public class NodesViewController {
     private void handlePanEnd(MouseEvent e) {
         if (!isPanning) return;
 
-        // In MOVE_NODES, non chiudiamo il pan su primary se era drag nodo.
         if (toolMode == ToolMode.MOVE_NODES && isDraggingNode) {
             return;
         }
@@ -748,8 +759,8 @@ public class NodesViewController {
         GraphicsContext g = gridCanvas.getGraphicsContext2D();
         g.clearRect(0, 0, gridCanvas.getWidth(), gridCanvas.getHeight());
 
-        Color minor = Color.rgb(255, 255, 255, 0.06);
-        Color major = Color.rgb(255, 255, 255, 0.12);
+        Color minor = gridMinorColor;
+        Color major = gridMajorColor;
 
         Point2D topLeftWorld;
         Point2D bottomRightWorld;
@@ -808,9 +819,6 @@ public class NodesViewController {
         return Math.max(min, Math.min(max, v));
     }
 
-    /**
-     * Abilita/disabilita Export e imposta un tooltip esplicativo quando disabilitato.
-     */
     public void setExportEnabled(boolean enabled, String tooltipText) {
         if (exportButton == null) return;
         exportButton.setDisable(!enabled);
@@ -823,7 +831,6 @@ public class NodesViewController {
     }
 
     private void installCanvasDnD() {
-        // L'overlay è mouseTransparent: usiamo la superficie canvas.
         if (canvas == null) return;
 
         canvas.setOnDragOver(e -> {
@@ -841,7 +848,6 @@ public class NodesViewController {
             if (db.hasString() && backend != null) {
                 String nodeType = db.getString();
 
-                // Non permettiamo di creare Input/Output qui: sono nodi strutturali unici.
                 if (!"InputNode".equals(nodeType) && !"OutputNode".equals(nodeType)) {
                     java.util.Set<String> beforeIds = new java.util.HashSet<>(backend.getPipeline().getNodes().keySet());
 
@@ -861,8 +867,8 @@ public class NodesViewController {
                     if (createdId != null) {
                         Node created = backend.getPipeline().getNode(createdId);
                         if (created != null) {
-                          created.setX(world.getX() - (NODE_WIDGET_WIDTH / 2.0));
-                          created.setY(world.getY() - (NODE_WIDGET_HEIGHT / 2.0));
+                            created.setX(world.getX() - (NODE_WIDGET_WIDTH / 2.0));
+                            created.setY(world.getY() - (NODE_WIDGET_HEIGHT / 2.0));
                         }
                     }
 
@@ -898,10 +904,6 @@ public class NodesViewController {
         };
     }
 
-    /**
-     * Superficie che riceve effettivamente gli input utente.
-     * L'overlay è mouseTransparent, quindi di default è il canvas.
-     */
     private javafx.scene.Node getEventSurface() {
         return (canvas != null) ? canvas : inputOverlay;
     }
@@ -918,7 +920,6 @@ public class NodesViewController {
             if (toolMode != ToolMode.MOVE_NODES) return;
             if (backend == null) return;
 
-            // Se siamo in connecting mode e l'utente clicca altrove, annulliamo.
             if (isConnecting) {
                 isConnecting = false;
                 connectingSourceNodeId = null;
@@ -926,12 +927,10 @@ public class NodesViewController {
                 rubberBand.getCurve().setVisible(false);
             }
 
-            // Se il click arriva da un socket, NON iniziare il drag del nodo.
             if (e.getTarget() instanceof javafx.scene.shape.Circle) {
                 return;
             }
 
-            // In MOVE_NODES, se l'utente sta attivando il pan override (cmd/ctrl o shift), non iniziamo drag nodo.
             if (e.getButton() == MouseButton.MIDDLE || e.getButton() == MouseButton.SECONDARY ||
                     (e.getButton() == MouseButton.PRIMARY && (e.isShortcutDown() || e.isShiftDown()))) {
                 return;
@@ -996,7 +995,6 @@ public class NodesViewController {
         });
     }
 
-    // Quando trascini dal socket IN, stai spostando un collegamento esistente: source = nodo in ingresso precedente
     private void startRewireFromInput(String targetNodeId) {
         if (targetNodeId == null) return;
         if (isPanning || isDraggingNode) return;
@@ -1007,11 +1005,9 @@ public class NodesViewController {
 
         String sourceId = incoming.get(0).getSource().getOwner().getId();
 
-        // Spezza subito la connessione A->B: il filo fisso deve sparire all'istante.
         backend.disconnect(sourceId, targetNodeId);
         redrawEdgesFromPipeline();
 
-        // Inizia la connessione come se partisse da A
         isConnecting = true;
         connectingSourceNodeId = sourceId;
         rubberBand.getCurve().setVisible(true);
@@ -1024,23 +1020,19 @@ public class NodesViewController {
             if (e.getButton() != MouseButton.PRIMARY) return;
             if (backend == null) return;
 
-            // Se stiamo facendo pan/drag/connecting, non cambiamo selezione.
             if (isPanning || isDraggingNode || isConnecting) {
                 return;
             }
 
-            // Se il click arriva da un socket, non selezioniamo (serve per connect/rewire)
             if (e.getTarget() instanceof javafx.scene.shape.Circle) {
                 return;
             }
 
-            // Trova il parent che ha userData=nodeId
             javafx.scene.Node n = (javafx.scene.Node) e.getTarget();
             while (n != null && n.getUserData() == null) {
                 n = n.getParent();
             }
 
-            // Click sul vuoto/griglia: rimuovi selezione
             if (n == null || n.getUserData() == null) {
                 if (selectedNodeId != null) {
                     clearSelection();
@@ -1050,7 +1042,6 @@ public class NodesViewController {
 
             String nodeId = String.valueOf(n.getUserData());
             if (backend.getPipeline().getNode(nodeId) == null) {
-                // userData non è un nodeId valido => consideriamo come click sul vuoto
                 if (selectedNodeId != null) {
                     clearSelection();
                 }
@@ -1058,7 +1049,6 @@ public class NodesViewController {
             }
 
             selectNode(nodeId);
-            // Non consumiamo: permettiamo ad altri handler (es. drag) di funzionare.
         });
     }
 
