@@ -13,11 +13,10 @@ import javafx.scene.paint.Color;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javafx.scene.layout.BorderPane;
 
 public class WaveFormViewController {
 
-    @FXML private BorderPane root;
+    @FXML private VBox root;
     @FXML private Canvas waveformCanvas;
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();

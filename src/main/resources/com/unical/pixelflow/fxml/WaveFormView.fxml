@@ -1,25 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="280.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
-   <center>
-      <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="background-3">
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-         <children>
-            <Canvas fx:id="waveformCanvas" height="150.0" width="250.0" />
-         </children>
-      </StackPane>
-   </center>
-   <top>
-      <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 0 0 1 0;" BorderPane.alignment="CENTER">
+
+<VBox fx:id="root" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
+   <children>
+      <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 0 0 1 0;">
          <padding>
             <Insets left="15.0" right="15.0" />
          </padding>
@@ -27,5 +19,17 @@
             <Label fx:id="titleWaveform" styleClass="title-text" text="WAVEFORM" />
          </children>
       </HBox>
-   </top>
-</BorderPane>
+      <StackPane styleClass="background-3">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Canvas fx:id="waveformCanvas" height="250.0" styleClass="background-3" width="250.0" StackPane.alignment="CENTER">
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+            </Canvas>
+         </children>
+      </StackPane>
+   </children>
+</VBox>

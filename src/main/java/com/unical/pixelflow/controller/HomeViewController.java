@@ -131,7 +131,6 @@ public class HomeViewController {
             stage.setScene(newScene);
             stage.setTitle("Pixel Flow - " + project.getName());
             stage.setMaximized(true);
-            stage.setResizable(false);
 
         } catch (IOException e) {
             e.printStackTrace();

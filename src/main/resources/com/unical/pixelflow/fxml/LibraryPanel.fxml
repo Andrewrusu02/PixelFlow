@@ -6,29 +6,30 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="300.0" spacing="10.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LibraryPanelController">
+<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" spacing="10.0" styleClass="background-3" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.LibraryPanelController">
 
-    <padding>
+          <padding>
         <Insets bottom="15.0" left="10.0" right="10.0" top="15.0" />
     </padding>
 
-    <Label fx:id="titleLibrary" styleClass="text-title" text="LIBRERIA NODI">
+          <Label fx:id="titleLibrary" styleClass="text-title" text="LIBRERIA NODI">
       <padding>
          <Insets left="10.0" />
-      </padding></Label>
+      </padding>
+   </Label>
 
-    <VBox maxWidth="1.7976931348623157E308" prefWidth="300.0" spacing="5.0" styleClass="search-bar-tag">
+          <VBox maxWidth="1.7976931348623157E308" prefWidth="300.0" spacing="5.0" styleClass="search-bar-tag">
         <TextField fx:id="searchField" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="40.0" prefWidth="200.0" promptText="Cerca un filtro..." styleClass="tag-filter-menu-item" />
       <padding>
          <Insets left="10.0" right="10.0" />
       </padding>
     </VBox>
 
-    <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" styleClass="background-3" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+          <ScrollPane fitToWidth="true" hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" styleClass="background-3" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
         <content>
             <VBox fx:id="itemsContainer" maxHeight="1.7976931348623157E308" spacing="8.0" styleClass="background-3">
             </VBox>
         </content>
     </ScrollPane>
 
-</VBox>
+      </VBox>
