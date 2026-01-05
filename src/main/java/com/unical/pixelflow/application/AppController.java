@@ -209,4 +209,12 @@ public class AppController {
     public ImageIOHandler getImageHandler() {
         return imageHandler;
     }
+
+    public void toggleNodeEnabled(String nodeId) {
+        Node node = pipeline.getNode(nodeId);
+        if (node != null) {
+            Command cmd = new ToggleNodeCommand(node);
+            undoManager.executeCommand(cmd);
+        }
+    }
 }

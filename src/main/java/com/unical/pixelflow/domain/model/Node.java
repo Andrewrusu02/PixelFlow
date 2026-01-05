@@ -5,24 +5,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-/**
- * Classe base astratta per tutti i nodi.
- * Implementa il pattern Template Method nel metodo process().
- */
 public abstract class Node {
     protected String id;
     protected String name;
     protected double x; // Posizione UI (coordinate nel modello per persistenza)
     protected double y;
+    protected boolean enabled = true;
 
-    /**
-     * Ruolo del nodo nella pipeline.
-     * Di default un nodo è un FILTER (compatibile con la codebase esistente).
-     */
     protected NodeRole role = NodeRole.FILTER;
 
     protected List<Socket> inputs = new ArrayList<>();
     protected List<Socket> outputs = new ArrayList<>();
+
 
     public Node(String name) {
         this.id = UUID.randomUUID().toString();
@@ -35,6 +29,10 @@ public abstract class Node {
      * 2. Applica l'effetto (implementato dalle sottoclassi)
      */
     public final BufferedImage process(BufferedImage input) {
+        if (!enabled) {
+            return input;
+        }
+
         if (!validateInput(input)) {
             throw new IllegalArgumentException("Invalid input for node " + name);
         }
@@ -79,4 +77,7 @@ public abstract class Node {
 
     public Socket getInputSocket(int index) { return inputs.get(index); }
     public Socket getOutputSocket(int index) { return outputs.get(index); }
+    public boolean isEnabled() { return enabled; }
+
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }

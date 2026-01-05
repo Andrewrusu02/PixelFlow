@@ -233,7 +233,44 @@ public class NodesViewController {
             saveToastBox.setMouseTransparent(true);
         }
 
+        if (deleteButton != null) {
+            deleteButton.setOnAction(e -> handleDelete());
+        }
+        if (undoButton != null) {
+            undoButton.setOnAction(e -> handleUndo());
+        }
+        if (redoButton != null) {
+            redoButton.setOnAction(e -> handleRedo());
+        }
+        if (copyButton != null) {
+            copyButton.setOnAction(e -> handleCopy());
+        }
+
+
+        if (disableButton != null) {
+            disableButton.setOnAction(e -> toggleNodeBypass());
+        }
+
         javafx.application.Platform.runLater(this::updateGridColorsFromTheme);
+    }
+
+    private void toggleNodeBypass() {
+        if (selectedNodeId == null || backend == null) return;
+
+        Node node = backend.getPipeline().getNode(selectedNodeId);
+        if (node != null) {
+            // node.setEnabled(!node.isEnabled()); // Assumendo tu abbia questo flag nel modello
+
+            // Aggiorna visivamente lo stile del nodo (es. diventa grigio scuro)
+            javafx.scene.Node view = nodeViewsById.get(selectedNodeId);
+            if (view != null) {
+                if (!node.isEnabled()) view.getStyleClass().add("node-disabled");
+                else view.getStyleClass().remove("node-disabled");
+            }
+
+            // Ricalcola la preview
+            if (onNodeSelected != null) onNodeSelected.accept(selectedNodeId);
+        }
     }
 
     private void updateGridColorsFromTheme() {
@@ -309,6 +346,18 @@ public class NodesViewController {
 
         scene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalModifierKey);
         scene.addEventFilter(KeyEvent.KEY_RELEASED, this::handleGlobalModifierKey);
+
+        scene.addEventFilter(KeyEvent.KEY_RELEASED, e -> {
+            if (e.getCode() == KeyCode.DELETE || e.getCode() == KeyCode.BACK_SPACE) {
+                handleDelete();
+                e.consume();
+            }
+            // Gestione Undo (Ctrl+Z)
+            if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
+                handleUndo();
+                e.consume();
+            }
+        });
     }
 
     private void uninstallGlobalSceneFilters(Scene scene) {
@@ -1080,4 +1129,40 @@ public class NodesViewController {
             saveToastHide.playFromStart();
         });
     }
+
+    private void handleDelete() {
+        if (selectedNodeId == null || backend == null) return;
+
+        // Rimuovi il nodo dal backend
+        backend.removeNode(selectedNodeId);
+
+        // Pulisci selezione e ridisegna
+        clearSelection();
+        redrawNodesFromPipeline();
+        redrawEdgesFromPipeline();
+
+        // Notifica salvataggio necessario o auto-save
+        if (onSaveRequested != null) onSaveRequested.run();
+    }
+
+    private void handleUndo() {
+        if (backend == null) return;
+        // backend.undo(); // Assumi che il backend abbia un sistema di Undo
+        redrawNodesFromPipeline();
+        redrawEdgesFromPipeline();
+    }
+
+    private void handleRedo() {
+        if (backend == null) return;
+        // backend.redo();
+        redrawNodesFromPipeline();
+        redrawEdgesFromPipeline();
+    }
+
+    private void handleCopy() {
+        if (selectedNodeId == null) return;
+        // Salva l'ID o l'oggetto nodo in una variabile temporanea "clipboardNode"
+        // clipboardNode = backend.getPipeline().getNode(selectedNodeId);
+    }
+
 }
