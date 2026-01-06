@@ -217,4 +217,55 @@ public class AppController {
             undoManager.executeCommand(cmd);
         }
     }
+
+    public void duplicateNode(String nodeId) {
+        Node originalNode = pipeline.getNode(nodeId);
+
+        if (originalNode == null || originalNode.isStructural()) {
+            return;
+        }
+
+        try {
+            Node newNode = createInstanceFromNode(originalNode);
+
+            if (newNode == null) {
+                return;
+            }
+
+            newNode.setX(originalNode.getX() + 40);
+            newNode.setY(originalNode.getY() + 40);
+            newNode.setEnabled(originalNode.isEnabled());
+
+            if (originalNode instanceof Filter && newNode instanceof Filter) {
+                Filter originalFilter = (Filter) originalNode;
+                Filter newFilter = (Filter) newNode;
+                newFilter.restoreMemento(originalFilter.createMemento());
+            }
+
+            Command cmd = new AddNodeCommand(pipeline, newNode);
+            undoManager.executeCommand(cmd);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Node createInstanceFromNode(Node original) {
+        if (original instanceof BrightnessFilter) return new BrightnessFilter();
+        if (original instanceof GrayscaleFilter) return new GrayscaleFilter();
+        if (original instanceof BlurFilter) return new BlurFilter();
+        if (original instanceof InvertFilter) return new InvertFilter();
+        if (original instanceof SepiaFilter) return new SepiaFilter();
+        if (original instanceof SharpenFilter) return new SharpenFilter();
+        if (original instanceof ThresholdFilter) return new ThresholdFilter();
+        if (original instanceof ContrastFilter) return new ContrastFilter();
+        if (original instanceof EdgeDetectionFilter) return new EdgeDetectionFilter();
+        if (original instanceof PixelateFilter) return new PixelateFilter();
+        if (original instanceof VignetteFilter) return new VignetteFilter();
+        if (original instanceof SolarizeFilter) return new SolarizeFilter();
+        if (original instanceof FlipFilter) return new FlipFilter();
+        if (original instanceof ScaleFilter) return new ScaleFilter();
+        if (original instanceof Rotate90Filter) return new Rotate90Filter();
+        return null;
+    }
 }

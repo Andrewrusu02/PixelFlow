@@ -20,6 +20,10 @@ public class NodeWidget {
     @FXML private Circle outputSocket;
     @FXML private HBox contentBox;
 
+    // Ho rimosso statusIcon perché non lo vuoi più usare sul nodo
+
+    private Node node;
+
     public void setTitle(String title) {
         if (nodeTitle != null) {
             nodeTitle.setText(title == null ? "" : title);
@@ -69,6 +73,7 @@ public class NodeWidget {
 
     public void bindNode(Node node) {
         if (node == null) return;
+        this.node = node;
 
         setTitle(node.getName() == null || node.getName().isBlank() ? node.getClass().getSimpleName() : node.getName());
 
@@ -85,6 +90,33 @@ public class NodeWidget {
         } else {
             setNodeTypeCss("node-filter");
             setSocketsEnabled(true, true);
+        }
+
+        // Applica lo stato visivo iniziale
+        updateVisualState();
+    }
+
+    /**
+     * Gestisce solo la trasparenza.
+     * Abilitato = 1.0 (Visibile)
+     * Disabilitato = 0.4 (Molto trasparente)
+     */
+    public void updateVisualState() {
+        if (node == null || root == null) return;
+
+        if (node.isEnabled()) {
+            // NODO ATTIVO: Completamente opaco
+            root.setOpacity(1.0);
+
+            // Opzionale: rimuovi eventuali stili di "disabled" se ne avevi aggiunti
+            root.getStyleClass().remove("node-disabled");
+        } else {
+            // NODO DISABILITATO: Semi-trasparente
+            // 0.4 significa 40% di visibilità, quindi appare molto sbiadito
+            root.setOpacity(0.4);
+
+            // Opzionale: Se vuoi puoi aggiungere una classe CSS per renderlo in scala di grigi
+            // root.getStyleClass().add("node-disabled");
         }
     }
 }

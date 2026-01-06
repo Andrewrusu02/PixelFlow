@@ -138,6 +138,14 @@ public class NodesViewController {
             }
         }
 
+        if (backend != null) {
+            Node n = backend.getPipeline().getNode(nodeId);
+            if (n != null) {
+                if (copyButton != null) copyButton.setDisable(n.isStructural());
+                updateDisableButtonState();
+            }
+        }
+
         if (onNodeSelected != null) {
             onNodeSelected.accept(nodeId);
         }
@@ -252,25 +260,6 @@ public class NodesViewController {
         }
 
         javafx.application.Platform.runLater(this::updateGridColorsFromTheme);
-    }
-
-    private void toggleNodeBypass() {
-        if (selectedNodeId == null || backend == null) return;
-
-        Node node = backend.getPipeline().getNode(selectedNodeId);
-        if (node != null) {
-            // node.setEnabled(!node.isEnabled()); // Assumendo tu abbia questo flag nel modello
-
-            // Aggiorna visivamente lo stile del nodo (es. diventa grigio scuro)
-            javafx.scene.Node view = nodeViewsById.get(selectedNodeId);
-            if (view != null) {
-                if (!node.isEnabled()) view.getStyleClass().add("node-disabled");
-                else view.getStyleClass().remove("node-disabled");
-            }
-
-            // Ricalcola la preview
-            if (onNodeSelected != null) onNodeSelected.accept(selectedNodeId);
-        }
     }
 
     private void updateGridColorsFromTheme() {
@@ -1160,9 +1149,77 @@ public class NodesViewController {
     }
 
     private void handleCopy() {
-        if (selectedNodeId == null) return;
-        // Salva l'ID o l'oggetto nodo in una variabile temporanea "clipboardNode"
-        // clipboardNode = backend.getPipeline().getNode(selectedNodeId);
+        if (selectedNodeId == null || backend == null) return;
+
+        backend.duplicateNode(selectedNodeId);
+
+        clearSelection();
+        redrawNodesFromPipeline();
+        redrawEdgesFromPipeline();
+    }
+
+    private void toggleNodeBypass() {
+        if (selectedNodeId == null || backend == null) return;
+
+        // 1. Backend: Esegui comando
+        backend.toggleNodeEnabled(selectedNodeId);
+
+        // 2. Frontend: Aggiorna l'icona nella toolbar (Pulsante in alto)
+        updateDisableButtonState();
+
+        // 3. Frontend: Aggiorna l'aspetto del nodo nel canvas (se hai implementato updateVisualState nel widget)
+        NodeWidget widget = nodeWidgetById.get(selectedNodeId);
+        if (widget != null) {
+            // Nota: Se ti dava errore qui è perché devi aggiungere il metodo
+            // updateVisualState() dentro la classe NodeWidget/NodeCanvasController
+            // come spiegato nel passaggio precedente.
+            widget.updateVisualState();
+        }
+
+        // 4. Notifica cambio selezione per preview
+        if (onNodeSelected != null) {
+            onNodeSelected.accept(selectedNodeId);
+        }
+    }
+
+    // Aggiungi questo helper per aggiornare lo stato dei bottoni della toolbar
+    private void updateToolbarButtonsState() {
+        if (selectedNodeId == null || disableButton == null) return;
+
+        Node n = backend.getPipeline().getNode(selectedNodeId);
+        if (n != null) {
+            // Esempio: Cambia testo o stile del bottone disable se il nodo è attivo o no
+            if (n.isEnabled()) {
+                disableButton.setStyle("-fx-opacity: 1.0;");
+            } else {
+                disableButton.setStyle("-fx-opacity: 0.5;");
+            }
+        }
+    }
+
+    private void updateDisableButtonState() {
+        if (selectedNodeId == null || backend == null) {
+            disableButton.setDisable(true);
+            return;
+        }
+
+        Node node = backend.getPipeline().getNode(selectedNodeId);
+        if (node == null) {
+            disableButton.setDisable(true);
+            return;
+        }
+
+        // Riabilita il bottone perché c'è una selezione
+        disableButton.setDisable(false);
+
+        // LOGICA ICONA:
+        // Se il nodo è abilitato -> Mostra icona "Hide" (l'azione sarà disabilitare)
+        // Se il nodo è disabilitato -> Mostra icona "Show" (l'azione sarà abilitare)
+        if (node.isEnabled()) {
+            hideShowIcon.setContent(com.unical.pixelflow.infrastructure.AssetManager.ICON_EYE_HIDE);
+        } else {
+            hideShowIcon.setContent(com.unical.pixelflow.infrastructure.AssetManager.ICON_EYE_SHOW);
+        }
     }
 
 }

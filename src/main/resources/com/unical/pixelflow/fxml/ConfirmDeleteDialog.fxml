@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="CENTER" prefWidth="460" spacing="16" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" prefWidth="460" spacing="16" style="-fx-background-radius: 10;" styleClass="background-1" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
     <padding>
         <Insets bottom="26" left="26" right="26" top="26" />

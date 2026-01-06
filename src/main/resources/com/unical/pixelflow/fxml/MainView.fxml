@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane fx:id="homeViewRoot" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.MainEditingController">
+<BorderPane fx:id="homeViewRoot" styleClass="background-1" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.MainEditingController">
 
     <center>
         <StackPane fx:id="CenterNodePane" styleClass="background-1" BorderPane.alignment="CENTER">
