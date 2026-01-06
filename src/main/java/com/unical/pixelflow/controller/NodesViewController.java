@@ -3,6 +3,7 @@ package com.unical.pixelflow.controller;
 import com.unical.pixelflow.application.AppController;
 import com.unical.pixelflow.components.NodeWidget;
 import com.unical.pixelflow.domain.model.Node;
+import com.unical.pixelflow.infrastructure.AssetManager;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -113,6 +114,7 @@ public class NodesViewController {
         this.backend = backend;
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
+        updateUndoRedoButtonsState();
     }
 
     public void setOnNodeSelected(java.util.function.Consumer<String> onNodeSelected) {
@@ -121,47 +123,6 @@ public class NodesViewController {
 
     public void setOnSaveRequested(Runnable onSaveRequested) {
         this.onSaveRequested = onSaveRequested;
-    }
-
-    private void selectNode(String nodeId) {
-        if (nodeId == null || nodeId.isBlank()) return;
-        selectedNodeId = nodeId;
-
-        for (java.util.Map.Entry<String, javafx.scene.Node> e : nodeViewsById.entrySet()) {
-            String id = e.getKey();
-            javafx.scene.Node viewRoot = e.getValue();
-            if (viewRoot == null) continue;
-
-            viewRoot.getStyleClass().remove("node-selected");
-            if (nodeId.equals(id)) {
-                viewRoot.getStyleClass().add("node-selected");
-            }
-        }
-
-        if (backend != null) {
-            Node n = backend.getPipeline().getNode(nodeId);
-            if (n != null) {
-                if (copyButton != null) copyButton.setDisable(n.isStructural());
-                updateDisableButtonState();
-            }
-        }
-
-        if (onNodeSelected != null) {
-            onNodeSelected.accept(nodeId);
-        }
-    }
-
-    private void clearSelection() {
-        selectedNodeId = null;
-        for (java.util.Map.Entry<String, javafx.scene.Node> e : nodeViewsById.entrySet()) {
-            javafx.scene.Node viewRoot = e.getValue();
-            if (viewRoot != null) {
-                viewRoot.getStyleClass().remove("node-selected");
-            }
-        }
-        if (onNodeSelected != null) {
-            onNodeSelected.accept(null);
-        }
     }
 
     @FXML
@@ -254,12 +215,88 @@ public class NodesViewController {
             copyButton.setOnAction(e -> handleCopy());
         }
 
-
         if (disableButton != null) {
             disableButton.setOnAction(e -> toggleNodeBypass());
         }
 
-        javafx.application.Platform.runLater(this::updateGridColorsFromTheme);
+        javafx.application.Platform.runLater(() -> {
+            updateGridColorsFromTheme();
+            updateUndoRedoButtonsState();
+        });
+    }
+
+    private void updateUndoRedoButtonsState() {
+        if (backend == null) return;
+
+        if (undoButton != null) {
+            undoButton.setDisable(!backend.canUndo());
+        }
+
+        if (redoButton != null) {
+            redoButton.setDisable(!backend.canRedo());
+        }
+    }
+
+    private void selectNode(String nodeId) {
+        if (nodeId == null || nodeId.isBlank()) return;
+        selectedNodeId = nodeId;
+
+        for (java.util.Map.Entry<String, javafx.scene.Node> e : nodeViewsById.entrySet()) {
+            String id = e.getKey();
+            javafx.scene.Node viewRoot = e.getValue();
+            if (viewRoot == null) continue;
+
+            viewRoot.getStyleClass().remove("node-selected");
+            if (nodeId.equals(id)) {
+                viewRoot.getStyleClass().add("node-selected");
+            }
+        }
+
+        if (backend != null) {
+            Node n = backend.getPipeline().getNode(nodeId);
+            if (n != null) {
+                if (copyButton != null) copyButton.setDisable(n.isStructural());
+                updateDisableButtonState();
+            }
+        }
+
+        if (onNodeSelected != null) {
+            onNodeSelected.accept(nodeId);
+        }
+    }
+
+    private void clearSelection() {
+        selectedNodeId = null;
+        for (java.util.Map.Entry<String, javafx.scene.Node> e : nodeViewsById.entrySet()) {
+            javafx.scene.Node viewRoot = e.getValue();
+            if (viewRoot != null) {
+                viewRoot.getStyleClass().remove("node-selected");
+            }
+        }
+        if (onNodeSelected != null) {
+            onNodeSelected.accept(null);
+        }
+    }
+
+    private void updateDisableButtonState() {
+        if (selectedNodeId == null || backend == null) {
+            disableButton.setDisable(true);
+            return;
+        }
+
+        Node node = backend.getPipeline().getNode(selectedNodeId);
+        if (node == null) {
+            disableButton.setDisable(true);
+            return;
+        }
+
+        disableButton.setDisable(false);
+
+        if (node.isEnabled()) {
+            hideShowIcon.setContent(AssetManager.ICON_EYE_HIDE);
+        } else {
+            hideShowIcon.setContent(AssetManager.ICON_EYE_SHOW);
+        }
     }
 
     private void updateGridColorsFromTheme() {
@@ -278,17 +315,13 @@ public class NodesViewController {
                 double luminance = c1.getRed() * 0.299 + c1.getGreen() * 0.587 + c1.getBlue() * 0.114;
 
                 if (luminance > 0.6) {
-                    // LIGHT MODE: Sfondo chiaro -> Linee NERE
                     this.gridMinorColor = new Color(0, 0, 0, 0.06);
                     this.gridMajorColor = new Color(0, 0, 0, 0.12);
-
                     this.currentEdgeStyle = "-fx-stroke: rgba(50,50,50,0.85); -fx-stroke-width: 2.2; -fx-stroke-line-cap: round;";
                     rubberBand.getCurve().setStyle("-fx-stroke: rgba(50,50,50,0.85);");
                 } else {
-                    // DARK MODE: Sfondo scuro -> Linee BIANCHE
                     this.gridMinorColor = new Color(1, 1, 1, 0.06);
                     this.gridMajorColor = new Color(1, 1, 1, 0.12);
-
                     this.currentEdgeStyle = "-fx-stroke: rgba(255,255,255,0.75); -fx-stroke-width: 2.2; -fx-stroke-line-cap: round;";
                     rubberBand.getCurve().setStyle("-fx-stroke: rgba(255,255,255,0.85);");
                 }
@@ -329,10 +362,8 @@ public class NodesViewController {
 
         scene.addEventFilter(ScrollEvent.SCROLL, this::handleScrollOrZoom);
         scene.addEventFilter(ZoomEvent.ZOOM, this::handlePinchZoom);
-
         scene.addEventFilter(MouseEvent.MOUSE_MOVED, this::handleGlobalCursorHints);
         scene.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleGlobalCursorHints);
-
         scene.addEventFilter(KeyEvent.KEY_PRESSED, this::handleGlobalModifierKey);
         scene.addEventFilter(KeyEvent.KEY_RELEASED, this::handleGlobalModifierKey);
 
@@ -341,7 +372,6 @@ public class NodesViewController {
                 handleDelete();
                 e.consume();
             }
-            // Gestione Undo (Ctrl+Z)
             if (e.getCode() == KeyCode.Z && e.isShortcutDown()) {
                 handleUndo();
                 e.consume();
@@ -533,6 +563,7 @@ public class NodesViewController {
         rubberBand.getCurve().setVisible(false);
 
         if (connected) e.consume();
+        updateUndoRedoButtonsState();
     }
 
     private void redrawEdgesFromPipeline() {
@@ -609,6 +640,7 @@ public class NodesViewController {
             nodeViewsById.put(n.getId(), nv.root);
             if (nv.controller != null) {
                 nodeWidgetById.put(n.getId(), nv.controller);
+                nv.controller.updateVisualState();
             }
 
             if (nv.root != null) {
@@ -616,6 +648,11 @@ public class NodesViewController {
                     if (me.getButton() != MouseButton.PRIMARY) return;
                     if (me.getTarget() instanceof javafx.scene.shape.Circle) return;
                     selectNode(n.getId());
+
+                    if (me.getClickCount() == 2) {
+                        toggleNodeBypass();
+                        me.consume();
+                    }
                 });
             }
 
@@ -913,6 +950,7 @@ public class NodesViewController {
                     redrawNodesFromPipeline();
                     redrawEdgesFromPipeline();
                     success = true;
+                    updateUndoRedoButtonsState();
                 }
             }
 
@@ -1122,30 +1160,14 @@ public class NodesViewController {
     private void handleDelete() {
         if (selectedNodeId == null || backend == null) return;
 
-        // Rimuovi il nodo dal backend
         backend.removeNode(selectedNodeId);
 
-        // Pulisci selezione e ridisegna
         clearSelection();
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
+        updateUndoRedoButtonsState();
 
-        // Notifica salvataggio necessario o auto-save
         if (onSaveRequested != null) onSaveRequested.run();
-    }
-
-    private void handleUndo() {
-        if (backend == null) return;
-        // backend.undo(); // Assumi che il backend abbia un sistema di Undo
-        redrawNodesFromPipeline();
-        redrawEdgesFromPipeline();
-    }
-
-    private void handleRedo() {
-        if (backend == null) return;
-        // backend.redo();
-        redrawNodesFromPipeline();
-        redrawEdgesFromPipeline();
     }
 
     private void handleCopy() {
@@ -1156,70 +1178,50 @@ public class NodesViewController {
         clearSelection();
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
+        updateUndoRedoButtonsState();
+
+        if (onSaveRequested != null) onSaveRequested.run();
     }
 
     private void toggleNodeBypass() {
         if (selectedNodeId == null || backend == null) return;
 
-        // 1. Backend: Esegui comando
         backend.toggleNodeEnabled(selectedNodeId);
 
-        // 2. Frontend: Aggiorna l'icona nella toolbar (Pulsante in alto)
         updateDisableButtonState();
 
-        // 3. Frontend: Aggiorna l'aspetto del nodo nel canvas (se hai implementato updateVisualState nel widget)
         NodeWidget widget = nodeWidgetById.get(selectedNodeId);
         if (widget != null) {
-            // Nota: Se ti dava errore qui è perché devi aggiungere il metodo
-            // updateVisualState() dentro la classe NodeWidget/NodeCanvasController
-            // come spiegato nel passaggio precedente.
             widget.updateVisualState();
         }
 
-        // 4. Notifica cambio selezione per preview
+        updateUndoRedoButtonsState();
+
         if (onNodeSelected != null) {
             onNodeSelected.accept(selectedNodeId);
         }
     }
 
-    // Aggiungi questo helper per aggiornare lo stato dei bottoni della toolbar
-    private void updateToolbarButtonsState() {
-        if (selectedNodeId == null || disableButton == null) return;
+    private void handleUndo() {
+        if (backend == null || !backend.canUndo()) return;
 
-        Node n = backend.getPipeline().getNode(selectedNodeId);
-        if (n != null) {
-            // Esempio: Cambia testo o stile del bottone disable se il nodo è attivo o no
-            if (n.isEnabled()) {
-                disableButton.setStyle("-fx-opacity: 1.0;");
-            } else {
-                disableButton.setStyle("-fx-opacity: 0.5;");
-            }
-        }
+        backend.undo();
+
+        clearSelection();
+        redrawNodesFromPipeline();
+        redrawEdgesFromPipeline();
+        updateUndoRedoButtonsState();
+        
     }
 
-    private void updateDisableButtonState() {
-        if (selectedNodeId == null || backend == null) {
-            disableButton.setDisable(true);
-            return;
-        }
+    private void handleRedo() {
+        if (backend == null || !backend.canRedo()) return;
 
-        Node node = backend.getPipeline().getNode(selectedNodeId);
-        if (node == null) {
-            disableButton.setDisable(true);
-            return;
-        }
+        backend.redo();
 
-        // Riabilita il bottone perché c'è una selezione
-        disableButton.setDisable(false);
-
-        // LOGICA ICONA:
-        // Se il nodo è abilitato -> Mostra icona "Hide" (l'azione sarà disabilitare)
-        // Se il nodo è disabilitato -> Mostra icona "Show" (l'azione sarà abilitare)
-        if (node.isEnabled()) {
-            hideShowIcon.setContent(com.unical.pixelflow.infrastructure.AssetManager.ICON_EYE_HIDE);
-        } else {
-            hideShowIcon.setContent(com.unical.pixelflow.infrastructure.AssetManager.ICON_EYE_SHOW);
-        }
+        clearSelection();
+        redrawNodesFromPipeline();
+        redrawEdgesFromPipeline();
+        updateUndoRedoButtonsState();
     }
-
 }

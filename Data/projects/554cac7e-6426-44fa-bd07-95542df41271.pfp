@@ -10,16 +10,16 @@
   }, {
     "id" : "7eb14f82-e419-4547-94db-451feea977f6",
     "type" : "GrayscaleFilter",
-    "x" : 454.0,
-    "y" : 279.0,
+    "x" : 374.0,
+    "y" : 182.0,
     "parameters" : {
       "intensity" : 100
     }
   }, {
     "id" : "eed74e4c-3390-40c6-91d6-560dc6764622",
     "type" : "GrayscaleFilter",
-    "x" : 494.0,
-    "y" : 319.0,
+    "x" : 600.0,
+    "y" : 124.0,
     "parameters" : {
       "intensity" : 100
     }
