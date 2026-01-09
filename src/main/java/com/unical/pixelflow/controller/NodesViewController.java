@@ -117,6 +117,7 @@ public class NodesViewController {
     private String selectedNodeId;
 
     private Runnable onSaveRequested;
+    private Runnable onGraphModified;
 
     public void setBackend(AppController backend) {
         this.backend = backend;
@@ -137,6 +138,10 @@ public class NodesViewController {
 
     public void setOnSaveRequested(Runnable onSaveRequested) {
         this.onSaveRequested = onSaveRequested;
+    }
+
+    public void setOnGraphModified(Runnable onGraphModified) {
+        this.onGraphModified = onGraphModified;
     }
 
     @FXML
@@ -653,6 +658,9 @@ public class NodesViewController {
         if (connected) e.consume();
         updateUndoRedoButtonsState();
         updateGraphStatsInternal();
+
+        // Notifica che il grafo è stato modificato
+        if (onGraphModified != null) onGraphModified.run();
     }
 
     private void redrawEdgesFromPipeline() {
@@ -1262,6 +1270,7 @@ public class NodesViewController {
         updateUndoRedoButtonsState();
 
         if (onSaveRequested != null) onSaveRequested.run();
+        if (onGraphModified != null) onGraphModified.run();
     }
 
     private void handleCopy() {

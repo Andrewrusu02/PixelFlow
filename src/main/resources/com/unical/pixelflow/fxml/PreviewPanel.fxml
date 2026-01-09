@@ -15,14 +15,14 @@
    <center>
    
           <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-           <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent; -fx-background: transparent;">
+           <ScrollPane fx:id="scrollPane" fitToWidth="true" fitToHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: transparent; -fx-background: transparent;">
                <content>
-                   <StackPane fx:id="imageContainer" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="transparency-grid">
+                   <StackPane fx:id="imageContainer" alignment="CENTER" styleClass="transparency-grid">
                        <ImageView fx:id="previewImage" preserveRatio="true" />
-                       <Label fx:id="placeholderLabel" styleClass="text-body" text="" visible="false" wrapText="true" />
                    </StackPane>
                </content>
            </ScrollPane>
+           <Label fx:id="placeholderLabel" styleClass="text-body" text="" visible="false" wrapText="true" mouseTransparent="true" />
        </StackPane>
    </center>
    <top>

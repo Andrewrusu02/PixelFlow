@@ -36,6 +36,9 @@ public class PreviewPanelController {
     private double startH;
     private double startV;
 
+    private boolean isFirstPreview = true;
+    private boolean hasInitializedCamera = false;
+
     @FXML
     private void initialize() {
         if (scrollPane != null) {
@@ -75,9 +78,9 @@ public class PreviewPanelController {
                 double dx = e.getSceneX() - dragStartX;
                 double dy = e.getSceneY() - dragStartY;
 
-                // Normalizziamo rispetto alle dimensioni contenuto
-                double contentW = imageContainer == null ? 1 : imageContainer.getBoundsInLocal().getWidth();
-                double contentH = imageContainer == null ? 1 : imageContainer.getBoundsInLocal().getHeight();
+                // Normalizziamo rispetto alle dimensioni contenuto (immagine scalata)
+                double contentW = previewImage.getFitWidth() > 0 ? previewImage.getFitWidth() : previewImage.getImage().getWidth() * zoom;
+                double contentH = previewImage.getFitHeight() > 0 ? previewImage.getFitHeight() : previewImage.getImage().getHeight() * zoom;
                 double viewportW = scrollPane.getViewportBounds().getWidth();
                 double viewportH = scrollPane.getViewportBounds().getHeight();
 
@@ -91,10 +94,6 @@ public class PreviewPanelController {
                 scrollPane.setVvalue(clamp01(startV - deltaV));
             });
         }
-
-        // Stato iniziale
-        setZoom(1.0);
-        center();
     }
 
     public void setPreviewImage(Image image) {
@@ -103,10 +102,24 @@ public class PreviewPanelController {
         placeholderLabel.setVisible(image == null || !placeholderLabel.getText().isBlank());
 
         if (image != null) {
-            // Reset view quando arriva una nuova preview
-            setZoom(1.0);
-            center();
+            if (isFirstPreview || !hasInitializedCamera) {
+                isFirstPreview = false;
+                hasInitializedCamera = true;
+                javafx.application.Platform.runLater(() -> {
+                    fitToScreen();
+                });
+            } else {
+                setZoom(zoom);
+            }
         }
+    }
+
+    /**
+     * Reset della camera state - utile quando si carica un nuovo progetto o si cambia source image
+     */
+    public void resetCameraState() {
+        isFirstPreview = true;
+        hasInitializedCamera = false;
     }
 
     public void showPlaceholder(String message) {
@@ -114,8 +127,6 @@ public class PreviewPanelController {
         previewImage.setVisible(false);
         placeholderLabel.setText(message == null ? "" : message);
         placeholderLabel.setVisible(true);
-        setZoom(1.0);
-        center();
     }
 
     public void clearPlaceholder() {
@@ -156,9 +167,21 @@ public class PreviewPanelController {
 
     private void setZoom(double newZoom) {
         zoom = newZoom;
-        if (imageContainer != null) {
-            imageContainer.setScaleX(zoom);
-            imageContainer.setScaleY(zoom);
+        if (previewImage != null && previewImage.getImage() != null) {
+            double imgW = previewImage.getImage().getWidth();
+            double imgH = previewImage.getImage().getHeight();
+            previewImage.setFitWidth(imgW * zoom);
+            previewImage.setFitHeight(imgH * zoom);
+
+            if (imageContainer != null && scrollPane != null) {
+                double vpW = scrollPane.getViewportBounds().getWidth();
+                double vpH = scrollPane.getViewportBounds().getHeight();
+
+                imageContainer.setMinWidth(Math.max(vpW, imgW * zoom));
+                imageContainer.setMinHeight(Math.max(vpH, imgH * zoom));
+                imageContainer.setPrefWidth(Math.max(vpW, imgW * zoom));
+                imageContainer.setPrefHeight(Math.max(vpH, imgH * zoom));
+            }
         }
         updateZoomLabel();
     }

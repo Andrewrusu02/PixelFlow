@@ -173,8 +173,12 @@
                     inputNode.setSourceImage(sourceImage);
                     currentSourceImagePath = file.getAbsolutePath();
 
-                    // Se il progetto è già su disco (.pfp), aggiorniamo subito la sourcePath.
-                    // Manteniamo l'implementazione minimale: riscriviamo il file .pfp con sourcePath aggiornato.
+
+                    if (previewPanelController != null) {
+                        previewPanelController.resetCameraState();
+                    }
+
+
                     if (currentProjectFilePath != null && !currentProjectFilePath.isBlank()) {
                         try {
                             backend.saveProject(currentProjectFilePath, currentSourceImagePath);
@@ -256,7 +260,11 @@
             this.currentProjectFilePath = null;
             this.currentSourceImagePath = null;
 
-            // IMPORTANT: se la view è già stata creata, NodesViewController deve puntare al nuovo backend.
+
+            if (previewPanelController != null) {
+                previewPanelController.resetCameraState();
+            }
+
             if (nodesViewController != null) {
                 nodesViewController.setBackend(backend);
             }
@@ -349,6 +357,7 @@
                 nodesViewController.setBackend(backend);
                 nodesViewController.setOnNodeSelected(this::refreshPreviewForSelectedNode);
                 nodesViewController.setOnSaveRequested(this::handleSaveProject);
+                nodesViewController.setOnGraphModified(this::refreshPreviewAndExportState);
             }
 
         }
