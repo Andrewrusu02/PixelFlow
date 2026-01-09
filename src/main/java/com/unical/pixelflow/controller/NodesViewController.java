@@ -1262,6 +1262,11 @@ public class NodesViewController {
     private void handleDelete() {
         if (selectedNodeId == null || backend == null) return;
 
+        Node node = backend.getPipeline().getNode(selectedNodeId);
+        if (node != null && node.isStructural()) {
+            return;
+        }
+
         backend.removeNode(selectedNodeId);
 
         clearSelection();
