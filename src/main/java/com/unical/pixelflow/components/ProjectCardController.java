@@ -1,7 +1,7 @@
 package com.unical.pixelflow.components;
 
-import com.unical.pixelflow.popUp.ProjectMenuController;
 import com.unical.pixelflow.model.ProjectMetadata;
+import com.unical.pixelflow.popUp.ProjectMenuController;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +19,7 @@ import javafx.stage.Popup;
 import javafx.stage.Window;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.function.Consumer;
 
@@ -33,7 +34,6 @@ public class ProjectCardController {
 
     private ProjectMetadata project;
 
-    // Le 3 azioni passate dal padre
     private Consumer<ProjectMetadata> onOpenAction;
     private Consumer<ProjectMetadata> onEditAction;
     private Consumer<ProjectMetadata> onDeleteAction;
@@ -43,10 +43,6 @@ public class ProjectCardController {
 
     private Popup currentMenuPopup;
 
-    /**
-     * Inizializza la card con 4 PARAMETRI.
-     * La logica di cosa succede quando clicchi è definita fuori da questa classe.
-     */
     public void setData(ProjectMetadata project,
                         Consumer<ProjectMetadata> onOpen,
                         Consumer<ProjectMetadata> onEdit,
@@ -57,7 +53,6 @@ public class ProjectCardController {
         this.onEditAction = onEdit;
         this.onDeleteAction = onDelete;
 
-        // 1. Setup UI
         nameLabel.setText(project.getName());
         dateLabel.setText(project.getFormattedDate());
 
@@ -76,11 +71,15 @@ public class ProjectCardController {
         if (project.getThumbnailPath() != null && !project.getThumbnailPath().isEmpty()) {
             File file = new File(project.getThumbnailPath());
             if (file.exists()) {
-                Image img = new Image(file.toURI().toString());
-                thumbnailView.setVisible(true);
-                fallbackIcon.setVisible(false);
-                setCenteredImage(thumbnailView, img);
-                return;
+                try (FileInputStream fis = new FileInputStream(file)) {
+                    Image img = new Image(fis);
+                    thumbnailView.setVisible(true);
+                    fallbackIcon.setVisible(false);
+                    setCenteredImage(thumbnailView, img);
+                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         thumbnailView.setVisible(false);
@@ -131,10 +130,8 @@ public class ProjectCardController {
     private void setupInteractions() {
         cardRoot.setOnMouseClicked(e -> {
             if (e.getButton() == MouseButton.PRIMARY) {
-                // Click Sinistro -> Chiama l'azione OPEN passata dal padre
                 if (onOpenAction != null) onOpenAction.accept(project);
             } else if (e.getButton() == MouseButton.SECONDARY) {
-                // Click Destro -> Menu
                 showCustomMenu(e.getScreenX(), e.getScreenY());
             }
         });
@@ -160,17 +157,16 @@ public class ProjectCardController {
             popup.getContent().add(menuContent);
             popup.setAutoHide(true);
 
-            // Collega i pulsanti del menu alle azioni salvate
             menuController.setActions(
-                    () -> { // OPEN
+                    () -> {
                         popup.hide();
                         if (onOpenAction != null) onOpenAction.accept(project);
                     },
-                    () -> { // EDIT
+                    () -> {
                         popup.hide();
                         if (onEditAction != null) onEditAction.accept(project);
                     },
-                    () -> { // DELETE
+                    () -> {
                         popup.hide();
                         if (onDeleteAction != null) onDeleteAction.accept(project);
                     }

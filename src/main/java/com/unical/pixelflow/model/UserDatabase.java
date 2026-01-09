@@ -142,4 +142,17 @@ public class UserDatabase extends Database {
             }
         });
     }
+
+
+    public Task<Boolean> updateProjectThumbnail(int projectId, String thumbnailPath) {
+        return asyncCall(() -> {
+            String query = "UPDATE Projects SET thumbnail_path = ?, modified_at = datetime('now', 'localtime') WHERE id = ?";
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, thumbnailPath);
+                stmt.setInt(2, projectId);
+                return stmt.executeUpdate() > 0;
+            }
+        });
+    }
+
 }

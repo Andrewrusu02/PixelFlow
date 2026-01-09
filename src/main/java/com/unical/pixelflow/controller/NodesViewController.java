@@ -33,7 +33,7 @@ public class NodesViewController {
 
     private static final double MIN_ZOOM = 0.2;
     private static final double MAX_ZOOM = 4.0;
-    private static final boolean DEBUG_EDGES = false; // Variabile reinserita qui
+    private static final boolean DEBUG_EDGES = false;
     private static final double GRID_STEP = 40.0;
     private static final int GRID_MAJOR_EVERY = 5;
     private static final double NODE_WIDGET_WIDTH = 180;
@@ -146,6 +146,12 @@ public class NodesViewController {
 
     @FXML
     private void initialize() {
+        // --- FIX PAN: Playground cattura eventi ovunque ---
+        if (playground != null) {
+            playground.setPickOnBounds(true);
+            playground.setMouseTransparent(false);
+        }
+
         if (inputOverlay != null) {
             inputOverlay.setMouseTransparent(true);
             inputOverlay.setPickOnBounds(true);
@@ -515,6 +521,7 @@ public class NodesViewController {
     }
 
     private void installInputHandlers() {
+        // --- FIX PAN: Uso playground invece di canvas per catturare eventi ---
         javafx.scene.Node eventSurface = getEventSurface();
         if (eventSurface == null) return;
 
@@ -659,7 +666,6 @@ public class NodesViewController {
         updateUndoRedoButtonsState();
         updateGraphStatsInternal();
 
-        // Notifica che il grafo è stato modificato
         if (onGraphModified != null) onGraphModified.run();
     }
 
@@ -1053,6 +1059,7 @@ public class NodesViewController {
                     redrawEdgesFromPipeline();
                     success = true;
                     updateUndoRedoButtonsState();
+                    if (onGraphModified != null) onGraphModified.run();
                 }
             }
 
@@ -1083,7 +1090,7 @@ public class NodesViewController {
     }
 
     private javafx.scene.Node getEventSurface() {
-        return (canvas != null) ? canvas : inputOverlay;
+        return playground;
     }
 
     private void setCanvasCursor(Cursor cursor) {
@@ -1169,6 +1176,8 @@ public class NodesViewController {
             draggingNodeId = null;
             dragStartWorld = null;
             dragStartNodePos = null;
+
+            if (onGraphModified != null) onGraphModified.run();
             e.consume();
         });
     }
@@ -1274,7 +1283,6 @@ public class NodesViewController {
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
 
-        if (onSaveRequested != null) onSaveRequested.run();
         if (onGraphModified != null) onGraphModified.run();
     }
 
@@ -1288,7 +1296,7 @@ public class NodesViewController {
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
 
-        if (onSaveRequested != null) onSaveRequested.run();
+        if (onGraphModified != null) onGraphModified.run();
     }
 
     private void toggleNodeBypass() {
@@ -1308,6 +1316,8 @@ public class NodesViewController {
         if (onNodeSelected != null) {
             onNodeSelected.accept(selectedNodeId);
         }
+
+        if (onGraphModified != null) onGraphModified.run();
     }
 
     private void handleUndo() {
@@ -1320,7 +1330,7 @@ public class NodesViewController {
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
 
-        if (onSaveRequested != null) onSaveRequested.run();
+        if (onGraphModified != null) onGraphModified.run();
     }
 
     private void handleRedo() {
@@ -1333,6 +1343,6 @@ public class NodesViewController {
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
 
-        if (onSaveRequested != null) onSaveRequested.run();
+        if (onGraphModified != null) onGraphModified.run();
     }
 }

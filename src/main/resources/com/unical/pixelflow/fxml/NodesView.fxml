@@ -12,22 +12,22 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.shape.SVGPath?>
 
-<StackPane fx:id="root" alignment="TOP_CENTER" styleClass="background-1"
-           stylesheets="@../css/nodes.css"
-           xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodesViewController" >
+<StackPane fx:id="root" alignment="TOP_CENTER" styleClass="background-1" stylesheets="@../css/nodes.css" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodesViewController">
 
-    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="false" styleClass="background-1"  vbarPolicy="NEVER">
+    <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="false" styleClass="background-1" vbarPolicy="NEVER">
       <content>
             <StackPane fx:id="playground" prefHeight="2000.0" prefWidth="3000.0" styleClass="graph-canvas">
                 <Canvas fx:id="gridCanvas" />
-                <Pane fx:id="edgesLayer" prefHeight="2000.0" prefWidth="3000.0" pickOnBounds="false" mouseTransparent="true" />
-                <Pane fx:id="canvas" prefHeight="2000.0" prefWidth="3000.0" pickOnBounds="true" />
-                <Pane fx:id="inputOverlay" pickOnBounds="true" mouseTransparent="true" style="-fx-background-color: transparent;" />
+                <Pane fx:id="edgesLayer" mouseTransparent="true" pickOnBounds="false" prefHeight="2000.0" prefWidth="3000.0" />
+                <Pane fx:id="canvas" pickOnBounds="true" prefHeight="2000.0" prefWidth="3000.0">
+               <children>
+                      <Pane fx:id="inputOverlay" layoutX="396.0" layoutY="42.0" mouseTransparent="true" pickOnBounds="true" style="-fx-background-color: transparent; -fx-border-radius: 10;" />
+               </children></Pane>
             </StackPane>
       </content>
     </ScrollPane>
 
-    <HBox fx:id="saveToastBox" alignment="CENTER_LEFT" spacing="8.0" visible="false" managed="false" StackPane.alignment="BOTTOM_LEFT" maxWidth="-Infinity" maxHeight="-Infinity">
+    <HBox fx:id="saveToastBox" alignment="CENTER_LEFT" managed="false" maxHeight="-Infinity" maxWidth="-Infinity" spacing="8.0" visible="false" StackPane.alignment="BOTTOM_LEFT">
         <StackPane.margin>
             <Insets bottom="18.0" left="18.0" />
         </StackPane.margin>
@@ -36,7 +36,7 @@
         </children>
     </HBox>
 
-    <HBox fx:id="viewportControls" alignment="CENTER" spacing="8.0" styleClass="background-pop-up" StackPane.alignment="BOTTOM_RIGHT" maxWidth="-Infinity" maxHeight="-Infinity">
+    <HBox fx:id="viewportControls" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" spacing="8.0" styleClass="background-pop-up" StackPane.alignment="BOTTOM_RIGHT">
         <padding>
             <Insets bottom="6.0" left="10.0" right="10.0" top="6.0" />
         </padding>
@@ -44,9 +44,9 @@
             <Insets bottom="18.0" right="18.0" />
         </StackPane.margin>
         <children>
-            <Button fx:id="zoomIndicatorButton" mnemonicParsing="false" styleClass="transparent-menubutton" text="100%" minWidth="60.0" prefWidth="60.0" maxWidth="60.0" />
+            <Button fx:id="zoomIndicatorButton" maxWidth="60.0" minWidth="60.0" mnemonicParsing="false" prefWidth="60.0" styleClass="transparent-menubutton" text="100%" />
             <Separator orientation="VERTICAL" prefHeight="22.0" />
-            <Button fx:id="resetViewButton" mnemonicParsing="false" styleClass="transparent-menubutton" minWidth="30.0" prefWidth="30.0" maxWidth="30.0" minHeight="30.0" prefHeight="30.0" maxHeight="30.0">
+            <Button fx:id="resetViewButton" maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="30.0" styleClass="transparent-menubutton">
                 <graphic>
                     <SVGPath content="M12 2a1 1 0 0 1 1 1v1.07a8 8 0 0 1 6.93 6.93H21a1 1 0 1 1 0 2h-1.07A8 8 0 0 1 13 19.93V21a1 1 0 1 1-2 0v-1.07A8 8 0 0 1 4.07 13H3a1 1 0 1 1 0-2h1.07A8 8 0 0 1 11 4.07V3a1 1 0 0 1 1-1Zm0 4a6 6 0 1 0 0 12a6 6 0 0 0 0-12Zm0 3a1 1 0 0 1 1 1v1h1a1 1 0 1 1 0 2h-1v1a1 1 0 1 1-2 0v-1h-1a1 1 0 1 1 0-2h1v-1a1 1 0 0 1 1-1Z" styleClass="icon_general" />
                 </graphic>

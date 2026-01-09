@@ -13,6 +13,7 @@ import com.unical.pixelflow.infrastructure.ProjectSerializer;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -297,4 +298,6 @@ public class AppController {
 
         return target;
     }
+
+
 }

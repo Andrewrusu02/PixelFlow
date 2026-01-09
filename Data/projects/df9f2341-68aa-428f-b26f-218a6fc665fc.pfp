@@ -1,0 +1,21 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "C:\\Users\\sebas\\Pictures\\vlcsnap-2026-01-05-17h25m24s832.png",
+  "nodes" : [ {
+    "id" : "9ac4e0a8-5b7d-4036-8615-5c4a07bc70a3",
+    "type" : "InputNode",
+    "x" : 80.0,
+    "y" : 200.0,
+    "parameters" : null
+  }, {
+    "id" : "dddfabf4-dda8-41fe-bfe7-eb31f7780190",
+    "type" : "OutputNode",
+    "x" : 820.0,
+    "y" : 200.0,
+    "parameters" : null
+  } ],
+  "connections" : [ {
+    "sourceId" : "9ac4e0a8-5b7d-4036-8615-5c4a07bc70a3",
+    "destId" : "dddfabf4-dda8-41fe-bfe7-eb31f7780190"
+  } ]
+}
