@@ -1,0 +1,32 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "C:\\Users\\user\\Pictures\\SFONDO DESKTOP.png",
+  "nodes" : [ {
+    "id" : "5bd885c7-9d3b-4ef5-adac-ce07b891cd2e",
+    "type" : "OutputNode",
+    "x" : 820.0,
+    "y" : 200.0,
+    "parameters" : null
+  }, {
+    "id" : "7c0cb465-a1f5-46c6-9fb6-0ce4257b5e2c",
+    "type" : "GrayscaleFilter",
+    "x" : 400.0,
+    "y" : 203.0,
+    "parameters" : {
+      "intensity" : 100
+    }
+  }, {
+    "id" : "0fc9f34a-cec2-427c-8a04-39816a453e9c",
+    "type" : "InputNode",
+    "x" : 80.0,
+    "y" : 200.0,
+    "parameters" : null
+  } ],
+  "connections" : [ {
+    "sourceId" : "0fc9f34a-cec2-427c-8a04-39816a453e9c",
+    "destId" : "7c0cb465-a1f5-46c6-9fb6-0ce4257b5e2c"
+  }, {
+    "sourceId" : "7c0cb465-a1f5-46c6-9fb6-0ce4257b5e2c",
+    "destId" : "5bd885c7-9d3b-4ef5-adac-ce07b891cd2e"
+  } ]
+}

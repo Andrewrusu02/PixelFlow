@@ -104,14 +104,51 @@ public class UserDatabase extends Database {
     }
 
     /**
-     * Elimina un progetto.
+     * Elimina un progetto dal database E cancella i file fisici associati (.pfp e thumbnail).
      */
     public Task<Boolean> deleteProject(int projectId) {
         return asyncCall(() -> {
-            String query = "DELETE FROM Projects WHERE id = ?";
-            try (PreparedStatement stmt = con.prepareStatement(query)) {
+            // 1. Recuperiamo i percorsi PRIMA di cancellare la riga, altrimenti li perdiamo
+            String selectQuery = "SELECT file_path, thumbnail_path FROM Projects WHERE id = ?";
+            String pfpPath = null;
+            String thumbPath = null;
+
+            try (PreparedStatement stmt = con.prepareStatement(selectQuery)) {
                 stmt.setInt(1, projectId);
-                return stmt.executeUpdate() > 0;
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    pfpPath = rs.getString("file_path");
+                    thumbPath = rs.getString("thumbnail_path");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                // Se fallisce la lettura, potremmo voler interrompere o continuare a provare a cancellare dal DB
+            }
+
+            // 2. Cancelliamo la riga dal Database
+            String deleteQuery = "DELETE FROM Projects WHERE id = ?";
+            try (PreparedStatement stmt = con.prepareStatement(deleteQuery)) {
+                stmt.setInt(1, projectId);
+                int rowsAffected = stmt.executeUpdate();
+
+                // 3. Se la cancellazione DB è andata a buon fine, cancelliamo i file fisici
+                if (rowsAffected > 0) {
+                    try {
+                        if (pfpPath != null) {
+                            java.io.File pfpFile = new java.io.File(pfpPath);
+                            if (pfpFile.exists()) pfpFile.delete();
+                        }
+                        if (thumbPath != null) {
+                            java.io.File thumbFile = new java.io.File(thumbPath);
+                            if (thumbFile.exists()) thumbFile.delete();
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("Warning: Impossibile cancellare alcuni file fisici per il progetto " + projectId);
+                        ex.printStackTrace();
+                    }
+                    return true;
+                }
+                return false;
             }
         });
     }

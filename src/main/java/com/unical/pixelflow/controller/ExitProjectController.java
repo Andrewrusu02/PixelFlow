@@ -28,6 +28,8 @@ public class ExitProjectController {
 
     @FXML
     private void handleSaveAndExit() {
+        // Esegue il metodo handleSaveProject() del MainEditingController
+        // che ora gestisce correttamente file .pfp, thumbnail e database.
         if (onSaveAction != null) {
             onSaveAction.run();
         }
@@ -36,7 +38,11 @@ public class ExitProjectController {
     }
 
     private void goToHome() {
-        SceneHandler.getInstance(null).startPixeFlow();
+        try {
+            SceneHandler.getInstance(null).startPixeFlow();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void closeDialog() {
