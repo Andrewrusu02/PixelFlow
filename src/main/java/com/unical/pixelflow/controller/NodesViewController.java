@@ -146,7 +146,7 @@ public class NodesViewController {
 
     @FXML
     private void initialize() {
-        // --- FIX PAN: Playground cattura eventi ovunque ---
+        // Configuriamo playground per ricevere eventi su tutta l'area
         if (playground != null) {
             playground.setPickOnBounds(true);
             playground.setMouseTransparent(false);
@@ -521,7 +521,7 @@ public class NodesViewController {
     }
 
     private void installInputHandlers() {
-        // --- FIX PAN: Uso playground invece di canvas per catturare eventi ---
+        // --- MODIFICA PAN: Usa playground invece di canvas ---
         javafx.scene.Node eventSurface = getEventSurface();
         if (eventSurface == null) return;
 
@@ -1014,9 +1014,10 @@ public class NodesViewController {
     }
 
     private void installCanvasDnD() {
-        if (canvas == null) return;
+        // --- MODIFICA DND: Usa playground invece di canvas ---
+        if (playground == null) return;
 
-        canvas.setOnDragOver(e -> {
+        playground.setOnDragOver(e -> {
             Dragboard db = e.getDragboard();
             if (db.hasString()) {
                 e.acceptTransferModes(TransferMode.COPY);
@@ -1024,7 +1025,7 @@ public class NodesViewController {
             e.consume();
         });
 
-        canvas.setOnDragDropped(e -> {
+        playground.setOnDragDropped(e -> {
             Dragboard db = e.getDragboard();
             boolean success = false;
 
