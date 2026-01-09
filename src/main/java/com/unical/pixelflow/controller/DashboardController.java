@@ -58,7 +58,7 @@ public class DashboardController {
         if (DataPF.userDatabase == null) {
             DataPF.userDatabase = UserDatabase.getInstance();
         }
-
+        if (btnImportProject != null) btnImportProject.textProperty().bind(DataPF.lsp.lsb("dashboard.import_project"));
         if (btnNewProject != null) btnNewProject.textProperty().bind(DataPF.lsp.lsb("dashboard.new_project"));
         if (btnProjects != null) btnProjects.textProperty().bind(DataPF.lsp.lsb("dashboard.recent_projects"));
         if (btnSettings != null) btnSettings.textProperty().bind(DataPF.lsp.lsb("dashboard.profile_settings"));

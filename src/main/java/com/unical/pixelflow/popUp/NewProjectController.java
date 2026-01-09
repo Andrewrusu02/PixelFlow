@@ -130,10 +130,10 @@ public class NewProjectController {
                 createButton.setDisable(false);
                 FieldAnimationUtils.animateFieldError(nameField);
                 if (errorLabel != null) {
-                    errorLabel.setText("Esiste già un progetto con questo nome.");
+                    errorLabel.setText(DataPF.lsp.lsb("dialog.new_project.error.name_exists").get());
                     errorLabel.setVisible(true);
                 } else {
-                    showAlert("Errore", "Nome progetto già esistente.");
+                    showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.name_exists").get());
                 }
             } else {
                 proceedWithCreation(name);
