@@ -121,8 +121,9 @@ public class DashboardController {
     @FXML
     void handleImportProject(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Importa Progetto PixelFlow");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PixelFlow Project (*.pfp)", "*.pfp"));
+        fileChooser.titleProperty().bind(DataPF.lsp.lsb("dashboard.import_project.file_chooser.title"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                DataPF.lsp.lsb("dashboard.import_project.file_chooser.filter.pfp").get(), "*.pfp"));
 
         File selectedFile = fileChooser.showOpenDialog(dashboardRoot.getScene().getWindow());
 

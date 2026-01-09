@@ -9,12 +9,12 @@
 
 <VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" styleClass="background-5" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.WaveFormViewController">
    <children>
-      <HBox fx:id="headerBox" alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 0 0 1 0;" styleClass="background-2">
+      <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" spacing="10.0" style="-fx-border-color: #2A2A2A; -fx-border-width: 0 0 1 0;" styleClass="background-2">
          <padding>
             <Insets left="15.0" right="15.0" />
          </padding>
          <children>
-            <Label fx:id="titleWaveform" styleClass="title-text" text="WAVEFORM" />
+            <Label fx:id="titleWaveform" styleClass="title-text" />
          </children>
       </HBox>
       <StackPane fx:id="canvasContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="230.0" prefWidth="280.0" styleClass="background-5">

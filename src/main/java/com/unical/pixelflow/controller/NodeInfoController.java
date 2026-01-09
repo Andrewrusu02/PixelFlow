@@ -1,5 +1,6 @@
 package com.unical.pixelflow.controller;
 
+import com.unical.pixelflow.model.DataPF;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -79,9 +80,7 @@ public class NodeInfoController {
         if (infoBox != null) {
             infoBox.setVisible(true);
         }
-        if (alertInfoLabel != null) {
-            alertInfoLabel.setText("Seleziona un nodo per modificare i parametri");
-        }
+        // alertInfoLabel is bound in initialize()
     }
 
     private static final java.time.Duration PARAM_DEBOUNCE = java.time.Duration.ofMillis(120);
@@ -95,6 +94,16 @@ public class NodeInfoController {
                 onParametersChanged.run();
             }
         });
+
+        // Bind static UI strings
+        if (titleProperties != null) titleProperties.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.properties.title"));
+        if (projectOverviewTitle != null) projectOverviewTitle.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.project_overview.title"));
+        if (nodesLabel != null) nodesLabel.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.project_overview.nodes"));
+        if (connectionsLabel != null) connectionsLabel.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.project_overview.connections"));
+        if (alertInfoLabel != null) alertInfoLabel.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.hint.select_node"));
+
+        // Stato iniziale overview
+        setGraphStats(0, 0);
     }
 
     private void requestParametersChangedDebounced() {
@@ -127,7 +136,8 @@ public class NodeInfoController {
         // Solo filtri hanno parametri.
         if (!(node instanceof com.unical.pixelflow.domain.model.Filter filter)) {
             if (PanelControlsEffects != null) {
-                javafx.scene.control.Label lbl = new javafx.scene.control.Label("Nessun parametro modificabile per questo nodo");
+                javafx.scene.control.Label lbl = new javafx.scene.control.Label();
+                lbl.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.no_editable_params.node"));
                 lbl.getStyleClass().add("text-body");
                 PanelControlsEffects.getChildren().add(lbl);
             }
@@ -149,12 +159,14 @@ public class NodeInfoController {
     }
 
     private void buildRotateControls(com.unical.pixelflow.domain.model.Filter filter) {
-        javafx.scene.control.Label title = new javafx.scene.control.Label("Rotazione (90°)");
+        javafx.scene.control.Label title = new javafx.scene.control.Label();
+        title.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.rotate.title"));
         title.getStyleClass().add("text-body");
 
         javafx.scene.control.Button left = new javafx.scene.control.Button("⟲");
         javafx.scene.control.Button right = new javafx.scene.control.Button("⟳");
-        javafx.scene.control.Button reset = new javafx.scene.control.Button("Reset");
+        javafx.scene.control.Button reset = new javafx.scene.control.Button();
+        reset.textProperty().bind(DataPF.lsp.lsb("common.reset"));
 
         left.getStyleClass().add("transparent-button");
         right.getStyleClass().add("transparent-button");
@@ -183,12 +195,14 @@ public class NodeInfoController {
     }
 
     private void buildFlipControls(com.unical.pixelflow.domain.model.Filter filter) {
-        javafx.scene.control.Label title = new javafx.scene.control.Label("Flip");
+        javafx.scene.control.Label title = new javafx.scene.control.Label();
+        title.textProperty().bind(DataPF.lsp.lsb("node.flip.name"));
         title.getStyleClass().add("text-body");
 
         javafx.scene.control.Button flipH = new javafx.scene.control.Button("H");
         javafx.scene.control.Button flipV = new javafx.scene.control.Button("V");
-        javafx.scene.control.Button reset = new javafx.scene.control.Button("Reset");
+        javafx.scene.control.Button reset = new javafx.scene.control.Button();
+        reset.textProperty().bind(DataPF.lsp.lsb("common.reset"));
 
         flipH.getStyleClass().add("transparent-button");
         flipV.getStyleClass().add("transparent-button");
@@ -245,7 +259,8 @@ public class NodeInfoController {
             javafx.scene.layout.HBox.setHgrow(slider, javafx.scene.layout.Priority.ALWAYS);
 
             // Reset: torna al default (che abbiamo impostato come "nessun effetto" nei filtri)
-            javafx.scene.control.Button reset = new javafx.scene.control.Button("Reset");
+            javafx.scene.control.Button reset = new javafx.scene.control.Button();
+            reset.textProperty().bind(DataPF.lsp.lsb("common.reset"));
             reset.getStyleClass().add("transparent-button");
 
             javafx.scene.control.Label valueLabel = new javafx.scene.control.Label();
@@ -290,27 +305,29 @@ public class NodeInfoController {
         }
 
         if (!any) {
-            javafx.scene.control.Label lbl = new javafx.scene.control.Label("Nessun parametro modificabile per questo filtro");
+            javafx.scene.control.Label lbl = new javafx.scene.control.Label();
+            lbl.textProperty().bind(DataPF.lsp.lsb("editor.nodeinfo.no_editable_params.filter"));
             lbl.getStyleClass().add("text-body");
             PanelControlsEffects.getChildren().add(lbl);
         }
     }
 
     private static String prettyParamName(String raw) {
-        if (raw == null) return "Parametro";
-        return switch (raw) {
-            case "radius" -> "Blur";
-            case "brightness" -> "Luminosità";
-            case "amount" -> "Intensità";
-            case "intensity" -> "Intensità";
-            case "threshold" -> "Soglia";
-            case "pixelSize" -> "Dimensione pixel";
-            case "percent" -> "Scala (%)";
-            case "angle_steps" -> "Rotazione";
-            case "horizontal" -> "Flip orizzontale";
-            case "vertical" -> "Flip verticale";
-            default -> raw;
+        if (raw == null) return DataPF.lsp.lsb("editor.nodeinfo.param.unknown").get();
+        String key = switch (raw) {
+            case "radius" -> "editor.nodeinfo.param.radius";
+            case "brightness" -> "editor.nodeinfo.param.brightness";
+            case "amount" -> "editor.nodeinfo.param.amount";
+            case "intensity" -> "editor.nodeinfo.param.intensity";
+            case "threshold" -> "editor.nodeinfo.param.threshold";
+            case "pixelSize" -> "editor.nodeinfo.param.pixelsize";
+            case "percent" -> "editor.nodeinfo.param.percent";
+            case "angle_steps" -> "editor.nodeinfo.param.angle_steps";
+            case "horizontal" -> "editor.nodeinfo.param.horizontal";
+            case "vertical" -> "editor.nodeinfo.param.vertical";
+            default -> null;
         };
+        return key == null ? raw : DataPF.lsp.lsb(key).get();
     }
 
     private static String formatValue(Object cur, double v) {
@@ -320,4 +337,19 @@ public class NodeInfoController {
         return String.format(java.util.Locale.US, "%.2f", v);
     }
 
+    /**
+     * Aggiorna la sezione "Project overview" con il numero totale di nodi e connessioni.
+     * Viene chiamato dal controller della vista nodi quando il grafo cambia o quando si carica un progetto.
+     */
+    public void setGraphStats(int nodesCount, int connectionsCount) {
+        if (nodesCountText != null) {
+            nodesCountText.setText(Integer.toString(Math.max(0, nodesCount)));
+        }
+        if (connectionsCountText != null) {
+            connectionsCountText.setText(Integer.toString(Math.max(0, connectionsCount)));
+        }
+
+        // In alcune UI i box possono essere nascosti quando non c' e8 selezione:
+        // qui li lasciamo comunque aggiornati senza forzare la visibilit e0.
+    }
 }

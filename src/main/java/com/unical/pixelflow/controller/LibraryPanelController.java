@@ -24,8 +24,21 @@ public class LibraryPanelController {
 
     @FXML
     public void initialize() {
+        // Titolo + placeholder localizzati
+        if (titleLibrary != null) titleLibrary.textProperty().bind(DataPF.lsp.lsb("library.title"));
+        if (searchField != null) searchField.promptTextProperty().bind(DataPF.lsp.lsb("library.search.placeholder"));
+
         loadFilterCategories();
         populateCategorized();
+
+        // Quando cambia lingua, rigenera la UI così aggiorna categorie + eventuale messaggio "no results"
+        DataPF.lsp.selectedLanguageProperty().addListener((_, _, __) -> {
+            if (searchField != null && searchField.getText() != null && !searchField.getText().isBlank()) {
+                handleSearch(searchField.getText());
+            } else {
+                populateCategorized();
+            }
+        });
 
         searchField.textProperty().addListener((observable, oldValue, newValue) -> {
             handleSearch(newValue);
@@ -86,7 +99,8 @@ public class LibraryPanelController {
         itemsContainer.getChildren().clear();
 
         if (filters.isEmpty()) {
-            Label noRes = new Label("Nessun risultato");
+            Label noRes = new Label();
+            noRes.textProperty().bind(DataPF.lsp.lsb("library.search.no_results"));
             noRes.setStyle("-fx-text-fill: #888888; -fx-padding: 10;");
             itemsContainer.getChildren().add(noRes);
             return;
@@ -115,8 +129,10 @@ public class LibraryPanelController {
         }
     }
 
-    private Label createCategoryHeader(String text) {
-        Label label = new Label(text.toUpperCase());
+    private Label createCategoryHeader(String keyOrText) {
+        Label label = new Label();
+        // Le categorie sono localizzate via chiavi, ma teniamo fallback se serve.
+        label.textProperty().bind(DataPF.lsp.lsb(keyOrText));
         label.setStyle("-fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 10 0 5 5;");
         return label;
     }
@@ -124,7 +140,7 @@ public class LibraryPanelController {
     private void loadFilterCategories() {
         categories.clear();
 
-        FilterCategory colorCat = new FilterCategory("Color & Light");
+        FilterCategory colorCat = new FilterCategory("library.category.color_light");
         addDef(colorCat, "BrightnessFilter");
         addDef(colorCat, "ContrastFilter");
         addDef(colorCat, "GrayscaleFilter");
@@ -134,7 +150,7 @@ public class LibraryPanelController {
         addDef(colorCat, "ThresholdFilter");
         categories.add(colorCat);
 
-        FilterCategory effectCat = new FilterCategory("Effects & Detail");
+        FilterCategory effectCat = new FilterCategory("library.category.effects_detail");
         addDef(effectCat, "BlurFilter");
         addDef(effectCat, "EdgeDetectionFilter");
         addDef(effectCat, "PixelateFilter");
@@ -142,7 +158,7 @@ public class LibraryPanelController {
         addDef(effectCat, "VignetteFilter");
         categories.add(effectCat);
 
-        FilterCategory geoCat = new FilterCategory("Geometry & Transform");
+        FilterCategory geoCat = new FilterCategory("library.category.geometry_transform");
         addDef(geoCat, "FlipFilter");
         addDef(geoCat, "Rotate90Filter");
         addDef(geoCat, "ScaleFilter");
@@ -176,3 +192,4 @@ public class LibraryPanelController {
         }
     }
 }
+

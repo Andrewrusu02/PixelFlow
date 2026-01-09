@@ -1,5 +1,6 @@
 package com.unical.pixelflow.controller;
 
+import com.unical.pixelflow.model.DataPF;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -9,7 +10,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,9 +17,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WaveFormViewController {
 
-    @FXML private VBox root;
     @FXML private StackPane canvasContainer;
     @FXML private Canvas waveformCanvas;
+    @FXML private javafx.scene.control.Label titleWaveform;
 
     // DEFINIZIONE EXECUTOR CON THREAD DAEMON (Risolve il problema della chiusura app)
     private final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
@@ -32,6 +32,10 @@ public class WaveFormViewController {
 
     @FXML
     public void initialize() {
+        if (titleWaveform != null) {
+            titleWaveform.textProperty().bind(DataPF.lsp.lsb("waveform.title"));
+        }
+
         // Binding per il ridimensionamento automatico
         if (canvasContainer != null && waveformCanvas != null) {
             waveformCanvas.widthProperty().bind(canvasContainer.widthProperty());
@@ -166,8 +170,6 @@ public class WaveFormViewController {
     }
 
     public void dispose() {
-        if (executor != null) {
-            executor.shutdownNow();
-        }
+        executor.shutdownNow();
     }
 }

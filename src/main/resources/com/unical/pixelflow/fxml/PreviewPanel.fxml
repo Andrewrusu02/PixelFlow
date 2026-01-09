@@ -32,7 +32,7 @@
                <Insets left="15.0" right="15.0" />
            </padding>
            <children>
-               <Label fx:id="titlePreview" styleClass="text-title" text="PREVIEW" />
+               <Label fx:id="titlePreview" styleClass="text-title" />
                <Pane HBox.hgrow="ALWAYS" />
            </children>
        </HBox>

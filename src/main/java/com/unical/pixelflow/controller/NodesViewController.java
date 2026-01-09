@@ -125,6 +125,9 @@ public class NodesViewController {
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
         updateGraphStatsInternal();
+
+
+        javafx.application.Platform.runLater(this::centerAndFitPipeline);
     }
 
     public void setOnNodeSelected(java.util.function.Consumer<String> onNodeSelected) {
@@ -280,8 +283,8 @@ public class NodesViewController {
         if (root == null || backend == null) return;
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Esporta o Salva Progetto");
-        fileChooser.setInitialFileName("progetto_pixelflow");
+        fileChooser.titleProperty().bind(DataPF.lsp.lsb("editor.export.file_chooser.title"));
+        fileChooser.setInitialFileName(DataPF.lsp.lsb("editor.export.file_chooser.default_name").get());
 
         String userHome = System.getProperty("user.home");
         File desktop = new File(userHome, "Desktop");
@@ -289,9 +292,12 @@ public class NodesViewController {
             fileChooser.setInitialDirectory(desktop);
         }
 
-        FileChooser.ExtensionFilter extFilterPfp = new FileChooser.ExtensionFilter("Progetto PixelFlow (*.pfp)", "*.pfp");
-        FileChooser.ExtensionFilter extFilterPng = new FileChooser.ExtensionFilter("Immagine PNG (*.png)", "*.png");
-        FileChooser.ExtensionFilter extFilterJpg = new FileChooser.ExtensionFilter("Immagine JPEG (*.jpg)", "*.jpg", "*.jpeg");
+        FileChooser.ExtensionFilter extFilterPfp = new FileChooser.ExtensionFilter(
+                DataPF.lsp.lsb("editor.export.file_chooser.filter.pfp").get(), "*.pfp");
+        FileChooser.ExtensionFilter extFilterPng = new FileChooser.ExtensionFilter(
+                DataPF.lsp.lsb("editor.export.file_chooser.filter.png").get(), "*.png");
+        FileChooser.ExtensionFilter extFilterJpg = new FileChooser.ExtensionFilter(
+                DataPF.lsp.lsb("editor.export.file_chooser.filter.jpg").get(), "*.jpg", "*.jpeg");
 
         fileChooser.getExtensionFilters().addAll(extFilterPfp, extFilterPng, extFilterJpg);
 
@@ -303,15 +309,15 @@ public class NodesViewController {
 
                 if (fileName.endsWith(".pfp")) {
                     backend.saveProject(file.getAbsolutePath(), "");
-                    showSaveToast(true, "Progetto esportato in: " + file.getName());
+                    showSaveToast(true, DataPF.lsp.lsb("editor.export.toast.project_success", new javafx.beans.property.SimpleStringProperty(file.getName())).get());
                 } else {
                     backend.exportImage(file);
-                    showSaveToast(true, "Immagine esportata con successo!");
+                    showSaveToast(true, DataPF.lsp.lsb("editor.export.toast.image_success").get());
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
-                showSaveToast(false, "Errore durante l'esportazione");
+                showSaveToast(false, DataPF.lsp.lsb("editor.export.toast.failed").get());
             }
         }
     }
@@ -984,6 +990,75 @@ public class NodesViewController {
     }
 
     private void resetView() {
+        centerAndFitPipeline();
+    }
+
+    /**
+     * Calcola il bounding box di tutti i nodi e centra la vista con un adeguato margine e zoom.
+     * Se non ci sono nodi, torna alla posizione di default.
+     */
+    private void centerAndFitPipeline() {
+        if (backend == null || backend.getPipeline() == null) {
+            resetToDefaults();
+            return;
+        }
+
+        java.util.Collection<Node> nodes = backend.getPipeline().getNodes().values();
+        if (nodes.isEmpty()) {
+            resetToDefaults();
+            return;
+        }
+
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = Double.MIN_VALUE;
+        double maxY = Double.MIN_VALUE;
+
+        for (Node n : nodes) {
+            double nx = n.getX();
+            double ny = n.getY();
+            double nw = NODE_WIDGET_WIDTH;
+            double nh = NODE_WIDGET_HEIGHT;
+
+            if (nx < minX) minX = nx;
+            if (ny < minY) minY = ny;
+            if (nx + nw > maxX) maxX = nx + nw;
+            if (ny + nh > maxY) maxY = ny + nh;
+        }
+
+        double pipelineWidth = maxX - minX;
+        double pipelineHeight = maxY - minY;
+
+        double boundsCenterX = minX + pipelineWidth / 2.0;
+        double boundsCenterY = minY + pipelineHeight / 2.0;
+
+        double viewportWidth = scrollPane.getViewportBounds().getWidth();
+        double viewportHeight = scrollPane.getViewportBounds().getHeight();
+
+        if (viewportWidth <= 0) viewportWidth = 800;
+        if (viewportHeight <= 0) viewportHeight = 600;
+
+        double padding = 60.0;
+        double availableWidth = viewportWidth - (padding * 2);
+        double availableHeight = viewportHeight - (padding * 2);
+
+        double zoomX = availableWidth / pipelineWidth;
+        double zoomY = availableHeight / pipelineHeight;
+        double fitZoom = Math.min(zoomX, zoomY);
+
+        fitZoom = clamp(fitZoom, MIN_ZOOM, 1.0);
+
+        zoom = fitZoom;
+
+        offsetX = boundsCenterX - viewportWidth / (2.0 * zoom);
+        offsetY = boundsCenterY - viewportHeight / (2.0 * zoom);
+
+        applyWorldTransform();
+        updateZoomIndicator();
+        gridDirty = true;
+    }
+
+    private void resetToDefaults() {
         zoom = 1.0;
         offsetX = 0.0;
         offsetY = 0.0;
@@ -1347,3 +1422,4 @@ public class NodesViewController {
         if (onGraphModified != null) onGraphModified.run();
     }
 }
+

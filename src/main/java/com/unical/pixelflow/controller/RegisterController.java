@@ -65,6 +65,9 @@ public class RegisterController {
     @FXML
     private ImageView logoImageView;
 
+    @FXML
+    private Label footerLabel;
+
     private final PFDataBase db = PFDataBase.getInstance();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -218,73 +221,33 @@ public class RegisterController {
     }
 
     @FXML
-    private void initialize() {
-        DataPF.esm.register(executorService);
+    public void initialize() {
+        // Bind UI texts to i18n.
+        if (labelUsername != null) labelUsername.textProperty().bind(DataPF.lsp.lsb("register.username"));
+        if (labelPassword != null) labelPassword.textProperty().bind(DataPF.lsp.lsb("register.password"));
+        if (labelConfirmPassword != null) labelConfirmPassword.textProperty().bind(DataPF.lsp.lsb("register.confirmpassword"));
 
-        try {
-            String path = "/com/unical/pixelflow/assets/logo/LogoPixelFlow.png";
-            Image logo = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-            logoImageView.setImage(logo);
-        } catch (Exception e) {
-            System.err.println("Errore caricamento logo register: " + e.getMessage());
+        if (registerButton != null) registerButton.textProperty().bind(DataPF.lsp.lsb("register.registertext"));
+
+        if (labelLogin != null) labelLogin.textProperty().bind(DataPF.lsp.lsb("register.loginlabel"));
+        if (loginChangeButton != null) loginChangeButton.textProperty().bind(DataPF.lsp.lsb("register.changetologin"));
+
+        if (footerLabel != null) {
+            footerLabel.textProperty().bind(DataPF.lsp.lsb("register.footer"));
         }
 
-        labelLogin.textProperty().bind(DataPF.lsp.lsb("register.loginlabel"));
-        labelUsername.textProperty().bind(DataPF.lsp.lsb("register.username"));
-        labelPassword.textProperty().bind(DataPF.lsp.lsb("register.password"));
-        labelConfirmPassword.textProperty().bind(DataPF.lsp.lsb("register.confirmpassword"));
-        registerButton.textProperty().bind(DataPF.lsp.lsb("register.registertext"));
-        loginChangeButton.textProperty().bind(DataPF.lsp.lsb("register.changetologin"));
+        // Clear error label initially; it will be bound when errors happen.
+        if (errorLabel != null) {
+            errorLabel.textProperty().unbind();
+            errorLabel.setText("");
+        }
 
-
-        usernameFieldRegister.setOnKeyPressed(event -> {
-            if (Objects.requireNonNull(event.getCode()) == KeyCode.ENTER) {
-                if (!(passwordFieldRegister.password.get() == null || passwordFieldRegister.password.get().isEmpty()) &&
-                        !(passwordConfirmPassword.password.get() == null || passwordConfirmPassword.password.get().isEmpty())) {
-                    registerButton.fire();
-                } else {
-                    passwordFieldRegister.requestFocusOnPassword();
-                }
+        if (logoImageView != null) {
+            try {
+                logoImageView.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/com/unical/pixelflow/images/LogoPixelFlow.png"))));
+            } catch (Exception ignored) {
             }
-        });
-
-        passwordFieldRegister.setOnKeyPressed(event -> {
-            if (Objects.requireNonNull(event.getCode()) == KeyCode.ENTER) {
-                if (!(usernameFieldRegister.getText() == null || usernameFieldRegister.getText().isEmpty()) &&
-                        !(passwordConfirmPassword.password.get() == null || passwordConfirmPassword.password.get().isEmpty())) {
-                    registerButton.fire();
-                } else {
-                    passwordConfirmPassword.requestFocusOnPassword();
-                }
-            }
-        });
-
-        passwordConfirmPassword.setOnKeyPressed(event -> {
-            if (Objects.requireNonNull(event.getCode()) == KeyCode.ENTER) {
-                registerButton.fire();
-            }
-        });
-
-        usernameFieldRegister.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.isEmpty()) {
-                FieldAnimationUtils.removeErrorStyles(usernameFieldRegister);
-                errorLabel.setOpacity(0);
-            }
-        });
-
-        passwordFieldRegister.password.addListener((observable, oldValue, newValue) -> {
-            if (!newValue.isEmpty()) {
-                FieldAnimationUtils.removeErrorStyles(passwordFieldRegister);
-                errorLabel.setOpacity(0);
-            }
-        });
-
-        passwordConfirmPassword.password.addListener((observable, oldValue, newValue) -> {
-            if (!newValue.isEmpty()) {
-                FieldAnimationUtils.removeErrorStyles(passwordConfirmPassword);
-                errorLabel.setOpacity(0);
-            }
-        });
+        }
     }
 
 }

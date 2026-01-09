@@ -184,8 +184,9 @@ public class ProfileSettingsController {
 
     private void handleImageChange() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Image");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.titleProperty().bind(DataPF.lsp.lsb("profile.image_chooser.title"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                DataPF.lsp.lsb("profile.image_chooser.filter.images").get(), "*.png", "*.jpg", "*.jpeg"));
         File selectedFile = fileChooser.showOpenDialog(saveButton.getScene().getWindow());
 
         if (selectedFile != null) {

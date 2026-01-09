@@ -14,7 +14,7 @@
     <children>
         <BorderPane prefHeight="540.0" prefWidth="960.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <bottom>
-                <Label text=" © PixelFlow - A new way to edit  " BorderPane.alignment="CENTER">
+                <Label BorderPane.alignment="CENTER">
                     <BorderPane.margin>
                         <Insets bottom="10.0" />
                     </BorderPane.margin>
@@ -32,37 +32,31 @@
                                            preserveRatio="true" />
                             </children>
                         </VBox>
-                        <Label fx:id="labelUsername" text="Username">
-                            <VBox.margin>
-                                <Insets />
-                            </VBox.margin></Label>
+                        <Label fx:id="labelUsername" />
                         <TextField fx:id="usernameField">
                             <VBox.margin>
                                 <Insets bottom="10.0" top="5.0" />
                             </VBox.margin>
                         </TextField>
-                        <Label fx:id="labelPassword" text="Password">
-                            <VBox.margin>
-                                <Insets />
-                            </VBox.margin></Label>
+                        <Label fx:id="labelPassword" />
                         <ComboPasswordField fx:id="passwordField">
                             <VBox.margin>
                                 <Insets bottom="10.0" top="5.0" />
                             </VBox.margin>
                         </ComboPasswordField>
-                        <Label fx:id="errorLabel" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" opacity="0.0" prefHeight="18.0" prefWidth="368.0" text="Error" textFill="RED">
+                        <Label fx:id="errorLabel" alignment="CENTER" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" opacity="0.0" prefHeight="18.0" prefWidth="368.0" textFill="RED">
                             <VBox.margin>
                                 <Insets bottom="5.0" />
                             </VBox.margin>
                         </Label>
-                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#CheckLogin" prefHeight="26.0" prefWidth="378.0" styleClass="full-button" text="Login">
+                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#CheckLogin" prefHeight="26.0" prefWidth="378.0" styleClass="full-button">
                             <VBox.margin>
                                 <Insets bottom="10.0" />
                             </VBox.margin>
                         </Button>
-                        <Label fx:id="LabelRegister" alignment="CENTER" contentDisplay="RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="386.0" text="Do not have an account?" textOverrun="CLIP">
+                        <Label fx:id="LabelRegister" alignment="CENTER" contentDisplay="RIGHT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="26.0" prefWidth="386.0" textOverrun="CLIP">
                             <graphic>
-                                <Button fx:id="registerButton" mnemonicParsing="false" onAction="#ChangeToRegister" styleClass="buttons_login_register_secondary" text="Register" />
+                                <Button fx:id="registerButton" mnemonicParsing="false" onAction="#ChangeToRegister" styleClass="buttons_login_register_secondary" />
                             </graphic>
                         </Label>
                     </children>

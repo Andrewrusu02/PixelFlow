@@ -56,6 +56,8 @@ public class MainEditingController {
     private int currentProjectId = -1; // --- NUOVO: Serve per aggiornare il DB ---
     private String lastSelectedNodeId;
 
+    private String lastSavedSnapshot;
+
     private final java.util.concurrent.ExecutorService previewExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "preview-executor");
         t.setDaemon(true);
@@ -77,17 +79,26 @@ public class MainEditingController {
         }
 
         ensureStructuralNodes();
+        markProjectAsSaved();
         javafx.application.Platform.runLater(this::refreshPreviewAndExportState);
     }
 
     @FXML
     private void handleHome() {
+        if (!isProjectModified()) {
+            goToDashboard();
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/ExitProjectView.fxml"));
             Parent root = loader.load();
 
             ExitProjectController exitController = loader.getController();
-            exitController.setOnSaveAction(this::handleSaveProject);
+            exitController.setOnSaveAction(() -> {
+                handleSaveProject();
+                markProjectAsSaved();
+            });
 
             Stage popupStage = new Stage();
             popupStage.initOwner(buttonHome.getScene().getWindow());
@@ -99,7 +110,8 @@ public class MainEditingController {
 
             if (buttonHome.getScene() != null) {
                 scene.getStylesheets().addAll(buttonHome.getScene().getStylesheets());
-            }            popupStage.setScene(scene);
+            }
+            popupStage.setScene(scene);
 
             showDialogWithBlur(popupStage);
 
@@ -108,12 +120,66 @@ public class MainEditingController {
         }
     }
 
+    private void goToDashboard() {
+        try {
+            com.unical.pixelflow.view.SceneHandler.getInstance(null).startPixeFlow();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean isProjectModified() {
+        if (backend == null || backend.getPipeline() == null) return false;
+        if (lastSavedSnapshot == null) return true;
+        String now = buildProjectSnapshot();
+        return !lastSavedSnapshot.equals(now);
+    }
+
+    private void markProjectAsSaved() {
+        if (backend == null || backend.getPipeline() == null) {
+            lastSavedSnapshot = null;
+            return;
+        }
+        lastSavedSnapshot = buildProjectSnapshot();
+    }
+
+    private String buildProjectSnapshot() {
+        var pipeline = backend.getPipeline();
+        if (pipeline == null) return "";
+
+        java.util.List<String> parts = new java.util.ArrayList<>();
+
+        java.util.List<com.unical.pixelflow.domain.model.Node> nodes = new java.util.ArrayList<>(pipeline.getNodes().values());
+        nodes.sort(java.util.Comparator.comparing(com.unical.pixelflow.domain.model.Node::getId));
+
+        parts.add("nodes=" + nodes.size());
+
+        for (com.unical.pixelflow.domain.model.Node n : nodes) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(n.getId()).append('|').append(n.getClass().getSimpleName()).append('|');
+            sb.append(java.lang.Double.toString(n.getX())).append('|').append(java.lang.Double.toString(n.getY()));
+
+            if (n instanceof com.unical.pixelflow.domain.model.Filter f) {
+                java.util.List<String> keys = new java.util.ArrayList<>(f.getParameters().keySet());
+                keys.sort(String::compareTo);
+                for (String k : keys) {
+                    Object v = f.getParameterValue(k);
+                    sb.append('|').append(k).append('=').append(v == null ? "null" : v.toString());
+                }
+            }
+
+            parts.add(sb.toString());
+        }
+
+        return String.join("\n", parts);
+    }
+
     @FXML
     private void handleBrowse() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Seleziona Immagine Sorgente");
+        fileChooser.titleProperty().bind(com.unical.pixelflow.model.DataPF.lsp.lsb("editor.file_chooser.source.title"));
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Immagini", "*.png", "*.jpg", "*.jpeg", "*.bmp")
+                new FileChooser.ExtensionFilter(com.unical.pixelflow.model.DataPF.lsp.lsb("imagefiles").get(), "*.png", "*.jpg", "*.jpeg", "*.bmp")
         );
 
         Stage stage = (Stage) browseButton.getScene().getWindow();
@@ -209,10 +275,10 @@ public class MainEditingController {
             img = backend.getPreview();
         } catch (Exception ex) {
             if (previewPanelController != null) {
-                previewPanelController.showPlaceholder("Preview non disponibile: " + ex.getMessage());
+                previewPanelController.showPlaceholder(DataPF.lsp.lsb("editor.preview.unavailable").get() + ": " + ex.getMessage());
             }
             if (nodesViewController != null) {
-                nodesViewController.setExportEnabled(false, "Preview non disponibile");
+                nodesViewController.setExportEnabled(false, DataPF.lsp.lsb("editor.preview.unavailable.short").get());
             }
             return;
         }
@@ -235,20 +301,20 @@ public class MainEditingController {
 
     private String buildPreviewErrorMessage(GraphValidationResult r) {
         String first = r.getFirstErrorOrNull();
-        if (first == null) return "Collega l'Input all'Output per vedere l'anteprima";
+        if (first == null) return com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.connect_input_output").get();
         return switch (first) {
-            case "Input is not connected" -> "Collega l'Input alla pipeline";
-            case "Output is not connected" -> "Collega un nodo all'Output";
-            case "No path from Input to Output" -> "Collega l'Input all'Output con una catena valida";
-            case "Missing Input node" -> "Nodo Input mancante";
-            case "Missing Output node" -> "Nodo Output mancante";
-            default -> "Anteprima non disponibile: " + first;
+            case "Input is not connected" -> com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.input_not_connected").get();
+            case "Output is not connected" -> com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.output_not_connected").get();
+            case "No path from Input to Output" -> com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.no_path").get();
+            case "Missing Input node" -> com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.missing_input").get();
+            case "Missing Output node" -> com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.missing_output").get();
+            default -> com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.error.generic").get() + ": " + first;
         };
     }
 
     private String buildExportTooltip(GraphValidationResult r) {
         String msg = buildPreviewErrorMessage(r);
-        return msg + " (Export disabilitato)";
+        return msg + " (" + DataPF.lsp.lsb("editor.export.disabled.suffix").get() + ")";
     }
 
     public void setProject(ProjectMetadata project) {
@@ -267,7 +333,7 @@ public class MainEditingController {
 
         if (project != null) {
             currentProjectFilePath = project.getPath();
-            currentProjectId = project.getId(); // --- RECUPERIAMO L'ID ---
+            currentProjectId = project.getId();
             backend.loadProject(project.getPath());
 
             ensureStructuralNodes();
@@ -306,6 +372,7 @@ public class MainEditingController {
                 e.printStackTrace();
             }
 
+            markProjectAsSaved();
             refreshPreviewAndExportState();
         }
     }
@@ -352,6 +419,13 @@ public class MainEditingController {
             nodesViewController.setOnNodeSelected(this::refreshPreviewForSelectedNode);
             nodesViewController.setOnSaveRequested(this::handleSaveProject);
             nodesViewController.setOnGraphModified(this::refreshPreviewAndExportState);
+
+            // Aggiorna Project Overview (nodi/connessioni totali)
+            nodesViewController.setOnGraphStatsChanged((nodes, connections) -> {
+                if (nodeInfoController != null) {
+                    nodeInfoController.setGraphStats(nodes, connections);
+                }
+            });
         }
 
     }
@@ -387,13 +461,13 @@ public class MainEditingController {
 
         if (nodeId == null || nodeId.isBlank()) {
             if (previewPanelController != null) {
-                previewPanelController.showPlaceholder("Seleziona un nodo per vedere l’anteprima");
+                previewPanelController.showPlaceholder(com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.placeholder.select_node").get());
             }
             if (nodeInfoController != null) {
                 nodeInfoController.showNoSelection();
             }
             if (nodesViewController != null) {
-                nodesViewController.setExportEnabled(false, "Seleziona un nodo per abilitare l’export");
+                nodesViewController.setExportEnabled(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.export.disabled.select_node").get());
             }
             return;
         }
@@ -423,10 +497,10 @@ public class MainEditingController {
                 javafx.application.Platform.runLater(() -> {
                     if (reqId != previewRequestSeq.get()) return;
                     if (previewPanelController != null) {
-                        previewPanelController.showPlaceholder("Preview non disponibile: " + ex.getMessage());
+                        previewPanelController.showPlaceholder(com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.unavailable").get() + ": " + ex.getMessage());
                     }
                     if (nodesViewController != null) {
-                        nodesViewController.setExportEnabled(false, "Preview non disponibile");
+                        nodesViewController.setExportEnabled(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.unavailable.short").get());
                     }
                 });
                 return;
@@ -438,9 +512,9 @@ public class MainEditingController {
                 if (previewPanelController == null) return;
 
                 if (fxImage == null) {
-                    previewPanelController.showPlaceholder("Preview non disponibile per il nodo selezionato");
+                    previewPanelController.showPlaceholder(com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.unavailable.for_node").get());
                     if (nodesViewController != null) {
-                        nodesViewController.setExportEnabled(false, "Preview non disponibile");
+                        nodesViewController.setExportEnabled(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.preview.unavailable.short").get());
                     }
                 } else {
                     previewPanelController.clearPlaceholder();
@@ -462,11 +536,11 @@ public class MainEditingController {
     // =========================================================
     private void handleSaveProject() {
         if (backend == null) {
-            if (nodesViewController != null) nodesViewController.showSaveToast(false, "Backend non disponibile");
+            if (nodesViewController != null) nodesViewController.showSaveToast(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.save.backend_unavailable").get());
             return;
         }
         if (currentProjectFilePath == null || currentProjectFilePath.isBlank()) {
-            if (nodesViewController != null) nodesViewController.showSaveToast(false, "Nessun file progetto associato");
+            if (nodesViewController != null) nodesViewController.showSaveToast(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.save.no_project_file").get());
             return;
         }
 
@@ -507,13 +581,13 @@ public class MainEditingController {
             }
 
             if (nodesViewController != null) {
-                nodesViewController.showSaveToast(true, "Salvataggio completato");
+                nodesViewController.showSaveToast(true, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.save.success").get());
             }
-
+            markProjectAsSaved();
         } catch (Exception ex) {
             ex.printStackTrace();
             if (nodesViewController != null) {
-                nodesViewController.showSaveToast(false, "Salvataggio non riuscito");
+                nodesViewController.showSaveToast(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.save.failed").get());
             }
         }
     }
@@ -556,7 +630,7 @@ public class MainEditingController {
         g2d.setColor(java.awt.Color.GRAY);
         g2d.setFont(new Font("Arial", Font.BOLD, 20));
 
-        String text = "Empty Project";
+        String text = DataPF.lsp.lsb("editor.thumbnail.empty").get();
         FontMetrics fm = g2d.getFontMetrics();
         int x = (width - fm.stringWidth(text)) / 2;
         int y = (height - fm.getHeight()) / 2 + fm.getAscent();
@@ -566,4 +640,6 @@ public class MainEditingController {
         return img;
     }
 }
+
+
 

@@ -234,7 +234,7 @@ public class HomeProjectsViewController {
 
     private void showError(String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("PixelFlow Error");
+        alert.setTitle(DataPF.lsp.lsb("common.app_error_title").get());
         alert.setHeaderText(null);
         alert.setContentText(content);
         alert.showAndWait();

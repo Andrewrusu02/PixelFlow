@@ -1,5 +1,6 @@
 package com.unical.pixelflow.controller;
 
+import com.unical.pixelflow.model.DataPF;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -41,6 +42,10 @@ public class PreviewPanelController {
 
     @FXML
     private void initialize() {
+        if (titlePreview != null) {
+            titlePreview.textProperty().bind(DataPF.lsp.lsb("editor.preview.title"));
+        }
+
         if (scrollPane != null) {
             scrollPane.setPannable(false); // usiamo pan custom per una UX consistente
             scrollPane.setHbarPolicy(javafx.scene.control.ScrollPane.ScrollBarPolicy.AS_NEEDED);

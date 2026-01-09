@@ -4,8 +4,8 @@
   "nodes" : [ {
     "id" : "b282b01a-6715-4fc4-9eac-d2b2539f510e",
     "type" : "InvertFilter",
-    "x" : 128.22449788718342,
-    "y" : -10.326534429027475,
+    "x" : 97.22449788718342,
+    "y" : -278.3265344290274,
     "parameters" : {
       "intensity" : 0
     }
@@ -25,5 +25,8 @@
   "connections" : [ {
     "sourceId" : "7dc0bbdd-0e98-4cfd-920c-3430e12d67cf",
     "destId" : "b282b01a-6715-4fc4-9eac-d2b2539f510e"
+  }, {
+    "sourceId" : "b282b01a-6715-4fc4-9eac-d2b2539f510e",
+    "destId" : "5697c4c7-2ba3-4193-a8ef-944fb9b7befe"
   } ]
 }
