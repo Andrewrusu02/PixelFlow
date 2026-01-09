@@ -184,6 +184,12 @@ public class MainEditingController {
     private void refreshPreviewAndExportState() {
         if (backend == null) return;
 
+
+        if (lastSelectedNodeId != null && !lastSelectedNodeId.isBlank()) {
+            refreshPreviewForSelectedNode(lastSelectedNodeId);
+            return;
+        }
+
         GraphValidationResult result = backend.getPipeline().validateGraph();
 
         if (!result.isValid()) {
@@ -196,7 +202,9 @@ public class MainEditingController {
             return;
         }
 
-        BufferedImage img = null;
+        long reqId = previewRequestSeq.incrementAndGet();
+
+        BufferedImage img;
         try {
             img = backend.getPreview();
         } catch (Exception ex) {
@@ -210,6 +218,9 @@ public class MainEditingController {
         }
 
         Image fxImage = (img == null) ? null : SwingFXUtils.toFXImage(img, null);
+
+        if (reqId != previewRequestSeq.get()) return;
+
         if (previewPanelController != null) {
             previewPanelController.clearPlaceholder();
             previewPanelController.setPreviewImage(fxImage);
@@ -555,3 +566,4 @@ public class MainEditingController {
         return img;
     }
 }
+
