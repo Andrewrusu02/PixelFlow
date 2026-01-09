@@ -20,8 +20,16 @@ public class Database implements AutoCloseable {
     protected Connection con = null;
 
     private static final String TEMPLATE_PATH = "/com/unical/pixelflow/databases/usertemplate.db";
-    private static final String USER_DB_FOLDER = "Data/user_dbs";
-    private static final String USER_IMGS_FOLDER = "Data/user_imgs";
+
+    /**
+     * Canonical data folder for runtime persistence.
+     *
+     * Keep this aligned with the repository layout (`Data/`).
+     */
+    protected static final String DATA_DIR = "Data";
+
+    private static final String USER_DB_FOLDER = DATA_DIR + "/user_dbs";
+    private static final String USER_IMGS_FOLDER = DATA_DIR + "/user_imgs";
     private static final String DEFAULT_PROFILE_IMAGE_PATH = "/com/unical/pixelflow/images/userprofile.png";
 
     protected final ExecutorService executorService = Executors.newCachedThreadPool();
@@ -35,9 +43,7 @@ public class Database implements AutoCloseable {
 
         if (!dbFile.exists()) {
             try {
-                if (dbFile.getParentFile() != null) {
-                    dbFile.getParentFile().mkdirs();
-                }
+                ensureParentDir(dbFile);
 
                 String templatePath = "/com/unical/pixelflow/databases/pixelFlowDataBaseTemplate.db";
 
@@ -58,6 +64,13 @@ public class Database implements AutoCloseable {
                 System.out.println("Database " + db + " connected!");
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void ensureParentDir(File file) {
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs();
         }
     }
 
@@ -102,7 +115,6 @@ public class Database implements AutoCloseable {
     }
 
     private static void createDefaultProfileImage(int id) throws IOException {
-        // Crea la cartella se non esiste
         File imgFolder = new File(USER_IMGS_FOLDER);
         if (!imgFolder.exists()) {
             imgFolder.mkdirs();

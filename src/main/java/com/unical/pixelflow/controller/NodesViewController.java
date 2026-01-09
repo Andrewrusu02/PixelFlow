@@ -527,7 +527,6 @@ public class NodesViewController {
     }
 
     private void installInputHandlers() {
-        // --- MODIFICA PAN: Usa playground invece di canvas ---
         javafx.scene.Node eventSurface = getEventSurface();
         if (eventSurface == null) return;
 
@@ -1089,7 +1088,6 @@ public class NodesViewController {
     }
 
     private void installCanvasDnD() {
-        // --- MODIFICA DND: Usa playground invece di canvas ---
         if (playground == null) return;
 
         playground.setOnDragOver(e -> {

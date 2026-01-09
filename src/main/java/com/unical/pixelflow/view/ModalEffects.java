@@ -9,7 +9,6 @@ import javafx.scene.Node;
 import javafx.scene.effect.Effect;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -49,21 +48,21 @@ public final class ModalEffects {
             this.blurByNode = blurByNode;
         }
 
+        /**
+         * Rimuove l'overlay e ripristina gli effetti originali sul contenuto sottostante.
+         */
         public void remove() {
             if (parent == null) return;
 
-            // Animazione di uscita: blur -> 0, glass opacity -> 0
             Platform.runLater(() -> {
                 try {
                     Timeline out = new Timeline();
 
-                    // glass fade-out
                     out.getKeyFrames().add(new KeyFrame(
                             ANIM_OUT,
                             new KeyValue(glass.opacityProperty(), 0.0, Interpolator.EASE_BOTH)
                     ));
 
-                    // blur -> 0
                     if (blurByNode != null) {
                         for (GaussianBlur gb : blurByNode.values()) {
                             out.getKeyFrames().add(new KeyFrame(
@@ -73,14 +72,12 @@ public final class ModalEffects {
                         }
                     }
 
-                    out.setOnFinished(ev -> {
-                        // 1) rimuovi glass
+                    out.setOnFinished(_ -> {
                         try {
                             parent.getChildren().remove(glass);
                         } catch (Exception ignored) {
                         }
 
-                        // 2) ripristina effetti originali sui child
                         if (previousChildEffects != null) {
                             for (var entry : previousChildEffects.entrySet()) {
                                 try {
@@ -90,7 +87,6 @@ public final class ModalEffects {
                             }
                         }
 
-                        // 3) ripristina effetto sul parent
                         try {
                             parent.setEffect(oldParentEffect);
                         } catch (Exception ignored) {
@@ -99,7 +95,6 @@ public final class ModalEffects {
 
                     out.play();
                 } catch (Exception e) {
-                    // fallback hard remove
                     try {
                         parent.getChildren().remove(glass);
                     } catch (Exception ignored) {

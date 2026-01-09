@@ -53,7 +53,7 @@ public class MainEditingController {
 
     private String currentProjectFilePath;
     private String currentSourceImagePath;
-    private int currentProjectId = -1; // --- NUOVO: Serve per aggiornare il DB ---
+    private int currentProjectId = -1;
     private String lastSelectedNodeId;
 
     private String lastSavedSnapshot;
@@ -531,9 +531,6 @@ public class MainEditingController {
 
     }
 
-    // =========================================================
-    //  SALVATAGGIO COMPLETO (PFP + THUMBNAIL + DB)
-    // =========================================================
     private void handleSaveProject() {
         if (backend == null) {
             if (nodesViewController != null) nodesViewController.showSaveToast(false, com.unical.pixelflow.model.DataPF.lsp.lsb("editor.save.backend_unavailable").get());
@@ -548,13 +545,11 @@ public class MainEditingController {
             // 1. Salva il file .pfp
             new ProjectSerializer().save(backend.getPipeline(), currentSourceImagePath, currentProjectFilePath);
 
-            // 2. Genera o Aggiorna la Thumbnail
             int thumbW = 380;
             int thumbH = 280;
 
             BufferedImage currentPreview = null;
             try {
-                // Tenta di ottenere la preview; se fallisce (es. grafo non valido), currentPreview resta null
                 currentPreview = backend.getPreview();
             } catch (Exception ignored) {}
 
@@ -568,14 +563,12 @@ public class MainEditingController {
             File thumbnailsDir = new File("Data/thumbnails");
             if (!thumbnailsDir.exists()) thumbnailsDir.mkdirs();
 
-            // Usa lo stesso nome base del file .pfp (UUID)
             File pfpFile = new File(currentProjectFilePath);
             String rawName = pfpFile.getName().replace(".pfp", "");
             File thumbFile = new File(thumbnailsDir, rawName + ".png");
 
             ImageIO.write(thumbnailToSave, "png", thumbFile);
 
-            // 3. Aggiorna il Database (con ID valido)
             if (currentProjectId > 0) {
                 DataPF.userDatabase.updateProjectThumbnail(currentProjectId, thumbFile.getAbsolutePath());
             }
@@ -591,8 +584,6 @@ public class MainEditingController {
             }
         }
     }
-
-    // --- METODI HELPER THUMBNAIL (Copiati da NewProjectController) ---
 
     private BufferedImage createThumbnail(BufferedImage source, int targetWidth, int targetHeight) {
         int sourceWidth = source.getWidth();
@@ -640,6 +631,4 @@ public class MainEditingController {
         return img;
     }
 }
-
-
 

@@ -7,11 +7,6 @@ import com.unical.pixelflow.model.DBObjects.dbUser;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PFDataBase extends Database {
 
@@ -25,7 +20,7 @@ public class PFDataBase extends Database {
     }
 
     private PFDataBase() {
-        super("data/pixel_flow.db");
+        super(Database.DATA_DIR + "/pixel_flow.db");
     }
 
     public Task<Boolean> checkPassword(String username, String password) {
@@ -143,4 +138,3 @@ public class PFDataBase extends Database {
         });
     }
 }
-

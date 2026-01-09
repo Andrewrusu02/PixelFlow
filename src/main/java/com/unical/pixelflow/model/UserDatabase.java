@@ -22,8 +22,7 @@ public class UserDatabase extends Database {
     }
 
     public UserDatabase() {
-        // Ogni utente ha il suo DB, quindi user_id non serve più nella tabella Projects locale
-        super("data/user_dbs/" + DataPF.dbUser.getId() + ".db");
+        super(Database.DATA_DIR + "/user_dbs/" + DataPF.dbUser.getId() + ".db");
         createProjectTable();
     }
 
@@ -44,10 +43,6 @@ public class UserDatabase extends Database {
         }
     }
 
-    // ============================================================
-    // GESTIONE PROGETTI (DB LOCALE UTENTE)
-    // ============================================================
-
     /**
      * Recupera tutti i progetti dal DB locale dell'utente corrente.
      * Non serve più passare userId.
@@ -55,7 +50,6 @@ public class UserDatabase extends Database {
     public Task<List<ProjectMetadata>> getUserProjects() {
         return asyncCall(() -> {
             List<ProjectMetadata> projects = new ArrayList<>();
-            // Rimosso "WHERE user_id = ?" perché il DB è già specifico dell'utente
             String query = "SELECT * FROM Projects ORDER BY modified_at DESC";
 
             try (PreparedStatement stmt = con.prepareStatement(query)) {
@@ -74,7 +68,7 @@ public class UserDatabase extends Database {
 
                     projects.add(new ProjectMetadata(
                             rs.getInt("id"),
-                            DataPF.dbUser.getId(), // Passiamo l'ID dell'utente corrente preso da DataPF
+                            DataPF.dbUser.getId(),
                             rs.getString("name"),
                             rs.getString("file_path"),
                             rs.getString("thumbnail_path"),
@@ -92,7 +86,6 @@ public class UserDatabase extends Database {
      */
     public Task<Boolean> saveProject(String name, String filePath, String thumbnailPath) {
         return asyncCall(() -> {
-            // Rimosso user_id dalla INSERT
             String query = "INSERT INTO Projects (name, file_path, thumbnail_path) VALUES (?, ?, ?)";
             try (PreparedStatement stmt = con.prepareStatement(query)) {
                 stmt.setString(1, name);
@@ -108,7 +101,6 @@ public class UserDatabase extends Database {
      */
     public Task<Boolean> deleteProject(int projectId) {
         return asyncCall(() -> {
-            // 1. Recuperiamo i percorsi PRIMA di cancellare la riga, altrimenti li perdiamo
             String selectQuery = "SELECT file_path, thumbnail_path FROM Projects WHERE id = ?";
             String pfpPath = null;
             String thumbPath = null;
@@ -122,16 +114,13 @@ public class UserDatabase extends Database {
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
-                // Se fallisce la lettura, potremmo voler interrompere o continuare a provare a cancellare dal DB
             }
 
-            // 2. Cancelliamo la riga dal Database
             String deleteQuery = "DELETE FROM Projects WHERE id = ?";
             try (PreparedStatement stmt = con.prepareStatement(deleteQuery)) {
                 stmt.setInt(1, projectId);
                 int rowsAffected = stmt.executeUpdate();
 
-                // 3. Se la cancellazione DB è andata a buon fine, cancelliamo i file fisici
                 if (rowsAffected > 0) {
                     try {
                         if (pfpPath != null) {
@@ -202,7 +191,7 @@ public class UserDatabase extends Database {
                 stmt.setString(1, name);
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
-                    return rs.getInt(1) > 0; // Ritorna true se count > 0
+                    return rs.getInt(1) > 0;
                 }
             }
             return false;

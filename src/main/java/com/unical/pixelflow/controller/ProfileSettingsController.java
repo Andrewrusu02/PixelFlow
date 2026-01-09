@@ -198,7 +198,6 @@ public class ProfileSettingsController {
                 if (!destFile.getParentFile().exists()) destFile.getParentFile().mkdirs();
                 Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-                // Carica e centra la nuova immagine temporanea
                 Image newImg = new Image(destFile.toURI().toString());
                 setCenteredCircleImage(image, newImg);
 
@@ -208,7 +207,6 @@ public class ProfileSettingsController {
         }
     }
 
-    // --- Metodi Helper per Ritaglio Immagine (Center Crop) ---
 
     private void setCenteredCircleImage(ImageView imageView, Image image) {
         imageView.setImage(image);

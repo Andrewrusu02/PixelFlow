@@ -73,7 +73,6 @@ public class EditProjectController {
             return;
         }
 
-        // No-op
         if (newName.equals(project.getName())) {
             saved = false;
             dialogStage.close();
@@ -81,7 +80,7 @@ public class EditProjectController {
         }
 
         Task<Boolean> task = DataPF.userDatabase.renameProject(project.getId(), newName);
-        task.setOnSucceeded(e -> {
+        task.setOnSucceeded(_ -> {
             Boolean ok = task.getValue();
             if (Boolean.TRUE.equals(ok)) {
                 saved = true;
@@ -90,7 +89,7 @@ public class EditProjectController {
                 showError(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.edit_project.error.generic").get());
             }
         });
-        task.setOnFailed(e -> showError(DataPF.lsp.lsb("common.error").get(), String.valueOf(task.getException())));
+        task.setOnFailed(_ -> showError(DataPF.lsp.lsb("common.error").get(), String.valueOf(task.getException())));
 
         Thread t = new Thread(task);
         t.setDaemon(true);
