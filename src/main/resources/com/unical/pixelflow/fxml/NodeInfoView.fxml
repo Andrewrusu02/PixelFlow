@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" styleClass="background-3" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodeInfoController">
+<VBox fx:id="root" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="400.0" styleClass="background-3" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.NodeInfoController">
    <children>
         <HBox fx:id="headerBox" alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" styleClass="background-3">
             <padding>
@@ -26,7 +26,7 @@
                         <children>
                             <Label fx:id="projectOverviewTitle" styleClass="text-title" text="Project Overview" />
 
-                                        <HBox fx:id="nodesStatsBox" alignment="CENTER_LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
+                                        <HBox fx:id="nodesStatsBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
                                 <children>
                                     <Label fx:id="nodesLabel" maxWidth="Infinity" nodeOrientation="LEFT_TO_RIGHT" text="Nodes:" HBox.hgrow="ALWAYS" />
                                     <Label fx:id="nodesCountText" text="0" />
@@ -36,7 +36,7 @@
                                 </padding>
                             </HBox>
 
-                                        <HBox fx:id="connectionsStatsBox" alignment="CENTER_LEFT" layoutX="25.0" layoutY="39.0" maxWidth="-Infinity" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
+                                        <HBox fx:id="connectionsStatsBox" alignment="CENTER_LEFT" layoutX="25.0" layoutY="39.0" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" spacing="10.0" style="-fx-background-radius: 10;" styleClass="background-4">
                                 <children>
                                     <Label fx:id="connectionsLabel" maxWidth="Infinity" nodeOrientation="LEFT_TO_RIGHT" text="Connections:" HBox.hgrow="ALWAYS" />
                                     <Label fx:id="connectionsCountText" text="0" />

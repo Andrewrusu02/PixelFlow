@@ -1,6 +1,6 @@
 {
   "version" : "1.0",
-  "sourcePath" : "",
+  "sourcePath" : null,
   "nodes" : [ {
     "id" : "0c87b870-4907-4625-b143-7ca0a6cbd11d",
     "type" : "InputNode",

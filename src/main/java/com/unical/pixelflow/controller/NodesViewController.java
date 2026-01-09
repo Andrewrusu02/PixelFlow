@@ -4,6 +4,7 @@ import com.unical.pixelflow.application.AppController;
 import com.unical.pixelflow.components.NodeWidget;
 import com.unical.pixelflow.domain.model.Node;
 import com.unical.pixelflow.infrastructure.AssetManager;
+import com.unical.pixelflow.model.DataPF;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.Tooltip;
@@ -22,6 +24,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Affine;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.File;
 import java.util.function.BiConsumer;
@@ -30,6 +33,7 @@ public class NodesViewController {
 
     private static final double MIN_ZOOM = 0.2;
     private static final double MAX_ZOOM = 4.0;
+    private static final boolean DEBUG_EDGES = false; // Variabile reinserita qui
     private static final double GRID_STEP = 40.0;
     private static final int GRID_MAJOR_EVERY = 5;
     private static final double NODE_WIDGET_WIDTH = 180;
@@ -153,6 +157,7 @@ public class NodesViewController {
         bindToolMode();
         applyWorldTransform();
         installNodeSelectionHandlers();
+        setupTooltips();
 
         new AnimationTimer() {
             @Override
@@ -240,6 +245,26 @@ public class NodesViewController {
         });
     }
 
+    private void setupTooltips() {
+        installTooltip(saveProjectButton, "editor.toolbar.save");
+        installTooltip(exportButton, "editor.toolbar.export");
+        installTooltip(undoButton, "editor.toolbar.undo");
+        installTooltip(redoButton, "editor.toolbar.redo");
+        installTooltip(deleteButton, "editor.toolbar.delete");
+        installTooltip(copyButton, "editor.toolbar.copy");
+        installTooltip(disableButton, "editor.toolbar.disable");
+        installTooltip(moveButton, "editor.toolbar.move");
+        installTooltip(resetViewButton, "editor.toolbar.reset_view");
+    }
+
+    private void installTooltip(Control control, String key) {
+        if (control == null) return;
+        Tooltip tooltip = new Tooltip();
+        tooltip.textProperty().bind(DataPF.lsp.lsb(key));
+        tooltip.setShowDelay(Duration.millis(50));
+        control.setTooltip(tooltip);
+    }
+
     private void handleExport() {
         if (root == null || backend == null) return;
 
@@ -266,8 +291,6 @@ public class NodesViewController {
                 String fileName = file.getName().toLowerCase();
 
                 if (fileName.endsWith(".pfp")) {
-                    // Questa riga salva il file .pfp esattamente nel percorso scelto dall'utente
-                    // rendendolo esportabile e condivisibile.
                     backend.saveProject(file.getAbsolutePath(), "");
                     showSaveToast(true, "Progetto esportato in: " + file.getName());
                 } else {
@@ -681,6 +704,10 @@ public class NodesViewController {
         }
 
         rubberBand.getCurve().toFront();
+
+        if (DEBUG_EDGES) {
+            System.out.println("[EDGE] renderedCurves=" + rendered + " layerChildren=" + edgesLayer.getChildren().size());
+        }
 
         if (!isDraggingNode && !isConnecting && !isPanning) {
             updateGraphStatsInternal();
