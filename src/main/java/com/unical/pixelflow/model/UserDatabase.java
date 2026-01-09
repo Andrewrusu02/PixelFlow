@@ -192,4 +192,21 @@ public class UserDatabase extends Database {
         });
     }
 
+    /**
+     * Verifica se esiste già un progetto con questo nome.
+     */
+    public Task<Boolean> checkProjectNameExists(String name) {
+        return asyncCall(() -> {
+            String query = "SELECT COUNT(*) FROM Projects WHERE name = ?";
+            try (PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, name);
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    return rs.getInt(1) > 0; // Ritorna true se count > 0
+                }
+            }
+            return false;
+        });
+    }
+
 }

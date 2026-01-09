@@ -327,11 +327,31 @@ public class DashboardController {
 
     void showProjects() {
         if (btnProjects != null && !btnProjects.isSelected()) btnProjects.setSelected(true);
+
+        if (btnNewProject != null) {
+            btnNewProject.setVisible(true);
+            btnNewProject.setManaged(true);
+        }
+        if (btnImportProject != null) {
+            btnImportProject.setVisible(true);
+            btnImportProject.setManaged(true);
+        }
+
         loadView("/com/unical/pixelflow/fxml/HomeView.fxml");
     }
 
     void showSettings() {
         if (btnSettings != null && !btnSettings.isSelected()) btnSettings.setSelected(true);
+
+        if (btnNewProject != null) {
+            btnNewProject.setVisible(false);
+            btnNewProject.setManaged(false);
+        }
+        if (btnImportProject != null) {
+            btnImportProject.setVisible(false);
+            btnImportProject.setManaged(false);
+        }
+
         loadView("/com/unical/pixelflow/fxml/ProfileSettings.fxml");
     }
 

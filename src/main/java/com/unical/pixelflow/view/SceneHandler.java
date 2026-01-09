@@ -14,18 +14,20 @@ public class SceneHandler {
     private static Stage primaryStage;
 
     private static final String STYLE_DARK_CSS_PATH = "/com/unical/pixelflow/css/style-dark.css";
-    private static final String STYLE_LIGHT_CSS_PATH = "/com/unical/pixelflow/css/style-light.css";
     private static final String ICON_PATH = "/com/unical/pixelflow/images/IconPixelFlow.png";
-    private static final double MIN_WIDTH = 960;
-    private static final double MIN_HEIGHT = 600;
+
     private static final double BASE_WIDTH = 1440;
     private static final double BASE_HEIGHT = 810;
 
-    private double lastWidth = MIN_WIDTH;
-    private double lastHeight = MIN_HEIGHT;
+    private double lastWidth = BASE_WIDTH;
+    private double lastHeight = BASE_HEIGHT;
+
+    private double lastX = -1;
+    private double lastY = -1;
 
     private SceneHandler(Stage primaryStage) {
         this.primaryStage = primaryStage;
+        initStageListeners();
     }
 
     public static SceneHandler getInstance(Stage primaryStage) {
@@ -35,58 +37,89 @@ public class SceneHandler {
         return instance;
     }
 
+    private void initStageListeners() {
+        primaryStage.xProperty().addListener((obs, oldVal, newVal) -> {
+            if (!primaryStage.isMaximized()) {
+                lastX = newVal.doubleValue();
+            }
+        });
 
-    private void setupScene(String fxmlPath, String title, boolean isMaximized) {
+        primaryStage.yProperty().addListener((obs, oldVal, newVal) -> {
+            if (!primaryStage.isMaximized()) {
+                lastY = newVal.doubleValue();
+            }
+        });
+
+        primaryStage.widthProperty().addListener((obs, oldVal, newVal) -> {
+            if (!primaryStage.isMaximized()) {
+                lastWidth = newVal.doubleValue();
+            }
+        });
+
+        primaryStage.heightProperty().addListener((obs, oldVal, newVal) -> {
+            if (!primaryStage.isMaximized()) {
+                lastHeight = newVal.doubleValue();
+            }
+        });
+    }
+
+    private void setupScene(String fxmlPath, String title, boolean startMaximized) {
         try {
             setUserAgentStylesheet(getClass().getResource(STYLE_DARK_CSS_PATH).toExternalForm());
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Scene scene = new Scene(loader.load());
 
-            primaryStage.setMinHeight(BASE_HEIGHT);
-            primaryStage.setMinWidth(BASE_WIDTH);
-
-            primaryStage.setWidth(lastWidth);
-            primaryStage.setHeight(lastHeight);
-
+            primaryStage.setScene(scene);
             primaryStage.setTitle(title);
 
-            Image icon = new Image(getClass().getResourceAsStream(ICON_PATH));
-            primaryStage.getIcons().add(icon);
+            try {
+                if (getClass().getResourceAsStream(ICON_PATH) != null) {
+                    Image icon = new Image(getClass().getResourceAsStream(ICON_PATH));
+                    primaryStage.getIcons().add(icon);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
+            primaryStage.setMinWidth(BASE_WIDTH);
+            primaryStage.setMinHeight(BASE_HEIGHT);
 
-            primaryStage.setScene(scene);
-            primaryStage.setMaximized(isMaximized);
-            primaryStage.centerOnScreen();
+            primaryStage.setWidth(Math.max(lastWidth, BASE_WIDTH));
+            primaryStage.setHeight(Math.max(lastHeight, BASE_HEIGHT));
+
+            if (startMaximized) {
+                primaryStage.setMaximized(true);
+            } else {
+                primaryStage.setMaximized(false);
+
+                if (lastX == -1 || lastY == -1) {
+                    primaryStage.centerOnScreen();
+                } else {
+                    primaryStage.setX(lastX);
+                    primaryStage.setY(lastY);
+                }
+            }
 
             primaryStage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    public void showHomePageScreen() {
+        setupScene("/com/unical/pixelflow/fxml/homePage.fxml", "Pixel Flow", false);
+    }
+
     public void showLoginScreen() {
-        lastWidth = primaryStage.getWidth();
-        lastHeight = primaryStage.getHeight();
-        setupScene("/com/unical/pixelflow/fxml/LoginView.fxml", "Pixel Flow  - Login", false);
+        setupScene("/com/unical/pixelflow/fxml/LoginView.fxml", "Pixel Flow - Login", false);
     }
 
     public void showRegisterScreen() {
-        lastWidth = primaryStage.getWidth();
-        lastHeight = primaryStage.getHeight();
         setupScene("/com/unical/pixelflow/fxml/RegisterView.fxml", "Pixel Flow - Register", false);
     }
 
     public void startPixeFlow() {
-        lastWidth = primaryStage.getWidth();
-        lastHeight = primaryStage.getHeight();
-        primaryStage.setMinHeight(BASE_HEIGHT);
-        primaryStage.setMinWidth(BASE_WIDTH);
-        setupScene("/com/unical/pixelflow/fxml/DashBoard.fxml", "Pixel Flow - DashBoard", true);
-    }
-
-    public void showHomePageScreen() {
-        lastWidth = primaryStage.getWidth();
-        lastHeight = primaryStage.getHeight();
-        setupScene("/com/unical/pixelflow/fxml/homePage.fxml", "Pixel Flow", false);
+        setupScene("/com/unical/pixelflow/fxml/DashBoard.fxml", "Pixel Flow - DashBoard", false);
     }
 }

@@ -6,6 +6,8 @@ import com.unical.pixelflow.domain.nodes.InputNode;
 import com.unical.pixelflow.domain.nodes.OutputNode;
 import com.unical.pixelflow.infrastructure.ProjectSerializer;
 import com.unical.pixelflow.model.DataPF;
+import com.unical.pixelflow.model.ProjectMetadata;
+import com.unical.pixelflow.utility.FieldAnimationUtils;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -36,6 +38,7 @@ public class NewProjectController {
     @FXML private Label titleLabel;
     @FXML private Label nameLabel;
     @FXML private Label sourceLabel;
+    @FXML private Label errorLabel;
     @FXML private Button browseButton;
     @FXML private Button cancelButton;
     @FXML private Button createButton;
@@ -68,8 +71,22 @@ public class NewProjectController {
         if (cancelButton != null) cancelButton.textProperty().bind(DataPF.lsp.lsb("common.cancel"));
         if (createButton != null) createButton.textProperty().bind(DataPF.lsp.lsb("dialog.new_project.create"));
 
-        if (nameField != null) nameField.promptTextProperty().bind(DataPF.lsp.lsb("dialog.new_project.name.placeholder"));
+        if (nameField != null) {
+            nameField.promptTextProperty().bind(DataPF.lsp.lsb("dialog.new_project.name.placeholder"));
+            nameField.textProperty().addListener((obs, oldVal, newVal) -> {
+                FieldAnimationUtils.removeErrorStyles(nameField);
+                if (errorLabel != null) errorLabel.setVisible(false);
+            });
+        }
+
         if (pathField != null) pathField.promptTextProperty().bind(DataPF.lsp.lsb("dialog.new_project.source.placeholder"));
+
+        if (errorLabel != null) {
+            errorLabel.setVisible(false);
+            errorLabel.setStyle("-fx-text-fill: #ff5555;");
+        }
+
+        FieldAnimationUtils.disableContextMenu(nameField, pathField);
     }
 
     @FXML
@@ -88,19 +105,57 @@ public class NewProjectController {
 
     @FXML
     private void handleCreate() {
+        FieldAnimationUtils.removeErrorStyles(nameField);
+        if (errorLabel != null) errorLabel.setVisible(false);
+
         String name = nameField.getText().trim();
 
         if (name.isEmpty()) {
-            showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.name").get());
+            FieldAnimationUtils.animateFieldError(nameField);
+            if (errorLabel != null) {
+                errorLabel.setText(DataPF.lsp.lsb("dialog.new_project.error.name").get());
+                errorLabel.setVisible(true);
+            } else {
+                showAlert(DataPF.lsp.lsb("common.error").get(), DataPF.lsp.lsb("dialog.new_project.error.name").get());
+            }
             return;
         }
 
+        createButton.setDisable(true);
+
+        Task<Boolean> checkTask = DataPF.userDatabase.checkProjectNameExists(name);
+
+        checkTask.setOnSucceeded(e -> {
+            if (checkTask.getValue()) {
+                createButton.setDisable(false);
+                FieldAnimationUtils.animateFieldError(nameField);
+                if (errorLabel != null) {
+                    errorLabel.setText("Esiste già un progetto con questo nome.");
+                    errorLabel.setVisible(true);
+                } else {
+                    showAlert("Errore", "Nome progetto già esistente.");
+                }
+            } else {
+                proceedWithCreation(name);
+            }
+        });
+
+        checkTask.setOnFailed(e -> {
+            createButton.setDisable(false);
+            e.getSource().getException().printStackTrace();
+            showAlert("Errore Database", "Impossibile verificare il nome del progetto.");
+        });
+
+        executorService.submit(checkTask);
+    }
+
+    private void proceedWithCreation(String name) {
         try {
             String uuid = UUID.randomUUID().toString();
             File projectsDir = new File("Data/projects");
             File thumbsDir = new File("Data/thumbnails");
-            projectsDir.mkdirs();
-            thumbsDir.mkdirs();
+            if (!projectsDir.exists()) projectsDir.mkdirs();
+            if (!thumbsDir.exists()) thumbsDir.mkdirs();
 
             String pfpPath = new File(projectsDir, uuid + ".pfp").getAbsolutePath();
             createdProjectPfpPath = pfpPath;
@@ -112,7 +167,10 @@ public class NewProjectController {
             if (selectedImageFile != null && selectedImageFile.exists()) {
                 sourceImage = ImageIO.read(selectedImageFile);
                 if (sourceImage == null) {
-                    showAlert(DataPF.lsp.lsb("common.error").get(), "Impossibile leggere l'immagine selezionata.");
+                    Platform.runLater(() -> {
+                        createButton.setDisable(false);
+                        showAlert(DataPF.lsp.lsb("common.error").get(), "Impossibile leggere l'immagine selezionata.");
+                    });
                     return;
                 }
                 sourcePathToSave = selectedImageFile.getAbsolutePath();
@@ -122,7 +180,6 @@ public class NewProjectController {
             InputNode input = new InputNode(sourceImage);
             OutputNode output = new OutputNode();
 
-            // Posizioni di default (coerenti con l'editor)
             input.setX(80);
             input.setY(200);
             output.setX(820);
@@ -131,8 +188,6 @@ public class NewProjectController {
             pipeline.addNode(input);
             pipeline.addNode(output);
 
-            // Se abbiamo un'immagine, creiamo anche la connessione di default Input -> Output.
-            // Se l'immagine è null (progetto vuoto), lasciamo la pipeline non connessa.
             if (sourceImage != null) {
                 pipeline.connect(input.getId(), output.getId());
             }
@@ -147,13 +202,10 @@ public class NewProjectController {
             }
             ImageIO.write(thumbnailImage, "png", new File(thumbPath));
 
-            Task<Boolean> dbTask = DataPF.userDatabase.saveProject(
-                    name,
-                    pfpPath,
-                    thumbPath
-            );
+            Task<Boolean> dbTask = DataPF.userDatabase.saveProject(name, pfpPath, thumbPath);
 
             dbTask.setOnSucceeded(e -> {
+                createButton.setDisable(false);
                 if (dbTask.getValue()) {
                     isCreated = true;
                     dialogStage.close();
@@ -164,6 +216,7 @@ public class NewProjectController {
             });
 
             dbTask.setOnFailed(e -> {
+                createButton.setDisable(false);
                 Throwable ex = dbTask.getException();
                 ex.printStackTrace();
                 showAlert("Errore Database", "Errore durante il salvataggio: " + ex.getMessage());
@@ -172,8 +225,11 @@ public class NewProjectController {
             executorService.submit(dbTask);
 
         } catch (Exception e) {
+            Platform.runLater(() -> {
+                createButton.setDisable(false);
+                showAlert("Errore Critico", "Errore durante la creazione: " + e.getMessage());
+            });
             e.printStackTrace();
-            showAlert("Errore Critico", "Errore durante la creazione: " + e.getMessage());
         }
     }
 
@@ -189,20 +245,17 @@ public class NewProjectController {
 
             MainEditingController editorCtrl = loader.getController();
             if (editorCtrl != null && createdProjectPfpPath != null) {
-                // Carica il .pfp appena creato, così la pipeline (Input/Output) viene visualizzata.
-                editorCtrl.setProject(new com.unical.pixelflow.model.ProjectMetadata("New Project", createdProjectPfpPath));
+                editorCtrl.setProject(new ProjectMetadata(0, 0, "New Project", createdProjectPfpPath, null, null));
             }
 
             Stage primaryStage = (Stage) dialogStage.getOwner();
             if (primaryStage == null) {
-                System.err.println("Primary Stage non trovato, impossibile cambiare scena.");
+                System.err.println("Primary Stage non trovato.");
                 return;
             }
 
             Scene scene = new Scene(root);
-            // Mantieni theme omogeneo come fa HomeViewController
-            String cssPath = (com.unical.pixelflow.model.DataPF.dbUser != null &&
-                    com.unical.pixelflow.model.DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK)
+            String cssPath = (DataPF.dbUser != null && DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK)
                     ? "/com/unical/pixelflow/css/style-dark.css"
                     : "/com/unical/pixelflow/css/style-light.css";
             scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
