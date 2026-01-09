@@ -6,6 +6,7 @@ import com.unical.pixelflow.model.types.Theme;
 import com.unical.pixelflow.popUp.NewProjectController;
 import com.unical.pixelflow.view.ModalEffects;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,29 +20,35 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class DashboardController {
 
+    @FXML private Button btnImportProject;
     @FXML private Button btnLogout;
     @FXML private Button btnNewProject;
     @FXML private ToggleButton btnProjects;
     @FXML private ToggleButton btnSettings;
     @FXML private ProgressBar busy_indicator;
     @FXML private StackPane contentPane;
+    @FXML private BorderPane dashboardRoot;
     @FXML private ImageView logoHeader;
     @FXML private ImageView userAvatar;
     @FXML private Label userNameLabel;
-    @FXML private BorderPane dashboardRoot;
 
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -49,13 +56,13 @@ public class DashboardController {
     public void initialize() {
         DataPF.esm.register(executorService);
         if (DataPF.userDatabase == null) {
-            DataPF.userDatabase = new UserDatabase();
+            DataPF.userDatabase = UserDatabase.getInstance();
         }
 
-        btnNewProject.textProperty().bind(DataPF.lsp.lsb("dashboard.new_project"));
-        btnProjects.textProperty().bind(DataPF.lsp.lsb("dashboard.recent_projects"));
-        btnSettings.textProperty().bind(DataPF.lsp.lsb("dashboard.profile_settings"));
-        btnLogout.textProperty().bind(DataPF.lsp.lsb("dashboard.logout"));
+        if (btnNewProject != null) btnNewProject.textProperty().bind(DataPF.lsp.lsb("dashboard.new_project"));
+        if (btnProjects != null) btnProjects.textProperty().bind(DataPF.lsp.lsb("dashboard.recent_projects"));
+        if (btnSettings != null) btnSettings.textProperty().bind(DataPF.lsp.lsb("dashboard.profile_settings"));
+        if (btnLogout != null) btnLogout.textProperty().bind(DataPF.lsp.lsb("dashboard.logout"));
 
         DataPF.dbUser.themeProperty().addListener((_, _, newValue) -> {
             Platform.runLater(() -> {
@@ -91,8 +98,8 @@ public class DashboardController {
         });
 
         ToggleGroup navGroup = new ToggleGroup();
-        btnProjects.setToggleGroup(navGroup);
-        btnSettings.setToggleGroup(navGroup);
+        if (btnProjects != null) btnProjects.setToggleGroup(navGroup);
+        if (btnSettings != null) btnSettings.setToggleGroup(navGroup);
 
         navGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null) {
@@ -106,9 +113,44 @@ public class DashboardController {
             }
         });
 
-        btnProjects.setSelected(true);
+        if (btnProjects != null) btnProjects.setSelected(true);
         update_user();
         showProjects();
+    }
+
+    @FXML
+    void handleImportProject(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Importa Progetto PixelFlow");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PixelFlow Project (*.pfp)", "*.pfp"));
+
+        File selectedFile = fileChooser.showOpenDialog(dashboardRoot.getScene().getWindow());
+
+        if (selectedFile != null) {
+            try {
+                String newFileName = UUID.randomUUID() + ".pfp";
+                File destDir = new File("Data/projects");
+                if (!destDir.exists()) destDir.mkdirs();
+
+                File destFile = new File(destDir, newFileName);
+                Files.copy(selectedFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                String originalName = selectedFile.getName().replace(".pfp", "");
+
+                Task<Boolean> saveTask = DataPF.userDatabase.saveProject(
+                        originalName,
+                        destFile.getAbsolutePath(),
+                        null
+                );
+
+                saveTask.setOnSucceeded(e -> Platform.runLater(this::showProjects));
+
+                executorService.submit(saveTask);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @FXML
@@ -117,7 +159,7 @@ public class DashboardController {
     }
 
     @FXML
-    private void handleNewProject(ActionEvent event) {
+    void handleNewProject(ActionEvent event) {
         openModal("/com/unical/pixelflow/fxml/NewProjectDialog.fxml",
                 DataPF.lsp.lsb("dialog.new_project.window_title").get(),
                 (loader, stage) -> {
@@ -138,14 +180,14 @@ public class DashboardController {
     }
 
     private void openModal(String fxmlPath, String title,
-                           java.util.function.BiConsumer<FXMLLoader, Stage> stageConfig,
+                           BiConsumer<FXMLLoader, Stage> stageConfig,
                            Consumer<FXMLLoader> afterCloseAction) {
         openModal(fxmlPath, title, null, stageConfig, afterCloseAction);
     }
 
     private void openModal(String fxmlPath, String title,
                            Consumer<FXMLLoader> simpleConfig,
-                           java.util.function.BiConsumer<FXMLLoader, Stage> stageConfig,
+                           BiConsumer<FXMLLoader, Stage> stageConfig,
                            Consumer<FXMLLoader> afterCloseAction) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
@@ -239,8 +281,12 @@ public class DashboardController {
                 ));
             }
 
-            setCenteredCircleImage(userAvatar, image);
-            userNameLabel.setText(DataPF.dbUser.getUsername());
+            if (userAvatar != null) {
+                setCenteredCircleImage(userAvatar, image);
+            }
+            if (userNameLabel != null) {
+                userNameLabel.setText(DataPF.dbUser.getUsername());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -280,12 +326,12 @@ public class DashboardController {
     }
 
     void showProjects() {
-        if (!btnProjects.isSelected()) btnProjects.setSelected(true);
+        if (btnProjects != null && !btnProjects.isSelected()) btnProjects.setSelected(true);
         loadView("/com/unical/pixelflow/fxml/HomeView.fxml");
     }
 
     void showSettings() {
-        if (!btnSettings.isSelected()) btnSettings.setSelected(true);
+        if (btnSettings != null && !btnSettings.isSelected()) btnSettings.setSelected(true);
         loadView("/com/unical/pixelflow/fxml/ProfileSettings.fxml");
     }
 
@@ -293,8 +339,10 @@ public class DashboardController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
             Parent view = loader.load();
-            contentPane.getChildren().clear();
-            contentPane.getChildren().add(view);
+            if (contentPane != null) {
+                contentPane.getChildren().clear();
+                contentPane.getChildren().add(view);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

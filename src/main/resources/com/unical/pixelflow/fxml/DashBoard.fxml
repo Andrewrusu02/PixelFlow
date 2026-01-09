@@ -14,7 +14,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.SVGPath?>
 
-<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
+<BorderPane fx:id="dashboardRoot" prefHeight="810.0" prefWidth="1440.0" styleClass="background-1" xmlns="http://javafx.com/javafx/24" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.unical.pixelflow.controller.DashboardController">
 
               <top>
          <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="background-4">
@@ -23,7 +23,15 @@
                <Image url="@../assets/logo/LogoPixelFlow.png" />
             </image></ImageView>
              <Region HBox.hgrow="ALWAYS" />
-             <Button fx:id="btnNewProject" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#handleNewProject" prefHeight="40.0" prefWidth="200.0" styleClass="full-button" text="New Project">
+             <Button fx:id="btnImportProject" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#handleImportProject" prefHeight="40.0" prefWidth="200.0" styleClass="full-button" text="Importa Progetto">
+            <graphic>
+               <SVGPath content="M6.29289 9.70711L11.2929 14.7071L12 15.4142L12.7071 14.7071L17.7071 9.70711L16.2929 8.29289L13 11.5858V4H18C19.1046 4 20 4.89543 20 6V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V6C4 4.89543 4.89543 4 6 4H11L11 11.5858L7.70711 8.29289L6.29289 9.70711Z" strokeWidth="0.0" styleClass="icon_general" translateX="-6.0" />
+            </graphic>
+            <padding>
+               <Insets bottom="10.0" top="10.0" />
+            </padding>
+         </Button>
+         <Button fx:id="btnNewProject" layoutX="1210.0" layoutY="43.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onAction="#handleNewProject" prefHeight="40.0" prefWidth="200.0" styleClass="full-button" text="New Project">
             <graphic>
                <SVGPath content="M11.883 3.007 12 3a1 1 0 0 1 .993.883L13 4v7h7a1 1 0 0 1 .993.883L21 12a1 1 0 0 1-.883.993L20 13h-7v7a1 1 0 0 1-.883.993L12 21a1 1 0 0 1-.993-.883L11 20v-7H4a1 1 0 0 1-.993-.883L3 12a1 1 0 0 1 .883-.993L4 11h7V4a1 1 0 0 1 .883-.993L12 3l-.117.007Z" strokeWidth="0.0" styleClass="icon_general" translateX="-6.0" />
             </graphic>

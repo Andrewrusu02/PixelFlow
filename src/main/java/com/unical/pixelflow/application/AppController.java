@@ -10,7 +10,11 @@ import com.unical.pixelflow.domain.nodes.*;
 import com.unical.pixelflow.infrastructure.ImageIOHandler;
 import com.unical.pixelflow.infrastructure.ProjectSerializer;
 
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 
 public class AppController {
@@ -30,8 +34,6 @@ public class AppController {
         this.serializer = new ProjectSerializer();
         this.imageHandler = new ImageIOHandler();
     }
-
-    // ================== GESTIONE PROGETTO ==================
 
     public void createNewProject() {
         this.pipeline = new Pipeline();
@@ -54,8 +56,6 @@ public class AppController {
             System.err.println("Errore salvataggio: " + e.getMessage());
         }
     }
-
-    // ================== AZIONI UTENTE (COMMANDS) ==================
 
     public void addFilter(String filterType) {
         if (pipeline == null) {
@@ -119,8 +119,6 @@ public class AppController {
         }
     }
 
-    // ================== CONTROLLO UNDO/REDO ==================
-
     public void undo() {
         if (undoManager.canUndo()) {
             undoManager.undo();
@@ -141,15 +139,6 @@ public class AppController {
         return undoManager.canRedo();
     }
 
-    // ================== ESECUZIONE & VIEW ==================
-
-    /**
-     * Restituisce una preview calcolata fino al nodo indicato (output del nodo target).
-     *
-     * <p>Virtual Proxy:
-     * se l'InputNode ha una source full-res, viene temporaneamente sostituita da una proxy low-res
-     * durante l'esecuzione preview, per evitare saturazione RAM e mantenere la UI reattiva.
-     */
     public BufferedImage getPreviewForNode(String targetNodeId) {
         if (targetNodeId == null || targetNodeId.isBlank()) {
             throw new IllegalArgumentException("targetNodeId cannot be null/blank");
@@ -172,14 +161,10 @@ public class AppController {
             input.setSourceImage(proxy);
             return previewExecutor.executeUntil(pipeline, targetNodeId);
         } finally {
-            // ripristina sempre la source originale (full-res) nel modello
             input.setSourceImage(original);
         }
     }
 
-    /**
-     * Preview default: pipeline completa. Manteniamo compatibilità, ma applichiamo comunque proxy.
-     */
     public BufferedImage getPreview() {
         InputNode input = pipeline.getNodes().values().stream()
                 .filter(n -> n instanceof InputNode)
@@ -267,5 +252,49 @@ public class AppController {
         if (original instanceof ScaleFilter) return new ScaleFilter();
         if (original instanceof Rotate90Filter) return new Rotate90Filter();
         return null;
+    }
+
+    public void exportImage(File file) throws IOException {
+        if (file == null) return;
+
+        BufferedImage resultImage = executor.execute(pipeline);
+
+        if (resultImage == null) {
+            throw new IOException("Pipeline result is empty");
+        }
+
+        String fileName = file.getName().toLowerCase();
+        String format = "png";
+
+        if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+            format = "jpg";
+        } else if (fileName.endsWith(".bmp")) {
+            format = "bmp";
+        } else if (fileName.endsWith(".gif")) {
+            format = "gif";
+        }
+
+        if (format.equals("jpg") && resultImage.getColorModel().hasAlpha()) {
+            resultImage = removeAlphaChannel(resultImage);
+        }
+
+        if (!ImageIO.write(resultImage, format, file)) {
+            throw new IOException("No writer found for format: " + format);
+        }
+    }
+
+    private BufferedImage removeAlphaChannel(BufferedImage img) {
+        if (!img.getColorModel().hasAlpha()) {
+            return img;
+        }
+
+        BufferedImage target = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+        Graphics2D g = target.createGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, img.getWidth(), img.getHeight());
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+
+        return target;
     }
 }

@@ -21,12 +21,15 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.transform.Affine;
+import javafx.stage.FileChooser;
+
+import java.io.File;
+import java.util.function.BiConsumer;
 
 public class NodesViewController {
 
     private static final double MIN_ZOOM = 0.2;
     private static final double MAX_ZOOM = 4.0;
-    private static final boolean DEBUG_EDGES = false;
     private static final double GRID_STEP = 40.0;
     private static final int GRID_MAJOR_EVERY = 5;
     private static final double NODE_WIDGET_WIDTH = 180;
@@ -105,6 +108,7 @@ public class NodesViewController {
     private AppController backend;
 
     private java.util.function.Consumer<String> onNodeSelected;
+    private BiConsumer<Integer, Integer> onGraphStatsChanged;
 
     private String selectedNodeId;
 
@@ -115,10 +119,16 @@ public class NodesViewController {
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
+        updateGraphStatsInternal();
     }
 
     public void setOnNodeSelected(java.util.function.Consumer<String> onNodeSelected) {
         this.onNodeSelected = onNodeSelected;
+    }
+
+    public void setOnGraphStatsChanged(BiConsumer<Integer, Integer> onGraphStatsChanged) {
+        this.onGraphStatsChanged = onGraphStatsChanged;
+        updateGraphStatsInternal();
     }
 
     public void setOnSaveRequested(Runnable onSaveRequested) {
@@ -219,10 +229,65 @@ public class NodesViewController {
             disableButton.setOnAction(e -> toggleNodeBypass());
         }
 
+        if (exportButton != null) {
+            exportButton.setOnAction(e -> handleExport());
+        }
+
         javafx.application.Platform.runLater(() -> {
             updateGridColorsFromTheme();
             updateUndoRedoButtonsState();
+            updateGraphStatsInternal();
         });
+    }
+
+    private void handleExport() {
+        if (root == null || backend == null) return;
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Esporta o Salva Progetto");
+        fileChooser.setInitialFileName("progetto_pixelflow");
+
+        String userHome = System.getProperty("user.home");
+        File desktop = new File(userHome, "Desktop");
+        if (desktop.exists() && desktop.isDirectory()) {
+            fileChooser.setInitialDirectory(desktop);
+        }
+
+        FileChooser.ExtensionFilter extFilterPfp = new FileChooser.ExtensionFilter("Progetto PixelFlow (*.pfp)", "*.pfp");
+        FileChooser.ExtensionFilter extFilterPng = new FileChooser.ExtensionFilter("Immagine PNG (*.png)", "*.png");
+        FileChooser.ExtensionFilter extFilterJpg = new FileChooser.ExtensionFilter("Immagine JPEG (*.jpg)", "*.jpg", "*.jpeg");
+
+        fileChooser.getExtensionFilters().addAll(extFilterPfp, extFilterPng, extFilterJpg);
+
+        File file = fileChooser.showSaveDialog(root.getScene().getWindow());
+
+        if (file != null) {
+            try {
+                String fileName = file.getName().toLowerCase();
+
+                if (fileName.endsWith(".pfp")) {
+                    // Questa riga salva il file .pfp esattamente nel percorso scelto dall'utente
+                    // rendendolo esportabile e condivisibile.
+                    backend.saveProject(file.getAbsolutePath(), "");
+                    showSaveToast(true, "Progetto esportato in: " + file.getName());
+                } else {
+                    backend.exportImage(file);
+                    showSaveToast(true, "Immagine esportata con successo!");
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                showSaveToast(false, "Errore durante l'esportazione");
+            }
+        }
+    }
+
+    private void updateGraphStatsInternal() {
+        if (onGraphStatsChanged != null && backend != null && backend.getPipeline() != null) {
+            int nodes = backend.getPipeline().getNodes().size();
+            int connections = backend.getPipeline().getConnections().size();
+            onGraphStatsChanged.accept(nodes, connections);
+        }
     }
 
     private void updateUndoRedoButtonsState() {
@@ -564,6 +629,7 @@ public class NodesViewController {
 
         if (connected) e.consume();
         updateUndoRedoButtonsState();
+        updateGraphStatsInternal();
     }
 
     private void redrawEdgesFromPipeline() {
@@ -616,8 +682,8 @@ public class NodesViewController {
 
         rubberBand.getCurve().toFront();
 
-        if (DEBUG_EDGES) {
-            System.out.println("[EDGE] renderedCurves=" + rendered + " layerChildren=" + edgesLayer.getChildren().size());
+        if (!isDraggingNode && !isConnecting && !isPanning) {
+            updateGraphStatsInternal();
         }
     }
 
@@ -688,6 +754,7 @@ public class NodesViewController {
         }
 
         redrawEdgesFromPipeline();
+        updateGraphStatsInternal();
     }
 
     private void applyWorldTransform() {
@@ -1211,7 +1278,8 @@ public class NodesViewController {
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
-        
+
+        if (onSaveRequested != null) onSaveRequested.run();
     }
 
     private void handleRedo() {
@@ -1223,5 +1291,7 @@ public class NodesViewController {
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
+
+        if (onSaveRequested != null) onSaveRequested.run();
     }
 }

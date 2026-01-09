@@ -17,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -25,18 +26,13 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class HomeViewController {
+public class HomeProjectsViewController {
 
-    @FXML
-    private FlowPane projectsGrid;
-    @FXML
-    private VBox emptyMessage;
-    @FXML
-    private Label titleLabel;
-    @FXML
-    private Label emptyTitleLabel;
-    @FXML
-    private Label emptySubtitleLabel;
+    @FXML private FlowPane projectsGrid;
+    @FXML private VBox emptyMessage;
+    @FXML private Label titleLabel;
+    @FXML private Label emptyTitleLabel;
+    @FXML private Label emptySubtitleLabel;
 
     private final ProjectRepository repo = new ProjectRepository();
 
@@ -106,8 +102,6 @@ public class HomeViewController {
         }
     }
 
-
-
     private void loadEditor(ProjectMetadata project) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/unical/pixelflow/fxml/MainView.fxml"));
@@ -116,17 +110,14 @@ public class HomeViewController {
             MainEditingController controller = loader.getController();
             controller.setProject(project);
 
-            // Ottieni lo stage attuale
             Stage stage = (Stage) projectsGrid.getScene().getWindow();
-
-            // Cambia scena
             Scene newScene = new Scene(root);
 
-            // Applica il tema corretto (Dark/Light) per evitare flash bianchi
             String cssPath = (DataPF.dbUser.getTheme() == com.unical.pixelflow.model.types.Theme.DARK)
                     ? "/com/unical/pixelflow/css/style-dark.css"
                     : "/com/unical/pixelflow/css/style-light.css";
             newScene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
+
             stage.setScene(newScene);
             stage.setTitle("Pixel Flow - " + project.getName());
             stage.setMaximized(true);
@@ -180,15 +171,12 @@ public class HomeViewController {
     private Stage createDialogStage(Parent page, String titleKey) {
         Stage stage = new Stage();
         stage.setTitle(DataPF.lsp.lsb(titleKey).get());
-
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(projectsGrid.getScene().getWindow());
-
         stage.initStyle(StageStyle.TRANSPARENT);
 
-
         Scene scene = new Scene(page);
-        scene.setFill(javafx.scene.paint.Color.TRANSPARENT);
+        scene.setFill(Color.TRANSPARENT);
 
         stage.setScene(scene);
         stage.setResizable(false);
