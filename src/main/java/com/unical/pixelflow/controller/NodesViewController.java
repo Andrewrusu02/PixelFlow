@@ -33,7 +33,7 @@ public class NodesViewController {
 
     private static final double MIN_ZOOM = 0.2;
     private static final double MAX_ZOOM = 4.0;
-    private static final boolean DEBUG_EDGES = false; // Variabile reinserita qui
+    private static final boolean DEBUG_EDGES = false;
     private static final double GRID_STEP = 40.0;
     private static final int GRID_MAJOR_EVERY = 5;
     private static final double NODE_WIDGET_WIDTH = 180;
@@ -1254,14 +1254,17 @@ public class NodesViewController {
     private void handleDelete() {
         if (selectedNodeId == null || backend == null) return;
 
+        Node node = backend.getPipeline().getNode(selectedNodeId);
+        if (node != null && node.isStructural()) {
+            return;
+        }
+
         backend.removeNode(selectedNodeId);
 
         clearSelection();
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
-
-        if (onSaveRequested != null) onSaveRequested.run();
     }
 
     private void handleCopy() {
@@ -1273,8 +1276,6 @@ public class NodesViewController {
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
-
-        if (onSaveRequested != null) onSaveRequested.run();
     }
 
     private void toggleNodeBypass() {
@@ -1305,8 +1306,6 @@ public class NodesViewController {
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
-
-        if (onSaveRequested != null) onSaveRequested.run();
     }
 
     private void handleRedo() {
@@ -1318,7 +1317,5 @@ public class NodesViewController {
         redrawNodesFromPipeline();
         redrawEdgesFromPipeline();
         updateUndoRedoButtonsState();
-
-        if (onSaveRequested != null) onSaveRequested.run();
     }
 }
