@@ -1,0 +1,29 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "C:\\Users\\kaniska\\OneDrive\\Immagini\\Catture di schermata\\Screenshot 2025-06-26 005157.png",
+  "nodes" : [ {
+    "id" : "b282b01a-6715-4fc4-9eac-d2b2539f510e",
+    "type" : "InvertFilter",
+    "x" : 154.22449788718342,
+    "y" : 165.67346557097252,
+    "parameters" : {
+      "intensity" : 0
+    }
+  }, {
+    "id" : "5697c4c7-2ba3-4193-a8ef-944fb9b7befe",
+    "type" : "OutputNode",
+    "x" : 795.6101509136447,
+    "y" : -8.493871222072812,
+    "parameters" : null
+  }, {
+    "id" : "7dc0bbdd-0e98-4cfd-920c-3430e12d67cf",
+    "type" : "InputNode",
+    "x" : -198.51634117967475,
+    "y" : -2.9864859445087006,
+    "parameters" : null
+  } ],
+  "connections" : [ {
+    "sourceId" : "7dc0bbdd-0e98-4cfd-920c-3430e12d67cf",
+    "destId" : "5697c4c7-2ba3-4193-a8ef-944fb9b7befe"
+  } ]
+}

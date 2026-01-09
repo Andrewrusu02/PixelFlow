@@ -1,0 +1,54 @@
+{
+  "version" : "1.0",
+  "sourcePath" : "C:\\Users\\kaniska\\OneDrive\\Immagini\\339275229_134019106307286_8482438561318440177_n.jpg",
+  "nodes" : [ {
+    "id" : "b282b01a-6715-4fc4-9eac-d2b2539f510e",
+    "type" : "InvertFilter",
+    "x" : 222.0364722874146,
+    "y" : 54.27935374875673,
+    "parameters" : {
+      "intensity" : 27
+    }
+  }, {
+    "id" : "46bf3458-ab1c-43ba-ab41-9c34299f3182",
+    "type" : "ThresholdFilter",
+    "x" : 744.6681101338436,
+    "y" : 247.8029440888921,
+    "parameters" : {
+      "threshold" : 128
+    }
+  }, {
+    "id" : "7dc0bbdd-0e98-4cfd-920c-3430e12d67cf",
+    "type" : "InputNode",
+    "x" : -167.51634117967475,
+    "y" : 127.0135140554913,
+    "parameters" : null
+  }, {
+    "id" : "4bb833f3-7eff-4c4c-a19a-6a56fb1e7d45",
+    "type" : "GrayscaleFilter",
+    "x" : 508.7032411558862,
+    "y" : 86.03847120025995,
+    "parameters" : {
+      "intensity" : 0
+    }
+  }, {
+    "id" : "5697c4c7-2ba3-4193-a8ef-944fb9b7befe",
+    "type" : "OutputNode",
+    "x" : 1097.009952868982,
+    "y" : 2.250191088977317,
+    "parameters" : null
+  } ],
+  "connections" : [ {
+    "sourceId" : "7dc0bbdd-0e98-4cfd-920c-3430e12d67cf",
+    "destId" : "b282b01a-6715-4fc4-9eac-d2b2539f510e"
+  }, {
+    "sourceId" : "b282b01a-6715-4fc4-9eac-d2b2539f510e",
+    "destId" : "4bb833f3-7eff-4c4c-a19a-6a56fb1e7d45"
+  }, {
+    "sourceId" : "4bb833f3-7eff-4c4c-a19a-6a56fb1e7d45",
+    "destId" : "46bf3458-ab1c-43ba-ab41-9c34299f3182"
+  }, {
+    "sourceId" : "46bf3458-ab1c-43ba-ab41-9c34299f3182",
+    "destId" : "5697c4c7-2ba3-4193-a8ef-944fb9b7befe"
+  } ]
+}
