@@ -39,6 +39,4 @@ build/
 ### Mac OS ###
 .DS_Store
 
-*.md
-
 PROJECT_STATUS.md
